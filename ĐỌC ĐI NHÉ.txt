@@ -1,0 +1,5 @@
+Some change need to consider in case error:
+*pom.xml:
+ - JDBC driver version
+*application.properties
+ - SQL server password and conencction string
