@@ -3,3 +3,10 @@ Some change need to consider in case error:
  - JDBC driver version
 *application.properties
  - SQL server password and conencction string
+
+Folder and package explanation:
+ - controller: Store controller
+ - model: store entity model that MATCH TABLES in database
+ - dto: store class represent model in case return type does NOT fit any created entities.
+ - dao: store complex command if needed to use (store procedure, complex join sql, ...)
+ - repository: store interface for each table entity for basic CRUDS or command that return table fit with created entity.
