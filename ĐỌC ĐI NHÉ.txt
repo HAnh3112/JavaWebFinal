@@ -10,4 +10,4 @@ Folder and package explanation:
  - dto: store class represent model in case return type does NOT fit any created entities.
  - dao: store complex command if needed to use (store procedure, complex join sql, ...)
  - repository: store interface for each table entity for basic CRUDS or command that return table fit with created entity.
- - service: logic method that return result that can be call from controller. Use method from repository and dao.
+ - service: logic method that return result that can be call from controller. Use method from repository and dao. (Check user table interaction for more information)
