@@ -5,7 +5,7 @@ pipeline {
 
 
     tools {
-        maven 'Maven 3.9.9'   // Replace with the name of your configured Maven installation in Jenkins
+        maven 'Maven 3.9.9'   // Replace with the name of your configured Maven installation in Jenkin
         jdk 'JDK 21'          // Replace with your JDK version name from Jenkins Global Tools config
     }
 
