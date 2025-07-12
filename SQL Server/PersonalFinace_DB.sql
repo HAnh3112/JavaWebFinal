@@ -42,14 +42,3 @@ CREATE TABLE Budgets (
     Year INT NOT NULL,
     CreatedAt DATETIME DEFAULT GETDATE()
 );
-
-GO
-CREATE TABLE Goals (
-    GoalID INT PRIMARY KEY IDENTITY(1,1),
-    UserID INT FOREIGN KEY REFERENCES Users(UserID),
-    Name NVARCHAR(100) NOT NULL,
-    TargetAmount DECIMAL(18,2) NOT NULL,
-    CurrentAmount DECIMAL(18,2) DEFAULT 0,
-    Deadline DATE,
-    CreatedAt DATETIME DEFAULT GETDATE()
-);
