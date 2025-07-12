@@ -44,6 +44,18 @@ public class Transaction {
 
     @Column(name = "CreatedAt", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime createdAt;
+    
+    public Transaction() {
+    }
+
+    public Transaction(User user, Category category, BigDecimal amount, String type, LocalDateTime transactionDate, String note) {
+    this.user = user;
+    this.category = category;
+    this.amount = amount;
+    this.type = type;
+    this.transactionDate = transactionDate;
+    this.note = note;
+    }
 
     @PrePersist
     protected void onCreate() {

@@ -41,6 +41,17 @@ public class Budget {
 
     @Column(name = "CreatedAt", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime createdAt;
+    
+    public Budget() {
+    }
+
+    public Budget(User user, Category category, BigDecimal amount, Integer month, Integer year) {
+    this.user = user;
+    this.category = category;
+    this.amount = amount;
+    this.month = month;
+    this.year = year;
+    }
 
     @PrePersist
     protected void onCreate() {
