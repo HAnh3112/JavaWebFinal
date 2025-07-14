@@ -16,7 +16,6 @@ CREATE TABLE Categories (
     CategoryID INT PRIMARY KEY IDENTITY(1,1),
     UserID INT FOREIGN KEY REFERENCES Users(UserID),
     Name NVARCHAR(50) NOT NULL,
-    Type NVARCHAR(10) CHECK (Type IN ('Income', 'Expense')) NOT NULL,
     CreatedAt DATETIME DEFAULT GETDATE()
 );
 
