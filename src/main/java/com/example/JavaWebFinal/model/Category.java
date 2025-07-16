@@ -28,9 +28,6 @@ public class Category {
     @Column(name = "Name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "Type", nullable = false, length = 10)
-    private String type;
-
     @Column(name = "CreatedAt", columnDefinition = "DATETIME DEFAULT GETDATE()")
     private LocalDateTime createdAt;
     
@@ -40,7 +37,6 @@ public class Category {
     public Category(User user, String name, String type) {
     this.user = user;
     this.name = name;
-    this.type = type;
     }
 
     @PrePersist
@@ -70,14 +66,6 @@ public class Category {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public LocalDateTime getCreatedAt() {
