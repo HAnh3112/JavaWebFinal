@@ -21,8 +21,13 @@ public class BudgetController {
     private BudgetService budgetService;
 
     @GetMapping("/show")
-    public Object insertBudget() {
+    public Object showBudget() {
         return budgetService.showBudgets();
+    }
+    
+    @GetMapping("/showByMonth")
+    public Object showBudgetByMonth(@RequestParam int userID, @RequestParam int month, @RequestParam int year){
+        return budgetService.showBudgetsByMonth(year, month, year);
     }
 
     @PostMapping("/insert")
@@ -37,9 +42,8 @@ public class BudgetController {
     }
 
     @PostMapping("/update")
-    public String updateBudget(@RequestParam int id,@RequestParam int userID,@RequestParam int categoryID,
-            @RequestParam BigDecimal amount,@RequestParam int month,@RequestParam int year) {
-        return budgetService.updateBudget(id, userID, categoryID, amount, month, year);
+    public String updateBudget(@RequestParam int id, @RequestParam BigDecimal amount) {
+        return budgetService.updateBudget(id, amount);
     }
 }
 

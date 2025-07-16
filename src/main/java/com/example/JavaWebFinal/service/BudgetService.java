@@ -14,6 +14,8 @@ import com.example.JavaWebFinal.model.User;
 import com.example.JavaWebFinal.repository.BudgetRepository;
 import com.example.JavaWebFinal.repository.UserRepository;
 import com.example.JavaWebFinal.repository.CategoryRepository;
+import com.example.JavaWebFinal.dao.BudgetDAO;
+
 import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,12 +33,23 @@ public class BudgetService {
     
     @Autowired
     private CategoryRepository categoryRepository;
+    
+    @Autowired
+    private BudgetDAO budgetDAO;
 
     public Object showBudgets() {
         try {
             return budgetRepository.findAll();
         } catch (Exception e) {
             return "Error retrieving budget data: " + e.getMessage();
+        }
+    }
+    
+    public Object showBudgetsByMonth(int id, int month, int year){
+        try{
+            return budgetDAO.getBudgetsWithSpendingByMonthAndYear(id, month, year);
+        }catch(Exception e){
+            return "Error retrieving budget data:" + e.getMessage();
         }
     }
     
@@ -68,24 +81,14 @@ public class BudgetService {
     }
 
     @Transactional
-    public String updateBudget(int id, int userID,int categoryID, BigDecimal amount, int month, int year) {
+    public String updateBudget(int id, BigDecimal amount) {
         try {
             Budget budget = budgetRepository.findById(id).orElse(null);
             if (budget == null) {
                 return "Budget data not found";
             }
-
-            User user = userRepository.findById(userID)
-                    .orElseThrow(() -> new RuntimeException("User not found!"));
             
-            Category ctg = categoryRepository.findById(categoryID)
-                    .orElseThrow(() -> new RuntimeException("Category not found!"));
-            
-            budget.setUser(user);
-            budget.setCategory(ctg);
             budget.setAmount(amount);
-            budget.setMonth(month);
-            budget.setYear(year);
             budgetRepository.save(budget);
             return "Budget updated!";
         } catch (Exception e) {
