@@ -19,15 +19,10 @@ public class BudgetController {
 
     @Autowired
     private BudgetService budgetService;
-
-    @GetMapping("/show")
-    public Object showBudget() {
-        return budgetService.showBudgets();
-    }
     
     @GetMapping("/showByMonth")
     public Object showBudgetByMonth(@RequestParam int userID, @RequestParam int month, @RequestParam int year){
-        return budgetService.showBudgetsByMonth(year, month, year);
+        return budgetService.showBudgetsByMonth(userID, month, year);
     }
 
     @PostMapping("/insert")
