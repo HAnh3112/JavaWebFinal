@@ -1,74 +1,70 @@
 -- Insert Users
 INSERT INTO Users (Username, Email, PasswordHash)
 VALUES 
-('alice', 'alice@example.com', 'hashed_password1'),
-('bob', 'bob@example.com', 'hashed_password2'),
-('charlie', 'charlie@example.com', 'hashed_password3');
+('alice', 'alice@example.com', 'hashed_pw1'),
+('bob', 'bob@example.com', 'hashed_pw2'),
+('carol', 'carol@example.com', 'hashed_pw3');
 
--- Insert Categories for Users
--- For Alice (UserID = 1)
-INSERT INTO Categories (UserID, Name) VALUES 
-(1, 'Groceries'),
-(1, 'Entertainment');
-
--- For Bob (UserID = 2)
-INSERT INTO Categories (UserID, Name) VALUES 
-(2, 'Utilities'),
-(2, 'Transport'),
-(2, 'Dining');
-
--- For Charlie (UserID = 3)
-INSERT INTO Categories (UserID, Name) VALUES 
-(3, 'Healthcare'),
-(3, 'Travel');
-
--- Insert Transactions (Income and Expense) for Each Category
--- Alice's Categories (CategoryID 1,2)
-INSERT INTO Transactions (UserID, CategoryID, Amount, Type, TransactionDate, Note)
+-- Insert Categories for each User
+-- Alice: 3 Categories
+INSERT INTO Categories (UserID, Name, Type)
 VALUES
-(1, 1, 50.00, 'Expense', '2025-07-01', 'Grocery store'),
-(1, 1, 30.00, 'Expense', '2025-07-05', 'Snacks'),
-(1, 1, 500.00, 'Income', '2025-07-03', 'Gift'),
+(1, 'Salary', 'Income'),
+(1, 'Groceries', 'Expense'),
+(1, 'Freelance', 'Income');
 
-(1, 2, 20.00, 'Expense', '2025-07-04', 'Movie'),
-(1, 2, 15.00, 'Expense', '2025-07-06', 'Music Subscription'),
-(1, 2, 200.00, 'Income', '2025-07-01', 'Side gig');
-
--- Bob's Categories (CategoryID 3,4,5)
-INSERT INTO Transactions (UserID, CategoryID, Amount, Type, TransactionDate, Note)
+-- Bob: 2 Categories
+INSERT INTO Categories (UserID, Name, Type)
 VALUES
-(2, 3, 100.00, 'Expense', '2025-07-02', 'Electric bill'),
-(2, 3, 60.00, 'Expense', '2025-07-07', 'Water bill'),
-(2, 3, 1000.00, 'Income', '2025-07-01', 'Salary'),
+(2, 'Investments', 'Income'),
+(2, 'Rent', 'Expense');
 
-(2, 4, 25.00, 'Expense', '2025-07-03', 'Gas'),
-(2, 4, 15.00, 'Expense', '2025-07-06', 'Bus fare'),
-(2, 4, 150.00, 'Income', '2025-07-01', 'Reimbursement'),
-
-(2, 5, 40.00, 'Expense', '2025-07-05', 'Lunch'),
-(2, 5, 20.00, 'Expense', '2025-07-06', 'Coffee'),
-(2, 5, 300.00, 'Income', '2025-07-01', 'Freelance');
-
--- Charlie's Categories (CategoryID 6,7)
-INSERT INTO Transactions (UserID, CategoryID, Amount, Type, TransactionDate, Note)
+-- Carol: 3 Categories
+INSERT INTO Categories (UserID, Name, Type)
 VALUES
-(3, 6, 70.00, 'Expense', '2025-07-04', 'Medicine'),
-(3, 6, 100.00, 'Expense', '2025-07-05', 'Doctor visit'),
-(3, 6, 600.00, 'Income', '2025-07-02', 'Insurance payout'),
+(3, 'Side Hustle', 'Income'),
+(3, 'Dining Out', 'Expense'),
+(3, 'Entertainment', 'Expense');
 
-(3, 7, 300.00, 'Expense', '2025-07-01', 'Flight'),
-(3, 7, 150.00, 'Expense', '2025-07-03', 'Hotel'),
-(3, 7, 800.00, 'Income', '2025-07-01', 'Bonus');
+-- Insert Transactions (match category type)
+-- Alice's Transactions
+INSERT INTO Transactions (UserID, CategoryID, Amount, TransactionDate, Note)
+VALUES
+(1, 1, 5000.00, '2025-07-01', 'Monthly salary'),
+(1, 1, 5000.00, '2025-06-01', 'Monthly salary'),
+(1, 2, 150.75, '2025-07-05', 'Groceries at supermarket'),
+(1, 2, 120.00, '2025-07-12', 'More groceries'),
+(1, 3, 800.00, '2025-07-10', 'Freelance design work');
 
--- Insert Budgets for All Categories
+-- Bob's Transactions
+INSERT INTO Transactions (UserID, CategoryID, Amount, TransactionDate, Note)
+VALUES
+(2, 4, 200.00, '2025-07-03', 'Stock dividends'),
+(2, 4, 220.00, '2025-06-15', 'Crypto gains'),
+(2, 5, 900.00, '2025-07-01', 'Monthly rent');
+
+-- Carol's Transactions
+INSERT INTO Transactions (UserID, CategoryID, Amount, TransactionDate, Note)
+VALUES
+(3, 6, 700.00, '2025-07-06', 'Online store sales'),
+(3, 6, 650.00, '2025-06-28', 'Craft market sales'),
+(3, 7, 60.00, '2025-07-02', 'Dinner at sushi place'),
+(3, 7, 45.50, '2025-07-09', 'Lunch out'),
+(3, 8, 100.00, '2025-07-04', 'Concert tickets');
+
+-- Insert Budgets for each Expense Category
+-- Alice's Expense Category: CategoryID = 2
 INSERT INTO Budgets (UserID, CategoryID, Amount, Month, Year)
 VALUES
-(1, 1, 200.00, 7, 2025),
-(1, 2, 100.00, 7, 2025),
+(1, 2, 400.00, 7, 2025);
 
-(2, 3, 250.00, 7, 2025),
-(2, 4, 100.00, 7, 2025),
-(2, 5, 150.00, 7, 2025),
+-- Bob's Expense Category: CategoryID = 5
+INSERT INTO Budgets (UserID, CategoryID, Amount, Month, Year)
+VALUES
+(2, 5, 1000.00, 7, 2025);
 
-(3, 6, 300.00, 7, 2025),
-(3, 7, 500.00, 7, 2025);
+-- Carol's Expense Categories: CategoryID = 7, 8
+INSERT INTO Budgets (UserID, CategoryID, Amount, Month, Year)
+VALUES
+(3, 7, 200.00, 7, 2025),
+(3, 8, 300.00, 7, 2025);

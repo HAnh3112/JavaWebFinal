@@ -16,7 +16,7 @@ CREATE TABLE Categories (
     CategoryID INT PRIMARY KEY IDENTITY(1,1),
     UserID INT FOREIGN KEY REFERENCES Users(UserID),
     Name NVARCHAR(50) NOT NULL,
-    Type NVARCHAR(10) NOT NULL CHECK (Type IN ('income', 'expense')),
+    Type NVARCHAR(10) NOT NULL CHECK (Type IN ('Income', 'Expense')),
     CreatedAt DATETIME DEFAULT GETDATE()
 );
 
@@ -26,7 +26,6 @@ CREATE TABLE Transactions (
     UserID INT FOREIGN KEY REFERENCES Users(UserID),
     CategoryID INT FOREIGN KEY REFERENCES Categories(CategoryID),
     Amount DECIMAL(18,2) NOT NULL,
-    Type NVARCHAR(10) CHECK (Type IN ('Income', 'Expense')) NOT NULL,
     TransactionDate DATETIME NOT NULL,
     Note NVARCHAR(255),
     CreatedAt DATETIME DEFAULT GETDATE()

@@ -19,9 +19,9 @@ BEGIN
     LEFT JOIN Transactions t 
         ON t.CategoryID = b.CategoryID
         AND t.UserID = @UserID
-        AND t.Type = 'Expense'
         AND MONTH(t.TransactionDate) = @Month
         AND YEAR(t.TransactionDate) = @Year
+        AND c.Type = 'Expense'
     WHERE 
         b.UserID = @UserID
         AND b.Month = @Month
