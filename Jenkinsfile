@@ -4,12 +4,13 @@ pipeline {
     tools {
         maven 'Maven 3.9.9'
         jdk 'JDK 21'
-        JAVA_HOME = tool name: 'JDK 21', type: 'hudson.model.JDK'
     }
 
     environment {
         TOMCAT_PATH = 'D:\\apache-tomcat-11.0.7'  // adjust as needed
         WAR_NAME = 'JavaWebFinal.war'             // or your actual war name
+        CATALINA_HOME = 'D:\\apache-tomcat-11.0.7'
+        JAVA_HOME = tool name: 'JDK 21', type: 'hudson.model.JDK'
     }
 
     stages {
@@ -58,7 +59,6 @@ pipeline {
             steps {
                 echo 'Restarting Tomcat server...'
                 bat """
-                    set CATALINA_HOME=%TOMCAT_PATH%
                     call "%TOMCAT_PATH%\\bin\\shutdown.bat"
                     timeout /t 5 /nobreak
                     call "%TOMCAT_PATH%\\bin\\startup.bat"
