@@ -74,7 +74,7 @@ stage('Restart Tomcat') {
                 )
 
                 rem Restart Tomcat
-                call "%CATALINA_HOME%\\bin\\startup.bat"
+                start "" /b "%CATALINA_HOME%\bin\startup.bat"
             """
         }
     }
