@@ -66,6 +66,7 @@ stage('Restart Tomcat') {
         }
     }
 }
+}
 
     post {
         success {
