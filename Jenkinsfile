@@ -10,7 +10,6 @@ pipeline {
         TOMCAT_PATH = 'D:\\apache-tomcat-11.0.7'  // adjust as needed
         WAR_NAME = 'JavaWebFinal.war'             // or your actual war name
         CATALINA_HOME = 'D:\\apache-tomcat-11.0.7'
-        JAVA_HOME = tool name: 'JDK 21', type: 'hudson.model.JDK'
     }
 
     stages {
@@ -57,12 +56,17 @@ pipeline {
 
         stage('Restart Tomcat') {
             steps {
-                echo 'Restarting Tomcat server...'
-                bat """
-                    call "%TOMCAT_PATH%\\bin\\shutdown.bat"
-                    timeout /t 5 /nobreak
-                    call "%TOMCAT_PATH%\\bin\\startup.bat"
-                """
+                script {
+                    def jdkPath = tool name: 'JDK 21', type: 'hudson.model.JDK'
+                    withEnv(["JAVA_HOME=${jdkPath}", "PATH=${jdkPath}\\bin;%PATH%"]) {
+                        echo 'Restarting Tomcat server...'
+                        bat """
+                            call "%CATALINA_HOME%\\bin\\shutdown.bat"
+                            timeout /t 5 /nobreak
+                            call "%CATALINA_HOME%\\bin\\startup.bat"
+                        """
+                    }
+                }
             }
         }
     }
