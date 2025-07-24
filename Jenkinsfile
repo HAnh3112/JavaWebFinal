@@ -57,6 +57,7 @@ pipeline {
             steps {
                 echo 'Restarting Tomcat server...'
                 bat """
+                    set CATALINA_HOME=%TOMCAT_PATH%
                     call "%TOMCAT_PATH%\\bin\\shutdown.bat"
                     timeout /t 5 /nobreak
                     call "%TOMCAT_PATH%\\bin\\startup.bat"
