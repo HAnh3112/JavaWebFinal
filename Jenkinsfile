@@ -3,6 +3,12 @@ pipeline {
 
     environment {
         TOMCAT_PATH = 'D:\\apache-tomcat-11.0.7'
+        WAR_NAME = 'JavaWebFinal.war'
+    }
+
+    tools {
+        maven 'Maven 3.9.6' // Make sure this matches your Jenkins Maven installation name
+        jdk 'JDK 21'        // Or whatever version your Jenkins has set up
     }
 
     stages {
@@ -13,33 +19,25 @@ pipeline {
             }
         }
 
-        stage('Build WAR') {
+        stage('Build with Maven') {
             steps {
-                echo 'Compiling and packaging WAR file'
-                bat '''
-                    mkdir build
-                    javac -d build -cp "%TOMCAT_PATH%\\lib\\servlet-api.jar" -sourcepath src ^
-                        src\\dao\\*.java ^
-                        src\\model\\*.java ^
-                        src\\controller\\*.java ^
-                        src\\context\\*.java
-                    
-                    xcopy Web\\* build /E /I /Y
-                    cd build
-                    jar -cvf JavaWebFinal.war *
-                '''
+                echo 'Running Maven build'
+                bat 'mvn clean package -DskipTests'
             }
         }
 
-        stage('Deploy to Tomcat') {
+        stage('Deploy WAR to Tomcat') {
             steps {
                 echo 'Deploying WAR file to Tomcat'
                 bat '''
                     if not exist "%TOMCAT_PATH%\\webapps" (
-                        echo "Tomcat webapps folder not found!"
+                        echo Tomcat webapps folder not found!
                         exit /b 1
                     )
-                    copy build\\JavaWebFinal.war "%TOMCAT_PATH%\\webapps\\" /Y
+                    for %%f in (target\\*.war) do (
+                        echo Copying %%f to Tomcat
+                        copy "%%f" "%TOMCAT_PATH%\\webapps\\%WAR_NAME%" /Y
+                    )
                 '''
             }
         }
@@ -49,7 +47,7 @@ pipeline {
                 echo 'Restarting Tomcat server'
                 bat '''
                     call "%TOMCAT_PATH%\\bin\\shutdown.bat"
-                    timeout /t 5
+                    timeout /t 5 > NUL
                     call "%TOMCAT_PATH%\\bin\\startup.bat"
                 '''
             }
