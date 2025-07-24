@@ -72,11 +72,12 @@ bat '''
     rmdir /S /Q "D:\\apache-tomcat-11.0.7\\temp" >nul 2>&1
     mkdir "D:\\apache-tomcat-11.0.7\\temp"
 
-    rem START startup.bat in background to avoid input redirection issues
-    start "" "D:\\apache-tomcat-11.0.7\\bin\\startup.bat"
+    rem Start Tomcat safely using detached cmd
+    cmd /c start "" "D:\\apache-tomcat-11.0.7\\bin\\startup.bat"
 
     timeout /t 10 >nul
 '''
+
 
     }
 }
