@@ -54,20 +54,20 @@ pipeline {
             }
         }
 
-        stage('Restart Tomcat') {
-            steps {
-                script {
-                    def jdkPath = tool name: 'JDK 21', type: 'hudson.model.JDK'
-		    withEnv(["JAVA_HOME=${jdkPath}", "PATH=${jdkPath}\\bin;" + env.PATH]) {
-                        echo 'Restarting Tomcat server...'
-                        bat """
-                            call "%CATALINA_HOME%\\bin\\shutdown.bat"
-                            timeout /t 5 /nobreak
-                            call "%CATALINA_HOME%\\bin\\startup.bat"
-                        """
-                    }
-                }
-            }
-        }
+		stage('Restart Tomcat') {
+		    steps {
+		        script {
+		            def jdkPath = tool name: 'JDK 21', type: 'hudson.model.JDK'
+		            echo "Resolved JDK path: ${jdkPath}"
+		            bat """
+                		set "JAVA_HOME=${jdkPath}"
+		                set "PATH=%JAVA_HOME%\\bin;%PATH%"
+                		call "%CATALINA_HOME%\\bin\\shutdown.bat"
+		                timeout /t 5 /nobreak
+		                call "%CATALINA_HOME%\\bin\\startup.bat"
+		            """
+		        }
+		    }
+		}
     }
 }
