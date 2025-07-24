@@ -54,13 +54,16 @@ stage('Restart Tomcat') {
     steps {
         echo 'Restarting Tomcat server...'
         bat """
-            echo Attempting to shut down Tomcat...
-            call "%TOMCAT_PATH%\\bin\\shutdown.bat"
+            rem Ensure temp directory exists
+            if not exist "%TOMCAT_PATH%\\temp" mkdir "%TOMCAT_PATH%\\temp"
+
+            rem Attempt to stop Tomcat using catalina.bat
+            call "%TOMCAT_PATH%\\bin\\catalina.bat" stop
             timeout /t 5
 
-            echo Checking for any process still using port 8080...
+            rem Kill any remaining Tomcat process using port 8080
             for /f "tokens=5" %%a in ('netstat -aon ^| find ":8080" ^| find "LISTENING"') do (
-                echo Found process on 8080: PID %%a
+                echo Checking PID %%a
                 tasklist /FI "PID eq %%a" | find /I "tomcat" >nul
                 if %%ERRORLEVEL%% EQU 0 (
                     echo Killing Tomcat PID %%a
@@ -70,16 +73,18 @@ stage('Restart Tomcat') {
                 )
             )
 
-            echo Cleaning temp and work directories...
+            rem Clean Tomcat temp and work directories
             rmdir /S /Q "%TOMCAT_PATH%\\work" >nul 2>&1
             rmdir /S /Q "%TOMCAT_PATH%\\temp" >nul 2>&1
+            mkdir "%TOMCAT_PATH%\\temp"
 
-            echo Starting Tomcat...
-            call "%TOMCAT_PATH%\\bin\\startup.bat"
+            rem Start Tomcat using catalina.bat
+            call "%TOMCAT_PATH%\\bin\\catalina.bat" start
             timeout /t 10
         """
     }
 }
+
 
 
         stage('Verify Deployment') {
