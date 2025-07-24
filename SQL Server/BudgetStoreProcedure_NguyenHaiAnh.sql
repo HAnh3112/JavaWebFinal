@@ -35,3 +35,5 @@ BEGIN
         b.Month,
         b.Year
 END
+
+EXEC GetBudgetsWithSpending 3,7,2025

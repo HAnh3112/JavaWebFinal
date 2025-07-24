@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Budget Management</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+<body class="bg-pink-50 min-h-screen p-6">
+
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Budget Management</h1>
+    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">+ Add Budget</button>
+  </div>
+
+  <h2 class="text-lg font-semibold mb-4">Budget Overview</h2>
+
+  <div id="budget-container" class="space-y-4">
+    <!-- Budget cards will be added here -->
+  </div>
+
+  <script>
+    const MONTHS = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+
+    function createBudgetCard(budget) {
+      const remaining = budget.amount - budget.spentAmount;
+      const progress = ((budget.spentAmount / budget.amount) * 100).toFixed(1);
+      const colorClass = budget.categoryId % 2 === 0 ? "bg-blue-500" : "bg-red-500";
+      const monthText = MONTHS[budget.month - 1] + " " + budget.year;
+
+      return `
+        <div class="bg-white shadow rounded-lg p-6">
+          <div class="flex justify-between items-start">
+            <div>
+              <div class="flex items-center space-x-2 mb-1">
+                <div class="w-3 h-3 rounded-full ${colorClass}"></div>
+                <span class="font-semibold text-gray-800">${budget.categoryName}</span>
+              </div>
+              <p class="text-sm text-gray-500">${monthText}</p>
+            </div>
+            <div class="flex space-x-2">
+              <button class="text-gray-400 hover:text-gray-600">✏️</button>
+              <button class="text-gray-400 hover:text-red-500">🗑️</button>
+            </div>
+          </div>
+          <div class="grid grid-cols-4 gap-4 mt-4 text-sm">
+            <div>
+              <p class="text-gray-500">Budget</p>
+              <p class="font-semibold">$${budget.amount.toFixed(2)}</p>
+            </div>
+            <div>
+              <p class="text-gray-500">Spent</p>
+              <p class="font-semibold text-green-600">$${budget.spentAmount.toFixed(2)}</p>
+            </div>
+            <div>
+              <p class="text-gray-500">Remaining</p>
+              <p class="font-semibold text-green-600">$${remaining.toFixed(2)}</p>
+            </div>
+            <div>
+              <p class="text-gray-500">Progress</p>
+              <p class="font-semibold">${progress}%</p>
+            </div>
+          </div>
+          <div class="mt-4 h-2 w-full bg-gray-200 rounded-full">
+            <div class="h-2 bg-green-500 rounded-full" style="width: ${progress}%"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    $(document).ready(function () {
+      const $container = $('#budget-container');
+
+      fetch('/api/budget/showByMonth?userID=1&month=7&year=2025')
+        .then(res => {
+          if (!res.ok) throw new Error("Failed to load budget data");
+          return res.json();
+        })
+        .then(budgets => {
+          if (!budgets.length) {
+            $container.html('<p class="text-gray-500">No budgets available.</p>');
+            return;
+          }
+
+          budgets.forEach(budget => {
+            const card = createBudgetCard(budget);
+            $container.append(card);
+          });
+        })
+        .catch(err => {
+          $container.html(`<p class="text-red-500">Error: ${err.message}</p>`);
+        });
+    });
+  </script>
+</body>
+</html>
