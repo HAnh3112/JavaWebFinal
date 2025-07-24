@@ -4,6 +4,7 @@ pipeline {
     tools {
         maven 'Maven 3.9.9'
         jdk 'JDK 21'
+        JAVA_HOME = tool name: 'JDK 21', type: 'hudson.model.JDK'
     }
 
     environment {
