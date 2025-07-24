@@ -64,14 +64,13 @@ stage('Restart Tomcat') {
                 set "JAVA_HOME=${jdkPath}"
                 set "PATH=%JAVA_HOME%\\bin;%PATH%"
 
-                rem Just in case Tomcat isn’t running
-                tasklist | findstr /I "tomcat" >nul
-                if errorlevel 1 (
-                    echo Tomcat not running, starting now...
-                    start "" "%CATALINA_HOME%\\bin\\startup.bat"
-                ) else (
-                    echo Tomcat is already running, skip restart.
-                )
+                rem Find and kill Tomcat process
+                for /f "tokens=2" %%i in ('tasklist ^| findstr /i "java.exe"') do taskkill /PID %%i /F
+
+                timeout /t 5 /nobreak
+
+                rem Start Tomcat again
+                start "" "%CATALINA_HOME%\\bin\\startup.bat"
             """
         }
     }
