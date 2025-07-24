@@ -58,7 +58,7 @@ pipeline {
             steps {
                 script {
                     def jdkPath = tool name: 'JDK 21', type: 'hudson.model.JDK'
-                    withEnv(["JAVA_HOME=${jdkPath}", "PATH=${jdkPath}\\bin;%PATH%"]) {
+		    withEnv(["JAVA_HOME=${jdkPath}", "PATH=${jdkPath}\\bin;" + env.PATH]) {
                         echo 'Restarting Tomcat server...'
                         bat """
                             call "%CATALINA_HOME%\\bin\\shutdown.bat"
