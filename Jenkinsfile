@@ -53,37 +53,38 @@ pipeline {
 stage('Restart Tomcat') {
     steps {
         echo 'Restarting Tomcat server...'
-        bat """
-            rem Kill any Tomcat process on port 8080
+        bat '''
+            rem Kill any process listening on port 8080
             for /f "tokens=5" %%a in ('netstat -aon ^| find ":8080" ^| find "LISTENING"') do (
-                echo Checking PID %%a
-                tasklist /FI "PID eq %%a" | find /I "tomcat" >nul
+                echo Checking PID %%a  
+                tasklist /FI "PID eq %%a" | find /I "tomcat" >nul  
                 if %%ERRORLEVEL%% EQU 0 (
-                    echo Killing Tomcat PID %%a
-                    taskkill /F /PID %%a
+                    echo Killing Tomcat PID %%a  
+                    taskkill /F /PID %%a 
                 ) else (
                     echo Skipping PID %%a (not Tomcat)
                 )
             )
 
-            rem Clean work and temp directories
-            if not exist "%TOMCAT_PATH%\\temp" mkdir "%TOMCAT_PATH%\\temp"
-            rmdir /S /Q "%TOMCAT_PATH%\\work" >nul 2>&1
-            rmdir /S /Q "%TOMCAT_PATH%\\temp" >nul 2>&1
-            mkdir "%TOMCAT_PATH%\\temp"
+            rem Clean temp and work directories
+            if not exist "D:\\apache-tomcat-11.0.7\\temp" mkdir "D:\\apache-tomcat-11.0.7\\temp"
+            rmdir /S /Q "D:\\apache-tomcat-11.0.7\\work" >nul 2>&1
+            rmdir /S /Q "D:\\apache-tomcat-11.0.7\\temp" >nul 2>&1
+            mkdir "D:\\apache-tomcat-11.0.7\\temp"
 
-            rem Start Tomcat using Java (bypassing .bat files)
-            start "" "C:\\Program Files\\Java\\jdk-21\\bin\\java.exe" ^
-                -Dcatalina.base=%TOMCAT_PATH% ^
-                -Dcatalina.home=%TOMCAT_PATH% ^
-                -Djava.io.tmpdir=%TOMCAT_PATH%\\temp ^
-                -classpath "%TOMCAT_PATH%\\bin\\bootstrap.jar;%TOMCAT_PATH%\\bin\\tomcat-juli.jar" ^
+            rem Start Tomcat in background
+            cmd /c start /B "" "C:\\Program Files\\Java\\jdk-21\\bin\\java.exe" ^
+                -Dcatalina.base=D:\\apache-tomcat-11.0.7 ^
+                -Dcatalina.home=D:\\apache-tomcat-11.0.7 ^
+                -Djava.io.tmpdir=D:\\apache-tomcat-11.0.7\\temp ^
+                -classpath "D:\\apache-tomcat-11.0.7\\bin\\bootstrap.jar;D:\\apache-tomcat-11.0.7\\bin\\tomcat-juli.jar" ^
                 org.apache.catalina.startup.Bootstrap start
 
-            timeout /t 10
-        """
+            timeout /t 10 >nul
+        '''
     }
 }
+
 
 
 
