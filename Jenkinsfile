@@ -60,25 +60,22 @@ stage('Restart Tomcat') {
         script {
             def jdkPath = tool name: 'JDK 21', type: 'hudson.model.JDK'
             echo "Resolved JDK path: ${jdkPath}"
+
             bat """
                 set "JAVA_HOME=${jdkPath}"
                 set "PATH=%JAVA_HOME%\\bin;%PATH%"
 
-                rem Try clean shutdown first
+                rem Try to stop Tomcat
                 call "%CATALINA_HOME%\\bin\\shutdown.bat"
                 timeout /t 5 /nobreak
 
-                rem If Tomcat is still running, kill only Tomcat processes
-                for /f "tokens=2 delims=," %%i in ('wmic process where "CommandLine like '%%tomcat%%'" get ProcessId /format:csv ^| findstr /i ".") do (
-                    taskkill /F /PID %%i
-                )
-
-                rem Restart Tomcat
-                bat 'start "" /b "%CATALINA_HOME%\\bin\\startup.bat"'
+                rem Start Tomcat
+                call "%CATALINA_HOME%\\bin\\startup.bat"
             """
         }
     }
 }
+
 
 
     }
