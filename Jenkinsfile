@@ -1,6 +1,5 @@
 pipeline {
     agent any
-//
 
     tools {
         maven 'Maven 3.9.9'
@@ -8,9 +7,9 @@ pipeline {
     }
 
     environment {
-        TOMCAT_PATH = 'D:\\apache-tomcat-11.0.7'  // adjust as needed
-        WAR_NAME = 'JavaWebFinal.war'             // or your actual war name
-        CATALINA_HOME = 'D:\\apache-tomcat-11.0.7'
+        TOMCAT_PATH = 'D:\\apache-tomcat-11.0.7'
+        WAR_NAME = 'JavaWebFinal.war'
+        CATALINA_HOME = "${env.TOMCAT_PATH}"
     }
 
     stages {
@@ -39,17 +38,13 @@ pipeline {
             steps {
                 echo 'Deploying WAR to Tomcat...'
                 bat """
-                    rem Ensure WAR exists
                     if not exist target\\%WAR_NAME% (
                         echo WAR file not found!
                         exit /b 1
                     )
 
-                    rem Remove previous WAR and folder (optional clean)
                     del "%TOMCAT_PATH%\\webapps\\%WAR_NAME%" >nul 2>&1
                     rmdir /S /Q "%TOMCAT_PATH%\\webapps\\JavaWebFinal" >nul 2>&1
-
-                    rem Copy new WAR
                     copy target\\%WAR_NAME% "%TOMCAT_PATH%\\webapps\\" /Y
                 """
             }
@@ -57,16 +52,44 @@ pipeline {
 
         stage('Restart Tomcat') {
             steps {
-                echo 'Restarting Tomcat server'
-                bat '''
+                echo 'Restarting Tomcat server...'
+                bat """
                     call "%TOMCAT_PATH%\\bin\\shutdown.bat"
                     timeout /t 5
+
+                    for /f "tokens=5" %%a in ('netstat -aon ^| find ":8080" ^| find "LISTENING"') do (
+                        echo Checking PID %%a
+                        tasklist /FI "PID eq %%a" | find /I "tomcat" >nul
+                        if %%ERRORLEVEL%% EQU 0 (
+                            echo Killing Tomcat PID %%a
+                            taskkill /F /PID %%a
+                        ) else (
+                            echo Skipping PID %%a (not Tomcat)
+                        )
+                    )
+
+                    rmdir /S /Q "%TOMCAT_PATH%\\work" >nul 2>&1
+                    rmdir /S /Q "%TOMCAT_PATH%\\temp" >nul 2>&1
+
                     call "%TOMCAT_PATH%\\bin\\startup.bat"
-                '''
+                """
             }
         }
 
+        stage('Verify Deployment') {
+            steps {
+                echo 'Checking if Tomcat is up on http://localhost:8080...'
+                bat 'powershell -Command "try { (Invoke-WebRequest -Uri http://localhost:8080 -UseBasicParsing).StatusCode } catch { Write-Host \\"Tomcat not responding\\"; exit 1 }"'
+            }
+        }
+    }
 
-
+    post {
+        success {
+            echo 'Deployment completed successfully.'
+        }
+        failure {
+            echo 'Pipeline failed. Please check the logs for details.'
+        }
     }
 }
