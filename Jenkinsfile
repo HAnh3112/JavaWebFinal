@@ -50,50 +50,16 @@ pipeline {
             }
         }
 
-stage('Restart Tomcat') {
-    steps {
-        echo 'Restarting Tomcat server...'
-bat '''
-    rem Kill any process listening on port 8080
-    for /f "tokens=5" %%a in ('netstat -aon ^| find ":8080" ^| find "LISTENING"') do (
-        echo Checking PID %%a  
-        tasklist /FI "PID eq %%a" | find /I "tomcat" >nul  
-        if %%ERRORLEVEL%% EQU 0 (
-            echo Killing Tomcat PID %%a  
-            taskkill /F /PID %%a 
-        ) else (
-            echo Skipping PID %%a (not Tomcat)
-        )
-    )
-
-    rem Clean temp and work directories
-    if not exist "D:\\apache-tomcat-11.0.7\\temp" mkdir "D:\\apache-tomcat-11.0.7\\temp"
-    rmdir /S /Q "D:\\apache-tomcat-11.0.7\\work" >nul 2>&1
-    rmdir /S /Q "D:\\apache-tomcat-11.0.7\\temp" >nul 2>&1
-    mkdir "D:\\apache-tomcat-11.0.7\\temp"
-
-    rem Start Tomcat safely using detached cmd
-    cmd /c start "" "D:\\apache-tomcat-11.0.7\\bin\\startup.bat"
-
-    timeout /t 10 >nul
-'''
-
-
-    }
-}
-
-
-
-
-
-
-        stage('Verify Deployment') {
+        stage('Restart Tomcat') {
             steps {
-                echo 'Checking if Tomcat is up on http://localhost:8080...'
-                bat 'powershell -Command "try { (Invoke-WebRequest -Uri http://localhost:8080 -UseBasicParsing).StatusCode } catch { Write-Host \\"Tomcat not responding\\"; exit 1 }"'
+                echo 'Restarting Tomcat server'
+                bat '''
+                    call "%TOMCAT_PATH%\\bin\\shutdown.bat"
+                    timeout /t 5
+                    call "%TOMCAT_PATH%\\bin\\startup.bat"
+                '''
             }
         }
-    }
 
     post {
         success {
