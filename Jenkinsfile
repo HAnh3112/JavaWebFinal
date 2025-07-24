@@ -63,14 +63,19 @@ stage('Restart Tomcat') {
             bat """
                 set "JAVA_HOME=${jdkPath}"
                 set "PATH=%JAVA_HOME%\\bin;%PATH%"
-                call "%CATALINA_HOME%\\bin\\shutdown.bat"
-                timeout /t 5 /nobreak
 
-                rem Use start instead of call to run Tomcat in a separate process
-                start "" "%CATALINA_HOME%\\bin\\startup.bat"
+                rem Just in case Tomcat isn’t running
+                tasklist | findstr /I "tomcat" >nul
+                if errorlevel 1 (
+                    echo Tomcat not running, starting now...
+                    start "" "%CATALINA_HOME%\\bin\\startup.bat"
+                ) else (
+                    echo Tomcat is already running, skip restart.
+                )
             """
         }
     }
 }
+
     }
 }
