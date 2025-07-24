@@ -55,20 +55,22 @@ pipeline {
             }
         }
 
-		stage('Restart Tomcat') {
-		    steps {
-		        script {
-		            def jdkPath = tool name: 'JDK 21', type: 'hudson.model.JDK'
-		            echo "Resolved JDK path: ${jdkPath}"
-		            bat """
-                		set "JAVA_HOME=${jdkPath}"
-		                set "PATH=%JAVA_HOME%\\bin;%PATH%"
-                		call "%CATALINA_HOME%\\bin\\shutdown.bat"
-		                timeout /t 5 /nobreak
-		                call "%CATALINA_HOME%\\bin\\startup.bat"
-		            """
-		        }
-		    }
-		}
+stage('Restart Tomcat') {
+    steps {
+        script {
+            def jdkPath = tool name: 'JDK 21', type: 'hudson.model.JDK'
+            echo "Resolved JDK path: ${jdkPath}"
+            bat """
+                set "JAVA_HOME=${jdkPath}"
+                set "PATH=%JAVA_HOME%\\bin;%PATH%"
+                call "%CATALINA_HOME%\\bin\\shutdown.bat"
+                timeout /t 5 /nobreak
+
+                rem Use start instead of call to run Tomcat in a separate process
+                start "" "%CATALINA_HOME%\\bin\\startup.bat"
+            """
+        }
+    }
+}
     }
 }
