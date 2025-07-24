@@ -53,7 +53,7 @@ pipeline {
 stage('Restart Tomcat') {
     steps {
         script {
-            def javaHome = tool name: 'JDK_21', type: 'jdk'
+            def javaHome = tool name: 'JDK 21', type: 'jdk'
             echo "Resolved JDK path: ${javaHome}"
 
             bat """
