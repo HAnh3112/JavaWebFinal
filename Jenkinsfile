@@ -72,18 +72,13 @@ stage('Restart Tomcat') {
             rmdir /S /Q "D:\\apache-tomcat-11.0.7\\temp" >nul 2>&1
             mkdir "D:\\apache-tomcat-11.0.7\\temp"
 
-            rem Start Tomcat in background
-            cmd /c start /B "" "C:\\Program Files\\Java\\jdk-21\\bin\\java.exe" ^
-                -Dcatalina.base=D:\\apache-tomcat-11.0.7 ^
-                -Dcatalina.home=D:\\apache-tomcat-11.0.7 ^
-                -Djava.io.tmpdir=D:\\apache-tomcat-11.0.7\\temp ^
-                -classpath "D:\\apache-tomcat-11.0.7\\bin\\bootstrap.jar;D:\\apache-tomcat-11.0.7\\bin\\tomcat-juli.jar" ^
-                org.apache.catalina.startup.Bootstrap start
-
+            rem Use Tomcat's script to start safely
+            call "D:\\apache-tomcat-11.0.7\\bin\\startup.bat"
             timeout /t 10 >nul
         '''
     }
 }
+
 
 
 
