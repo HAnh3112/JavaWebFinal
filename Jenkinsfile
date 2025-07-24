@@ -64,17 +64,22 @@ stage('Restart Tomcat') {
                 set "JAVA_HOME=${jdkPath}"
                 set "PATH=%JAVA_HOME%\\bin;%PATH%"
 
-                rem Find and kill Tomcat process
-                for /f "tokens=2" %%i in ('tasklist ^| findstr /i "java.exe"') do taskkill /PID %%i /F
-
+                rem Try clean shutdown first
+                call "%CATALINA_HOME%\\bin\\shutdown.bat"
                 timeout /t 5 /nobreak
 
-                rem Start Tomcat again
-                start "" "%CATALINA_HOME%\\bin\\startup.bat"
+                rem If Tomcat is still running, kill only Tomcat processes
+                for /f "tokens=2 delims=," %%i in ('wmic process where "CommandLine like '%%tomcat%%'" get ProcessId /format:csv ^| findstr /i ".") do (
+                    taskkill /F /PID %%i
+                )
+
+                rem Restart Tomcat
+                call "%CATALINA_HOME%\\bin\\startup.bat"
             """
         }
     }
 }
+
 
     }
 }
