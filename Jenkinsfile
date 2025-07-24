@@ -50,16 +50,22 @@ pipeline {
             }
         }
 
-        stage('Restart Tomcat') {
-            steps {
-                echo 'Restarting Tomcat server'
-                bat '''
-                    call "%TOMCAT_PATH%\\bin\\shutdown.bat"
-                    timeout /t 5
-                    call "%TOMCAT_PATH%\\bin\\startup.bat"
-                '''
-            }
+stage('Restart Tomcat') {
+    steps {
+        script {
+            def javaHome = tool name: 'JDK_21', type: 'jdk'
+            echo "Resolved JDK path: ${javaHome}"
+
+            bat """
+                set JAVA_HOME=${javaHome}
+                set PATH=%JAVA_HOME%\\bin;%PATH%
+                call "D:\\apache-tomcat-11.0.7\\bin\\shutdown.bat"
+                timeout /t 5
+                call "D:\\apache-tomcat-11.0.7\\bin\\startup.bat"
+            """
         }
+    }
+}
 
     post {
         success {
