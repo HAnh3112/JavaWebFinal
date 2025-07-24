@@ -54,14 +54,7 @@ stage('Restart Tomcat') {
     steps {
         echo 'Restarting Tomcat server...'
         bat """
-            rem Ensure temp directory exists
-            if not exist "%TOMCAT_PATH%\\temp" mkdir "%TOMCAT_PATH%\\temp"
-
-            rem Attempt to stop Tomcat using catalina.bat
-            call "%TOMCAT_PATH%\\bin\\catalina.bat" stop
-            timeout /t 5
-
-            rem Kill any remaining Tomcat process using port 8080
+            rem Kill any Tomcat process on port 8080
             for /f "tokens=5" %%a in ('netstat -aon ^| find ":8080" ^| find "LISTENING"') do (
                 echo Checking PID %%a
                 tasklist /FI "PID eq %%a" | find /I "tomcat" >nul
@@ -73,17 +66,25 @@ stage('Restart Tomcat') {
                 )
             )
 
-            rem Clean Tomcat temp and work directories
+            rem Clean work and temp directories
+            if not exist "%TOMCAT_PATH%\\temp" mkdir "%TOMCAT_PATH%\\temp"
             rmdir /S /Q "%TOMCAT_PATH%\\work" >nul 2>&1
             rmdir /S /Q "%TOMCAT_PATH%\\temp" >nul 2>&1
             mkdir "%TOMCAT_PATH%\\temp"
 
-            rem Start Tomcat using catalina.bat
-            call "%TOMCAT_PATH%\\bin\\catalina.bat" start
+            rem Start Tomcat using Java (bypassing .bat files)
+            start "" "C:\\Program Files\\Java\\jdk-21\\bin\\java.exe" ^
+                -Dcatalina.base=%TOMCAT_PATH% ^
+                -Dcatalina.home=%TOMCAT_PATH% ^
+                -Djava.io.tmpdir=%TOMCAT_PATH%\\temp ^
+                -classpath "%TOMCAT_PATH%\\bin\\bootstrap.jar;%TOMCAT_PATH%\\bin\\tomcat-juli.jar" ^
+                org.apache.catalina.startup.Bootstrap start
+
             timeout /t 10
         """
     }
 }
+
 
 
 
