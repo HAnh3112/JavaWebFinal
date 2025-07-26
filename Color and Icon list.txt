@@ -1,0 +1,30 @@
+final List<IconData> commonIcons = [
+    Icons.fastfood,        // Đồ ăn nhanh (57946)
+    Icons.directions_car,  // Xe hơi (57815)
+    Icons.shopping_bag,    // Mua sắm (58778)
+    Icons.lightbulb,       // Điện / ý tưởng (58235)
+    Icons.movie,           // Xem phim (58381)
+    Icons.attach_money,    // Tiền bạc (57522)
+    Icons.home,            // Nhà (58136)
+    Icons.smartphone,      // Điện thoại (58822)
+    Icons.medical_services, // Y tế (58328)
+    Icons.school,          // Giáo dục (58713)
+    Icons.flight,          // Du lịch (58007)
+    Icons.sports_esports,  // Game (58856)
+  ]; 
+
+Trong ngoặc là mã số icon (int) của flutter, phải mapping ở JS
+
+
+  final List<Color> commonColors = [
+    Color(0xFFFF6B6B), //#FF6B6B
+    Color(0xFF4ECDC4), //#4ECDC4
+    Color(0xFF45B7D1), //#45B7D1
+    Color(0xFF96CEB4), //#96CEB4
+    Color(0xFFFFEAA7), //#FFEAA7
+    Color(0xFFDDA0DD), //#DDA0DD
+    Color(0xFFFFB6C1), //#FFB6C1
+    Color(0xFF98D8C8), //#98D8C8
+  ];
+
+Mã màu này dùng trực tiếp ở css
