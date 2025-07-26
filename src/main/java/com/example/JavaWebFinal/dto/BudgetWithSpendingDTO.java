@@ -6,15 +6,12 @@ package com.example.JavaWebFinal.dto;
 
 import java.math.BigDecimal;
 
-/**
- *
- * @author ADMIN
- */
 public class BudgetWithSpendingDTO {
     private int budgetId;
     private int userId;
     private int categoryId;
     private String categoryName;
+    private int iconCode;
     private BigDecimal amount;
     private int month;
     private int year;
@@ -25,11 +22,13 @@ public class BudgetWithSpendingDTO {
     }
 
     public BudgetWithSpendingDTO(int budgetId, int userId, int categoryId, String categoryName,
-                                  BigDecimal amount, int month, int year, BigDecimal spentAmount) {
+                                 int iconCode, BigDecimal amount,
+                                 int month, int year, BigDecimal spentAmount) {
         this.budgetId = budgetId;
         this.userId = userId;
         this.categoryId = categoryId;
         this.categoryName = categoryName;
+        this.iconCode = iconCode;
         this.amount = amount;
         this.month = month;
         this.year = year;
@@ -37,7 +36,6 @@ public class BudgetWithSpendingDTO {
     }
 
     // Getters and Setters
-
     public int getBudgetId() {
         return budgetId;
     }
@@ -68,6 +66,14 @@ public class BudgetWithSpendingDTO {
 
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
+    }
+
+    public int getIconCode() {
+        return iconCode;
+    }
+
+    public void setIconCode(int iconCode) {
+        this.iconCode = iconCode;
     }
 
     public BigDecimal getAmount() {

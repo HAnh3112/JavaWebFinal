@@ -32,6 +32,7 @@ public class BudgetDAO {
             dto.setUserId(rs.getInt("UserID"));
             dto.setCategoryId(rs.getInt("CategoryID"));
             dto.setCategoryName(rs.getString("CategoryName"));
+            dto.setIconCode(rs.getInt("IconCode"));
             dto.setAmount(rs.getBigDecimal("Amount"));
             dto.setMonth(rs.getInt("Month"));
             dto.setYear(rs.getInt("Year"));

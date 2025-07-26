@@ -7,24 +7,24 @@ VALUES
 
 -- Insert Categories for each User
 -- Alice: 3 Categories
-INSERT INTO Categories (UserID, Name, Type)
+INSERT INTO Categories (UserID, Name, Type, ColorCodeHex, IconCode)
 VALUES
-(1, 'Salary', 'Income'),
-(1, 'Groceries', 'Expense'),
-(1, 'Freelance', 'Income');
+(1, 'Salary', 'Income', '#FF6B6B', 57522),
+(1, 'Groceries', 'Expense', '#4ECDC4', 58778),
+(1, 'Freelance', 'Income', '#45B7D1', 57522);
 
 -- Bob: 2 Categories
-INSERT INTO Categories (UserID, Name, Type)
+INSERT INTO Categories (UserID, Name, Type, ColorCodeHex, IconCode)
 VALUES
-(2, 'Investments', 'Income'),
-(2, 'Rent', 'Expense');
+(2, 'Investments', 'Income', '#96CEB4', 57522),
+(2, 'Rent', 'Expense', '#FFEAA7', 58136);
 
 -- Carol: 3 Categories
-INSERT INTO Categories (UserID, Name, Type)
+INSERT INTO Categories (UserID, Name, Type, ColorCodeHex, IconCode)
 VALUES
-(3, 'Side Hustle', 'Income'),
-(3, 'Dining Out', 'Expense'),
-(3, 'Entertainment', 'Expense');
+(3, 'Side Hustle', 'Income', '#DDA0DD', 57522),
+(3, 'Dining Out', 'Expense', '#FFB6C1', 57946),
+(3, 'Entertainment', 'Expense', '#98D8C8', 58856);
 
 -- Insert Transactions (match category type)
 -- Alice's Transactions
