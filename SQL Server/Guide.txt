@@ -1,0 +1,3 @@
+Chạy script tạo db trước (Nếu có trước  rồi thì xóa toàn bộ db và tạo lại)
+Chạy data insert
+Chạy cáC SP và Trigger
