@@ -36,7 +36,7 @@ public class BudgetController {
         return budgetService.deleteBudget(id);
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public String updateBudget(@RequestParam int id, @RequestParam BigDecimal amount) {
         return budgetService.updateBudget(id, amount);
     }
