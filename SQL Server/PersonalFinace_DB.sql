@@ -25,6 +25,16 @@ CREATE TABLE Categories (
 CREATE NONCLUSTERED INDEX IX_Categories_CategoryID_Type
 ON Categories (CategoryID, Type);
 
+GO
+CREATE TABLE Prefixes (
+    PrefixID INT PRIMARY KEY IDENTITY(1,1),
+    CategoryID INT NOT NULL FOREIGN KEY REFERENCES Categories(CategoryID) ON DELETE CASCADE,
+    UserID INT NOT NULL FOREIGN KEY REFERENCES Users(UserID),
+    Amount DECIMAL(18,2) NOT NULL,
+
+    CONSTRAINT UQ_Prefixes_User_Category UNIQUE (UserID, CategoryID)
+);
+
 
 GO
 CREATE TABLE Transactions (
@@ -49,7 +59,10 @@ CREATE TABLE Budgets (
     Amount DECIMAL(18,2) NOT NULL,
     Month INT NOT NULL CHECK (Month BETWEEN 1 AND 12),
     Year INT NOT NULL,
-    CreatedAt DATETIME DEFAULT GETDATE()
+    CreatedAt DATETIME DEFAULT GETDATE(),
+
+	CONSTRAINT UQ_Budgets_User_Category_Month_Year
+	UNIQUE (UserID, CategoryID, Month, Year)
 );
 
 CREATE NONCLUSTERED INDEX IX_Budgets_UserMonthYear

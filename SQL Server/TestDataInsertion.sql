@@ -26,6 +26,14 @@ VALUES
 (3, 'Dining Out', 'Expense', '#FFB6C1', 57946),
 (3, 'Entertainment', 'Expense', '#98D8C8', 58856);
 
+
+--Insert Prefixes (For Carol (ID=3) only)
+INSERT INTO Prefixes (CategoryID, UserID, Amount)
+VALUES
+(2, 1, 1500),
+(7, 3, 500),
+(8, 3, 1000)
+
 -- Insert Transactions (match category type)
 -- Alice's Transactions
 INSERT INTO Transactions (UserID, CategoryID, Amount, TransactionDate, Note)
