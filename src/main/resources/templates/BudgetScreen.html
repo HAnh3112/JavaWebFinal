@@ -109,9 +109,10 @@
     }
 
     $(document).ready(function () {
+      var userID = 3; // Temporaly hard-coded
       const $container = $('#budget-container');
 
-      fetch('/api/budget/showByMonth?userID=3&month=7&year=2025')
+      fetch(`/api/budget/showByMonth?userID=${userID}&month=7&year=2025`)
         .then(res => {
           if (!res.ok) throw new Error("Failed to load budget data");
           return res.json();
@@ -226,16 +227,20 @@
           $('#overlay').removeClass('hidden');
           populateMonthOptions();
 
-          // Populate dropdown from API
-          fetch('/api/categories') // adjust URL to your actual endpoint
-            .then(res => res.json())
-            .then(data => {
-              const $select = $('#categorySelect');
-              $select.empty().append('<option value="">Select category...</option>');
-              data.forEach(cat => {
-                $select.append(`<option value="${cat.categoryId}">${cat.categoryName}</option>`);
+          // Delay fetching categories until after month options are rendered
+          setTimeout(() => {
+            const [month, year] = $('#monthSelect').val().split('-').map(Number);
+
+            fetch(`/api/categories/simpleCategoryExpense?userID=${userID}&month=${month}&year=${year}`)
+              .then(res => res.json())
+              .then(data => {
+                const $select = $('#categorySelect');
+                $select.empty().append('<option value="">Select category...</option>');
+                data.forEach(cat => {
+                  $select.append(`<option value="${cat.categoryId}">${cat.name}</option>`);
+                });
               });
-            });
+          }, 100); // slight delay to ensure monthSelect is populated
         });
         
         $('#overlay').on('click', function (e) {

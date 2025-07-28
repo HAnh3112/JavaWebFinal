@@ -60,4 +60,9 @@ public class CategoryController {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
+    
+    @GetMapping("/simpleCategoryExpense")
+    public Object getSimpleListExpense(@RequestParam int userID, @RequestParam int month, @RequestParam int year){
+        return categoryService.getCategoryExpenseListHaventExistInBudget(userID, month, year);
+    }
 }

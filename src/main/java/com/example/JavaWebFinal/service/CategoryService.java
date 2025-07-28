@@ -3,22 +3,31 @@ package com.example.JavaWebFinal.service;
 import com.example.JavaWebFinal.dto.CategoryPostDTO;
 import com.example.JavaWebFinal.dto.CategoryResponseDTO;
 import com.example.JavaWebFinal.dto.CategorySimpleDTO;
+import com.example.JavaWebFinal.dao.SimpleCategoryListDAO;
+import com.example.JavaWebFinal.dto.SimpleCategoryListDTO;
 import com.example.JavaWebFinal.model.Category;
 import com.example.JavaWebFinal.model.User;
 import com.example.JavaWebFinal.repository.CategoryRepository;
 import com.example.JavaWebFinal.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class CategoryService {
-
+    
+    @Autowired
     private final CategoryRepository categoryRepository;
+    
+    @Autowired
     private final UserRepository userRepository;
-
+    
+    @Autowired
+    private SimpleCategoryListDAO simpleCategoryDAO;
+    
     public CategoryService(CategoryRepository categoryRepository, UserRepository userRepository) {
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
@@ -103,5 +112,13 @@ public class CategoryService {
                 category.getUser().getUserId(),
                 category.getName()
         );
+    }
+    
+    public Object getCategoryExpenseListHaventExistInBudget (int userId, int month, int year){
+        try{
+            return simpleCategoryDAO.getAvailableExpenseCategoriesForBudget(userId, month, year);
+        }catch(Exception e){
+            return "Error showing the simple category list" + e.getMessage();
+        }
     }
 }
