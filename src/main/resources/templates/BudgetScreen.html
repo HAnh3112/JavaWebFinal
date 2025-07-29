@@ -11,7 +11,12 @@
 
   <div class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-bold text-gray-800">Budget Management</h1>
-    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">+ Add Budget</button>
+    <div class="flex items-center gap-4 mb-4">
+        <div id="openPrefixModal" class="bg-indigo-500 text-white px-4 py-2 rounded-md cursor-pointer w-fit">
+          Prefixes
+        </div>
+        <button id="addBudgetBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">+ Add Budget</button>
+    </div>
   </div>
 
   <div class="flex items-center justify-between mb-4">
@@ -23,10 +28,10 @@
     <!-- Budget cards will be added here -->
   </div>
   
-  <!-- Overlay + Modal (Initially hidden) -->
+  <!-- Budget Adding Overlay + Modal (Initially hidden) -->
     <div id="overlay" class="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center hidden z-50">
       <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-md space-y-4">
-        <h2 class="text-lg font-bold text-gray-700">Add New Budget</h2>
+        <h2 id="budgetModalTitle" class="text-lg font-bold text-gray-700"></h2>
 
         <!-- Amount input -->
         <div class="relative">
@@ -53,8 +58,61 @@
           </div>
       </div>
     </div>
+        
+    
+       <!-- Prefix Modal -->
+       <div id="prefixModal" class="fixed inset-0 bg-black bg-opacity-40 hidden flex justify-center items-center z-50">
+         <div class="bg-white w-full max-w-md p-6 rounded-xl shadow-xl relative">
+           <!-- Modal Header -->
+           <div class="flex justify-between items-center mb-4">
+             <h2 class="text-lg font-bold text-gray-800">Prefix Settings</h2>
+             <button id="addPrefixBtn" class="text-sm text-indigo-600 hover:underline">+ Add</button>
+           </div>
 
+           <!-- Prefix List -->
+           <div id="prefixList" class="space-y-3 max-h-60 overflow-y-auto">
+             <!-- Dynamic list goes here -->
+           </div>
+           <br>
 
+           <!-- Modal Footer -->
+           <h2 class="text-xs text-red-500">Applying prefixes will override existed budget of the same category</h2>
+           <div class="flex justify-between item-center mt-6">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Selected Month</label>
+              <label id="monthSelectPrefix" class="block text-sm font-bold text-black mb-1"></label>
+            </div>
+             <button id="applyPrefixBtn" class="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600">
+               Apply
+             </button>
+           </div>
+         </div>
+       </div>
+       
+    <!-- Prefix adding Overlay + Modal (Initially hidden) -->
+    <div id="overlayAddingPrefix" class="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center hidden z-50">
+      <div class="bg-white p-6 rounded-xl shadow-xl w-full max-w-md space-y-4">
+        <h2 id="prefixModalTitle" class="text-lg font-bold text-gray-700">Set New Prefix</h2>
+        <h4 class="text-xs text-red-500">Created prefix cant be edit, removing is needed if you want to change amount</h4>
+
+        <!-- Amount input -->
+        <div class="relative">
+          <input type="number" id="amountPrefixInput" min="0" class="w-full border border-gray-300 rounded-lg pl-4 pr-16 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" placeholder="Enter amount">
+          <span class="absolute right-4 top-2.5 text-gray-500 font-semibold">VND</span>
+        </div>
+
+        <!-- Dropdown for category -->
+        <select id="categoryPrefixSelect" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+          <option value="">Select category...</option>
+        </select>
+
+            <!-- Confirm button -->
+            <div>
+              <button id="confirmAddPrefixBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">Confirm</button>
+            </div>
+          </div>
+      </div>
+       
   <script>
     var userID = 3; // Temporaly hard-coded
     const MONTHS = [
@@ -93,6 +151,111 @@
       };
 
     const monthPicker = document.getElementById("monthPicker");
+    
+    const prefixModal = document.getElementById("prefixModal");
+    const openPrefixModal = document.getElementById("openPrefixModal");
+    const prefixList = document.getElementById("prefixList");
+    const prefixOverlay = document.getElementById("overlayAddingPrefix");
+    
+    let prefixData = [];
+    
+     openPrefixModal.addEventListener("click", () => {
+        prefixModal.classList.remove("hidden");
+        fetchPrefixes(userID);
+      });
+
+      document.getElementById("addPrefixBtn").addEventListener("click", () => {
+          prefixOverlay.classList.remove("hidden");
+          fetchAvailableCategoriesPrefix();
+      });
+      
+      prefixOverlay.addEventListener('click', function (e) {
+        if (e.target === prefixOverlay) {
+          prefixOverlay.classList.add('hidden');
+        }
+      });
+
+      document.getElementById("applyPrefixBtn").addEventListener("click", () => {
+        if (confirm("Apply prefix?")){
+            if(confirm("This will override budget if it already exist, apply prefix?")){
+                const [year, month] = monthPicker.value.split("-").map(Number);
+                fetchApplyPrefix(userID, month, year);
+                prefixModal.classList.add("hidden");
+                console.log("Applied prefixes");
+                window.alert("Applied prefixes");
+                setTimeout(() => {
+                    loadBudgetsForMonth(userID, month, year);
+                 }, 1200);
+            }
+        }
+      });
+      
+      function fetchPrefixes(userID) {
+        fetch(`/api/prefix/show?userID=${userID}`)
+          .then(res => res.json())
+          .then(data => {
+            renderPrefixList(data);
+          })
+          .catch(err => console.error("Error fetching prefixes:", err));
+      }
+      
+      function fetchApplyPrefix(userID, month, year){
+        fetch(`/api/prefix/applyPrefix?userID=${userID}&month=${month}&year=${year}`,{
+            method: "POST"
+        })
+          .then(res => res.text())
+          .catch(err => console.error("Error applying prefixes:", err));
+      }
+      
+    function fetchAvailableCategoriesPrefix() {
+        fetch(`/api/categories/simpleCategoryForPrefix?userID=${userID}`)
+          .then(res => res.json())
+          .then(data => {
+            const $select = $('#categoryPrefixSelect');
+            $select.empty().append('<option value="">Select category...</option>');
+            data.forEach(cat => {
+                console.log(cat);
+              $select.append(`<option value="${cat.categoryId}">${cat.name}</option>`);
+            });
+          });
+    }
+
+
+    function renderPrefixList(prefixes) {
+      const $list = $('#prefixList');
+      const [year, month] = monthPicker.value.split("-");
+      $list.empty();
+
+      prefixes.forEach(prefix => {
+        const item = `
+          <div class="flex justify-between items-center bg-gray-100 px-4 py-2 rounded">
+            <span class="text-gray-700 font-medium">${prefix.categoryName}: $${prefix.amount}</span>
+            <div class="flex gap-2">
+              <button class="text-sm text-red-500 hover:underline delete-prefix" data-id="${prefix.prefixId}">Remove</button>
+            </div>
+          </div>
+        `;
+        $list.append(item);
+      });
+      $("#monthSelectPrefix").text(`${month}/${year}`);
+    }
+    
+
+    function deletePrefix(id) {
+      fetch(`/api/prefix/delete?id=${id}`, {
+        method: 'DELETE'
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to delete prefix");
+        return res.text(); // or .json()
+      })
+      .then(data => {
+        console.log("Delete successful:", data);
+        // Optionally re-fetch prefix list
+        fetchPrefixes(userID);
+      })
+      .catch(err => console.error("Delete error:", err));
+    }
 
     const now = new Date();
 
@@ -114,6 +277,7 @@
       
       loadBudgetsForMonth(userID, Number(month), Number(year));
       updateAddButtonState();
+      updateApplyPrefixButtonState();
     });
     
     
@@ -192,6 +356,7 @@
                 data-category="${budget.categoryId}"
                 data-month="${budget.month}"
                 data-year="${budget.year}"
+                data-name="${budget.categoryName}"
               >✏️</button>
               <button class="delete-btn text-gray-400 hover:text-red-500" data-id="${budget.budgetId}">🗑️</button>
             </div>
@@ -270,8 +435,8 @@
       }
       
         function updateAddButtonState() {
-          const addBtn = document.querySelector('.bg-blue-500');
-
+          const addBtn = $("#addBudgetBtn");
+            
           if (!monthPicker || !addBtn) return;
 
           const [selectedYear, selectedMonth] = monthPicker.value.split("-").map(Number);
@@ -290,12 +455,33 @@
           const shouldEnable = isCurrent || isPrevious;
 
           if (!shouldEnable) {
-            addBtn.classList.add('opacity-50', 'pointer-events-none');
+            addBtn.addClass('opacity-50 pointer-events-none');
           } else {
-            addBtn.classList.remove('opacity-50', 'pointer-events-none');
+            addBtn.removeClass('opacity-50 pointer-events-none');
           }
         }
+        
+        function updateApplyPrefixButtonState() {
+          const [selectedYear, selectedMonth] = monthPicker.value.split("-").map(Number);
+          const openModal = $("#openPrefixModal");
 
+          const now = new Date();
+          const currentMonth = now.getMonth() + 1;
+          const currentYear = now.getFullYear();
+
+          const isThisMonth = selectedYear === currentYear && selectedMonth === currentMonth;
+          const isPreviousMonth = 
+            (selectedYear === currentYear && selectedMonth === currentMonth - 1) ||
+            (selectedYear === currentYear - 1 && currentMonth === 1 && selectedMonth === 12);
+
+          const shouldEnable = isThisMonth || isPreviousMonth;
+
+          if (shouldEnable) {
+            openModal.removeClass("opacity-50 pointer-events-none");
+          } else {
+            openModal.addClass("opacity-50 pointer-events-none");
+          }
+        }
 
 
     $(document).ready(function () {
@@ -369,9 +555,11 @@
         $('#confirmAddBtn').on('click', handleAddBudget); // bind handler
         
         
-        $('.bg-blue-500').on('click', function () {
+        $('#addBudgetBtn').on('click', function () {
           const [year, month] = monthPicker.value.split('-').map(Number);
+          
           $('#overlay').removeClass('hidden');
+          $("#budgetModalTitle").text("Add New Budget");
           $("#monthSelect").text(`${month}/${year}`);
 
           // Delay fetching categories until after month options are rendered
@@ -411,16 +599,19 @@
           const id = $btn.data('id');
           const amount = $btn.data('amount');
           const categoryId = $btn.data('category');
+          const categoryName = $btn.data('name');
           const [year, month] = monthPicker.value.split('-').map(Number);
+
 
           // Open modal
           $('#overlay').removeClass('hidden');
+          $("#budgetModalTitle").text(`Editing ${categoryName}'s budget`);
           $('#amountInput').val(amount);
           $('#confirmAddBtn').data('mode', 'edit').data('id', id).text('Update');
 
           // Disable category & month dropdowns
           $('#categorySelect').prop('disabled', true);
-          $('#monthSelect').prop('disabled', true);
+          $('#monthSelect').text(`${month}/${year}`);
 
           // Load categories and select current one
           fetch('/api/categories')
@@ -433,8 +624,6 @@
                 $select.append(`<option value="${cat.categoryId}" ${selected}>${cat.categoryName}</option>`);
               });
             });
-
-          $('#monthSelect').val(`${month}/${year}`);
         });
 
           
@@ -459,9 +648,66 @@
             if (e.target === this) {
               $(this).addClass('hidden');
               resetModal();
+              $('#amountPrefixInput').val("");
+              $('#categoryPrefixSelect').val("");
+            }
+        });
+        
+        $('#prefixModal').on('click', function (e) {
+            if ($(e.target).is('#prefixModal')) {
+              $('#prefixModal').addClass('hidden');
+              $('#amountPrefixInput').val("");
+              $('#categoryPrefixSelect').val("");
+            }
+        });
+        
+        
+        $('#prefixList').on('click', '.delete-prefix', function () {
+            const prefixId = $(this).data('id');
+            if (confirm('Are you sure you want to delete this prefix?')) {
+                deletePrefix(prefixId);
+                setTimeout(() => {
+                    alert("Prefix deleted successfully!");
+                }, 100);
             }
         });
 
+        
+        $('#confirmAddPrefixBtn').on('click', function (e) {
+            e.preventDefault();
+            
+            const amount = parseFloat($('#amountPrefixInput').val());
+            const categoryId = $('#categoryPrefixSelect').val();
+
+            if (!categoryId) {
+              alert("Please select a category.");
+              return;
+            }
+
+            if (isNaN(amount) || amount <= 0) {
+              alert("Please enter a valid amount.");
+              return;
+            }
+
+            fetch(`/api/prefix/insert?cateID=${categoryId}&userID=${userID}&amount=${amount}`, {
+              method: 'POST'
+            })
+            .then(res => {
+              if (!res.ok) throw new Error('Failed to insert prefix');
+              return res.text(); // or res.json() if your API returns JSON
+            })
+            .then(response => {
+              alert('Prefix added successfully!');
+              $('#overlayAddingPrefix').addClass('hidden');
+              $('#amountPrefixInput').val("");
+              $('#categoryPrefixSelect').val("");
+              fetchPrefixes(userID); // Re-fetch and re-render prefix list
+            })
+            .catch(err => {
+              console.error('Insert error:', err);
+              alert('Failed to add prefix.');
+            });
+          });
 
     });
   </script>

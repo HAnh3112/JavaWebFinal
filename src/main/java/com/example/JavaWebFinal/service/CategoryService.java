@@ -121,4 +121,12 @@ public class CategoryService {
             return "Error showing the simple category list" + e.getMessage();
         }
     }
+    
+    public Object getCategoryExpenseListHaventExistInPrefix (int userId){
+        try{
+            return simpleCategoryDAO.getAvailableExpenseCategoriesForPrefix(userId);
+        }catch(Exception e){
+            return "Error showing the simple category list" + e.getMessage();
+        }
+    }
 }

@@ -38,4 +38,9 @@ public class SimpleCategoryListDAO {
         String sql = "EXEC GetAvailableExpenseCategoriesForBudget ?, ?, ?";
         return jdbcTemplate.query(sql, new Object[]{userId, month, year}, new SimpleCategoryRowMapper());
     }
+    
+    public List<SimpleCategoryListDTO> getAvailableExpenseCategoriesForPrefix(int userId) {
+        String sql = "EXEC GetAvailableExpenseCategoriesForPrefixes ?";
+        return jdbcTemplate.query(sql, new Object[]{userId}, new SimpleCategoryRowMapper());
+    }
 }

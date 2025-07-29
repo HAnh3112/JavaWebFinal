@@ -65,4 +65,9 @@ public class CategoryController {
     public Object getSimpleListExpense(@RequestParam int userID, @RequestParam int month, @RequestParam int year){
         return categoryService.getCategoryExpenseListHaventExistInBudget(userID, month, year);
     }
+    
+    @GetMapping("/simpleCategoryForPrefix")
+    public Object getSimpleListPrefix(@RequestParam int userID){
+        return categoryService.getCategoryExpenseListHaventExistInPrefix(userID);
+    }
 }
