@@ -14,7 +14,10 @@
     <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">+ Add Budget</button>
   </div>
 
-  <h2 class="text-lg font-semibold mb-4">Budget Overview</h2>
+  <div class="flex items-center justify-between mb-4">
+    <select id="monthPicker" class="p-2 border rounded-md text-sm"></select>
+  </div>
+
 
   <div id="budget-container" class="space-y-4">
     <!-- Budget cards will be added here -->
@@ -36,30 +39,141 @@
           <option value="">Select category...</option>
         </select>
         
-          <!-- Month/Year Dropdown -->
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Month</label>
-          <select id="monthSelect" class="form-select w-full border rounded-md px-3 py-2"></select>
-        </div>
+          <!-- Month/Year -->
+          <div class="flex justify-between items-center w-full">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Selected Month</label>
+              <label id="monthSelect" class="block text-sm font-bold text-black mb-1"></label>
+            </div>
 
-        <!-- Confirm button -->
-        <div class="text-right">
-          <button id="confirmAddBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">Confirm</button>
-        </div>
+            <!-- Confirm button -->
+            <div>
+              <button id="confirmAddBtn" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">Confirm</button>
+            </div>
+          </div>
       </div>
     </div>
 
 
   <script>
+    var userID = 3; // Temporaly hard-coded
     const MONTHS = [
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
     ];
+    
+    const mapCodeToIcon = {
+        57946: "🍔",  // fastfood
+        57815: "🚗",  // car
+        58778: "🛍️",  // shopping
+        58235: "💡",  // lightbulb
+        58381: "🎬",  // movie
+        57522: "💰",  // money
+        58136: "🏠",  // home
+        58822: "📱",  // smartphone
+        58328: "🩺",  // medical
+        58713: "🎓",  // school
+        58007: "✈️",  // flight
+        58856: "🎮"   // gaming
+      };
+      
+      const mapIconToCode = {
+        "🍔": 57946,
+        "🚗": 57815,
+        "🛍️": 58778,
+        "💡": 58235,
+        "🎬": 58381,
+        "💰": 57522,
+        "🏠": 58136,
+        "📱": 58822,
+        "🩺": 58328,
+        "🎓": 58713,
+        "✈️": 58007,
+        "🎮": 58856
+      };
+
+    const monthPicker = document.getElementById("monthPicker");
+
+    const now = new Date();
+
+    // Populate dropdown
+    for (let i = 0; i < 12; i++) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const month = date.getMonth();
+      const year = date.getFullYear();
+      const value = `${year}-${String(month + 1).padStart(2, "0")}`; // e.g., "2025-07"
+      const label = `${MONTHS[month]} ${year}`;                       // e.g., "July 2025"
+      const option = new Option(label, value);
+      monthPicker.add(option);
+    }
+
+    // Access selected value
+    monthPicker.addEventListener("change", () => {
+      const value = monthPicker.value;         // e.g., "2025-07"
+      const [year, month] = value.split("-");  // "2025", "07"
+      
+      loadBudgetsForMonth(userID, Number(month), Number(year));
+      updateAddButtonState();
+    });
+    
+    
+    function createOverviewCard(allBudgets){
+        var totalBudget = 0;
+        var totalSpent = 0;
+        allBudgets.forEach((budget) => {
+           totalBudget = totalBudget + budget.amount;
+           totalSpent = totalSpent + budget.spentAmount;
+        });
+        
+        const remaining = totalBudget - totalSpent;
+        const pickedDate = $("#monthPicker").val();
+        const progress = totalBudget === 0 ? 0 : Math.min((totalSpent / totalBudget) * 100, 100).toFixed(1);
+        const visualProgress = Math.min(progress, 100); // prevents overflow
+        const progressColor = progress > 100 ? "bg-red-500" : "bg-green-500";
+        
+        
+        return`
+            <div class="bg-indigo-100 border-l-4 border-purple-400 rounded-xl shadow p-6 mb-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Budget Overview</h2>
+
+            <div>
+              <h3 class="text-sm">${pickedDate}</h3>
+            </div>
+
+            <div class="grid grid-cols-4 gap-4 mb-4 text-center">
+              <div>
+                <p class="text-gray-500 text-sm">Total Budget</p>
+                <p id="totalBudget" class="text-lg font-semibold text-gray-700">${totalBudget}</p>
+              </div>
+              <div>
+                <p class="text-gray-500 text-sm">Total Spent</p>
+                <p id="totalSpent" class="text-lg font-semibold text-green-600">${totalSpent}</p>
+              </div>
+              <div>
+                <p class="text-gray-500 text-sm">Remaining</p>
+                <p id="totalRemaining" class="text-lg font-semibold ${remaining < 0 ? 'text-red-600' : 'text-green-600'}">${remaining}</p>
+              </div>
+              <div>
+                <p class="text-gray-500">Progress</p>
+                <p class="font-semibold">${progress}%</p>
+              </div>
+            </div>
+
+            <div class="h-3 w-full bg-gray-200 rounded-full overflow-hidden">
+              <div id="overviewProgress" class="h-3 ${progressColor} rounded-full transition-all duration-300" style="width: ${visualProgress}%"></div>
+            </div>
+          </div>
+        <hr class="my-4 border-t-2 border-black" />
+        `;
+    }
+
 
     function createBudgetCard(budget) {
       const remaining = budget.amount - budget.spentAmount;
       const progress = ((budget.spentAmount / budget.amount) * 100).toFixed(1);
-      const colorClass = budget.categoryId % 2 === 0 ? "bg-blue-500" : "bg-red-500";
+      const visualProgress = Math.min(progress, 100); // prevents overflow
+      const progressColor = progress > 100 ? "bg-red-500" : "bg-green-500";
+      const icon = mapCodeToIcon[budget.iconCode];
       const monthText = MONTHS[budget.month - 1] + " " + budget.year;
 
       return `
@@ -67,8 +181,7 @@
           <div class="flex justify-between items-start">
             <div>
               <div class="flex items-center space-x-2 mb-1">
-                <div class="w-3 h-3 rounded-full ${colorClass}"></div>
-                <span class="font-semibold text-gray-800">${budget.categoryName}</span>
+                <span class="font-semibold text-gray-800">${icon} ${budget.categoryName}</span>
               </div>
               <p class="text-sm text-gray-500">${monthText}</p>
             </div>
@@ -94,7 +207,9 @@
             </div>
             <div>
               <p class="text-gray-500">Remaining</p>
-              <p class="font-semibold text-green-600">$${remaining.toFixed(2)}</p>
+              <p class="font-semibold ${remaining < 0 ? 'text-red-600' : 'text-green-600'}">
+                $${remaining.toFixed(2)}
+              </p>
             </div>
             <div>
               <p class="text-gray-500">Progress</p>
@@ -102,60 +217,91 @@
             </div>
           </div>
           <div class="mt-4 h-2 w-full bg-gray-200 rounded-full">
-            <div class="h-2 bg-green-500 rounded-full" style="width: ${progress}%"></div>
+            <div class="h-2 ${progressColor} rounded-full" style="width: ${visualProgress}%"></div>
           </div>
         </div>
       `;
     }
+    
+    const $container = $('#budget-container');
+    
+    function loadBudgetsForMonth(id, month, year) {
+        $container.html('<p class="text-gray-400">Loading...</p>');
+
+        fetch(`/api/budget/showByMonth?userID=${id}&month=${month}&year=${year}`)
+          .then(res => {
+            if (!res.ok) throw new Error("Failed to load budget data");
+            return res.json();
+          })
+          .then(budgets => {
+            $container.empty();
+            if (!budgets.length) {
+              $container.html('<p class="text-gray-500">No budgets available.</p>');
+              return;
+            }
+            
+            $container.append(createOverviewCard(budgets));
+
+            budgets.forEach(budget => {
+              const card = createBudgetCard(budget);
+              $container.append(card);
+            });
+          })
+          .catch(err => {
+            $container.html(`<p class="text-red-500">Error: ${err.message}</p>`);
+          });
+      }
+      
+     function fetchAvailableCategories() {
+        const [year, month] = monthPicker.value.split('-').map(Number);
+
+        fetch(`/api/categories/simpleCategoryExpense?userID=${userID}&month=${month}&year=${year}`)
+          .then(res => res.json())
+          .then(data => {
+            const $select = $('#categorySelect');
+            $select.empty().append('<option value="">Select category...</option>');
+            data.forEach(cat => {
+                console.log(cat);
+                console.log(month);
+                console.log(year);
+              $select.append(`<option value="${cat.categoryId}">${cat.name}</option>`);
+            });
+          });
+      }
+      
+        function updateAddButtonState() {
+          const addBtn = document.querySelector('.bg-blue-500');
+
+          if (!monthPicker || !addBtn) return;
+
+          const [selectedYear, selectedMonth] = monthPicker.value.split("-").map(Number);
+
+          const now = new Date();
+          const currentMonth = now.getMonth() + 1;
+          const currentYear = now.getFullYear();
+
+          const prevMonthDate = new Date(currentYear, currentMonth - 2);
+          const prevMonth = prevMonthDate.getMonth() + 1;
+          const prevYear = prevMonthDate.getFullYear();
+
+          const isCurrent = selectedMonth === currentMonth && selectedYear === currentYear;
+          const isPrevious = selectedMonth === prevMonth && selectedYear === prevYear;
+
+          const shouldEnable = isCurrent || isPrevious;
+
+          if (!shouldEnable) {
+            addBtn.classList.add('opacity-50', 'pointer-events-none');
+          } else {
+            addBtn.classList.remove('opacity-50', 'pointer-events-none');
+          }
+        }
+
+
 
     $(document).ready(function () {
-      var userID = 3; // Temporaly hard-coded
-      const $container = $('#budget-container');
-
-      fetch(`/api/budget/showByMonth?userID=${userID}&month=7&year=2025`)
-        .then(res => {
-          if (!res.ok) throw new Error("Failed to load budget data");
-          return res.json();
-        })
-        .then(budgets => {
-          if (!budgets.length) {
-            $container.html('<p class="text-gray-500">No budgets available.</p>');
-            return;
-          }
-
-          budgets.forEach(budget => {
-            const card = createBudgetCard(budget);
-            $container.append(card);
-          });
-        })
-        .catch(err => {
-          $container.html(`<p class="text-red-500">Error: ${err.message}</p>`);
-        });
+      const [pickedYear, pickedMonth] = monthPicker.value.split("-");
         
-        function populateMonthOptions() {
-            const now = new Date();
-            const $monthSelect = $('#monthSelect');
-            $monthSelect.empty();
-
-            const currentMonth = now.getMonth(); // 0-indexed
-            const currentYear = now.getFullYear();
-
-            const prevMonthDate = new Date(currentYear, currentMonth - 1);
-            const prevMonth = prevMonthDate.getMonth();
-            const prevYear = prevMonthDate.getFullYear();
-
-            const MONTH_NAMES = [
-              "January", "February", "March", "April", "May", "June",
-              "July", "August", "September", "October", "November", "December"
-            ];
-
-            $monthSelect.append(`<option value="${prevMonth + 1}-${prevYear}">
-              ${MONTH_NAMES[prevMonth]} ${prevYear}</option>`);
-
-            $monthSelect.append(`<option value="${currentMonth + 1}-${currentYear}" selected>
-              ${MONTH_NAMES[currentMonth]} ${currentYear}</option>`);
-          }
-
+        loadBudgetsForMonth(userID,Number(pickedMonth),Number(pickedYear));
         
         function handleAddBudget() {
           const amount = parseFloat($('#amountInput').val());
@@ -172,7 +318,7 @@
             const params = new URLSearchParams({ id, amount });
 
             fetch(`/api/budget/update?${params.toString()}`, {
-              method: 'POST'
+              method: 'PUT'
             })
               .then(res => res.text())
               .then(response => {
@@ -190,10 +336,10 @@
           // ADD mode
           const categoryID = $('#categorySelect').val();
           const userID = 3; // Hardcoded
-          const [month, year] = $('#monthSelect').val().split('-').map(Number);
+          const [year, month] = monthPicker.value.split('-').map(Number);
 
           if (!categoryID || !month || !year) {
-            alert("Please complete all fields.");
+            alert("Please choose a categories!.");
             return;
           }
 
@@ -224,23 +370,12 @@
         
         
         $('.bg-blue-500').on('click', function () {
+          const [year, month] = monthPicker.value.split('-').map(Number);
           $('#overlay').removeClass('hidden');
-          populateMonthOptions();
+          $("#monthSelect").text(`${month}/${year}`);
 
           // Delay fetching categories until after month options are rendered
-          setTimeout(() => {
-            const [month, year] = $('#monthSelect').val().split('-').map(Number);
-
-            fetch(`/api/categories/simpleCategoryExpense?userID=${userID}&month=${month}&year=${year}`)
-              .then(res => res.json())
-              .then(data => {
-                const $select = $('#categorySelect');
-                $select.empty().append('<option value="">Select category...</option>');
-                data.forEach(cat => {
-                  $select.append(`<option value="${cat.categoryId}">${cat.name}</option>`);
-                });
-              });
-          }, 100); // slight delay to ensure monthSelect is populated
+          fetchAvailableCategories();
         });
         
         $('#overlay').on('click', function (e) {
@@ -276,8 +411,7 @@
           const id = $btn.data('id');
           const amount = $btn.data('amount');
           const categoryId = $btn.data('category');
-          const month = $btn.data('month');
-          const year = $btn.data('year');
+          const [year, month] = monthPicker.value.split('-').map(Number);
 
           // Open modal
           $('#overlay').removeClass('hidden');
@@ -300,13 +434,11 @@
               });
             });
 
-          // Set month dropdown to current budget month/year
-          populateMonthOptions(`${month}-${year}`);
-          $('#monthSelect').val(`${month}-${year}`);
+          $('#monthSelect').val(`${month}/${year}`);
         });
 
           
-          function handleEditButtonClick(budget) {
+        function handleEditButtonClick(budget) {
             $('#overlay').removeClass('hidden');
             $('#amountInput').val(budget.amount);
             $('#confirmAddBtn').data('mode', 'edit').data('budgetId', budget.budgetId);
@@ -314,21 +446,21 @@
             // Hide or disable dropdowns
             $('#categorySelect').val(budget.categoryId).prop('disabled', true);
             $('#monthSelect').val(`${budget.month}-${budget.year}`).prop('disabled', true);
-          }
+        }
           
-          function resetModal() {
+        function resetModal() {
             $('#amountInput').val('');
             $('#categorySelect').prop('disabled', false).val('');
             $('#monthSelect').prop('disabled', false).val('');
             $('#confirmAddBtn').removeData('mode').removeData('budgetId');
-          }
+        }
 
-          $('#overlay').on('click', function (e) {
+        $('#overlay').on('click', function (e) {
             if (e.target === this) {
               $(this).addClass('hidden');
               resetModal();
             }
-          });
+        });
 
 
     });
