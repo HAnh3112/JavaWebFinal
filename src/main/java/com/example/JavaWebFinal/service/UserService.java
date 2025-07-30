@@ -1,13 +1,17 @@
-
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.example.JavaWebFinal.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-
+/**
+ *
+ * @author ADMIN
+ */
 import com.example.JavaWebFinal.model.User;
 import com.example.JavaWebFinal.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
@@ -25,19 +29,12 @@ public class UserService {
 
     public String insertUser(String name, String email, String password) {
         try {
-            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            String hashedPassword = encoder.encode(password);
-
-            User user = new User(name, email, hashedPassword);
+            User user = new User(name, email, password);
             userRepository.save(user);
             return "User inserted!";
         } catch (Exception e) {
             return "Error inserting user: " + e.getMessage();
         }
-    }
-
-    public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username).orElse(null);
     }
 
     public String deleteUser(int id) {
@@ -49,7 +46,7 @@ public class UserService {
         }
     }
 
-    public String updateUser(int id, String name, String email, String password) {
+    public String updateUser(int id, String name,String email, String password) {
         try {
             User user = userRepository.findById(id).orElse(null);
             if (user == null) {
@@ -58,13 +55,7 @@ public class UserService {
 
             user.setUsername(name);
             user.setEmail(email);
-
-            if (password != null && !password.isEmpty()) {
-                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-                String hashedPassword = encoder.encode(password);
-                user.setPasswordHash(hashedPassword);
-            }
-
+            user.setPasswordHash(password);
             userRepository.save(user);
             return "User updated!";
         } catch (Exception e) {
@@ -72,3 +63,4 @@ public class UserService {
         }
     }
 }
+

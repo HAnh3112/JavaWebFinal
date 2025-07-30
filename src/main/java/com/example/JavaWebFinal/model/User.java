@@ -1,14 +1,16 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.example.JavaWebFinal.model;
 
-import java.time.LocalDateTime;
+/**
+ *
+ * @author ADMIN
+ */
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "Users")
@@ -28,7 +30,7 @@ public class User {
     @Column(name = "PasswordHash", nullable = false, length = 255)
     private String passwordHash;
 
-    @Column(name = "CreatedAt", columnDefinition = "DATETIME DEFAULT GETDATE()")
+    @Column(name = "CreatedAt")
     private LocalDateTime createdAt;
 
     // Constructors
