@@ -30,7 +30,7 @@ public class User {
     @Column(name = "PasswordHash", nullable = false, length = 255)
     private String passwordHash;
 
-    @Column(name = "CreatedAt", columnDefinition = "DATETIME DEFAULT GETDATE()")
+    @Column(name = "CreatedAt")
     private LocalDateTime createdAt;
 
     // Constructors
