@@ -60,12 +60,14 @@ public class CategoryController {
         categoryService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
-    
+
+    // Lấy category expense chưa tồn tại trong budget (hạng mục chi chưa lập kế hoạch)
     @GetMapping("/simpleCategoryExpense")
     public Object getSimpleListExpense(@RequestParam int userID, @RequestParam int month, @RequestParam int year){
         return categoryService.getCategoryExpenseListHaventExistInBudget(userID, month, year);
     }
-    
+
+    // Lấy category expense chưa tồn tại trong prefix (hạng mục chi chưa lập prefix)
     @GetMapping("/simpleCategoryForPrefix")
     public Object getSimpleListPrefix(@RequestParam int userID){
         return categoryService.getCategoryExpenseListHaventExistInPrefix(userID);

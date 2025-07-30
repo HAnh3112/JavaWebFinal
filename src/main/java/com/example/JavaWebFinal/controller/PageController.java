@@ -1,27 +1,21 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.example.JavaWebFinal.controller;
 
-import com.example.JavaWebFinal.model.Transaction;
-import com.example.JavaWebFinal.service.TransactionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+/**
+ *
+ * @author ADMIN
+ */
 import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
 
 @Controller
 public class PageController {
-
-    @Autowired
-    private TransactionService transactionService;
-
-    // Hiển thị form thêm transaction
-    @GetMapping("/transactions")
-    public String showTrans() {
-        return "add_transaction"; // without .html
-    }
-
-    // Trang khác, ví dụ: tổng quan
     @GetMapping("/budget-screen")
     public String showBudgetScreen() {
-        return "BudgetScreen";
+        return "BudgetScreen"; // without .html
     }
 }
+
