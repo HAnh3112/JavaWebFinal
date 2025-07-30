@@ -4,16 +4,25 @@ CREATE OR ALTER PROCEDURE ApplyUserPrefixesToBudget
     @Year INT
 AS
 BEGIN
-    -- Step 1: Delete existing budgets for this user that match their prefixes
-    DELETE b
-    FROM Budgets b
-    JOIN Prefixes p
-        ON b.UserID = p.UserID AND b.CategoryID = p.CategoryID
-    WHERE b.Month = @Month AND b.Year = @Year AND p.UserID = @UserID;
+    SET NOCOUNT ON;
 
-    -- Step 2: Insert that user's prefix values as new budgets
-    INSERT INTO Budgets (UserID, CategoryID, Amount, Month, Year, CreatedAt)
-    SELECT p.UserID, p.CategoryID, p.Amount, @Month, @Year, GETDATE()
-    FROM Prefixes p
-    WHERE p.UserID = @UserID;
+    MERGE Budgets AS target
+    USING (
+        SELECT 
+            p.UserID,
+            p.CategoryID,
+            p.Amount
+        FROM Prefixes p
+        WHERE p.UserID = @UserID
+    ) AS source
+    ON target.CategoryID = source.CategoryID
+       AND target.Month = @Month
+       AND target.Year = @Year
+
+    WHEN MATCHED THEN
+        UPDATE SET target.Amount = source.Amount
+
+    WHEN NOT MATCHED THEN
+        INSERT (UserID, CategoryID, Amount, Month, Year)
+        VALUES (source.UserID, source.CategoryID, source.Amount, @Month, @Year);
 END;
