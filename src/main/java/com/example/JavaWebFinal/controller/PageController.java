@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class PageController {
 
-    @Autowired
-    private TransactionService transactionService;
-
     // Hiển thị form thêm transaction
     @GetMapping("/transactions")
     public String showTrans() {
