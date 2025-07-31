@@ -10,7 +10,11 @@ package com.example.JavaWebFinal.controller;
  */
 import com.example.JavaWebFinal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.JavaWebFinal.dto.LoginRequest;
+import com.example.JavaWebFinal.dto.RegisterRequest;
+import com.example.JavaWebFinal.dto.UserResponse;
 
 @RestController
 @RequestMapping("/api/user")
@@ -39,5 +43,15 @@ public class UserController {
                              @RequestParam String email, @RequestParam String password) {
         return userService.updateUser(id, name, email, password);
     }
+
+    @PostMapping("/register")
+public ResponseEntity<UserResponse> registerUser(@RequestBody RegisterRequest request) {
+    return ResponseEntity.ok(userService.registerUser(request));
+}
+
+@PostMapping("/login")
+public ResponseEntity<UserResponse> loginUser(@RequestBody LoginRequest request) {
+    return ResponseEntity.ok(userService.loginUser(request));
+}
 }
 

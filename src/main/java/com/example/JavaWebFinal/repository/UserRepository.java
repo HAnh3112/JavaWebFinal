@@ -18,6 +18,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
     // You can define custom query methods here if needed
-    Optional<User> findByUsername(String username);
+    Optional<User> findByEmail(String email);
+    boolean existsByEmail(String email);
+    Optional<User> findByUsername(String username); 
+    boolean existsByUsername(String username);
 
 }
