@@ -20,10 +20,10 @@ public class CategoryController {
     }
 
     // Tạo mới category
-    @PostMapping
-    public ResponseEntity<CategoryResponseDTO> createCategory(@RequestBody CategoryPostDTO dto) {
-        CategoryResponseDTO created = categoryService.createCategory(dto);
-        return ResponseEntity.ok(created);
+    @PostMapping("/insert")
+    public String createCategory(@RequestParam int userID,@RequestParam String name,@RequestParam int iconCode,
+                                @RequestParam String colorCode, @RequestParam String type) {
+        return categoryService.createCategory(userID, name, iconCode, colorCode, type);
     }
 
     // Lấy tất cả category (full info, có type)
@@ -45,20 +45,16 @@ public class CategoryController {
     }
 
     // Cập nhật category
-    @PutMapping("/{id}")
-    public ResponseEntity<CategoryResponseDTO> updateCategory(
-            @PathVariable Integer id,
-            @RequestBody CategoryPostDTO dto
-    ) {
-        CategoryResponseDTO updated = categoryService.updateCategory(id, dto);
-        return ResponseEntity.ok(updated);
+    @PutMapping("/update")
+    public String updateCategory(@RequestParam int id,@RequestParam String name,@RequestParam int iconCode,
+                                @RequestParam String colorCode){
+        return categoryService.updateCategory(id, name, iconCode, colorCode);
     }
 
     // Xoá category
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Integer id) {
-        categoryService.deleteCategory(id);
-        return ResponseEntity.noContent().build();
+    @DeleteMapping("/delete")
+    public String deleteCategory(@RequestParam Integer id) {
+        return categoryService.deleteCategory(id);
     }
     
     @GetMapping("/simpleCategoryExpense")
@@ -69,5 +65,10 @@ public class CategoryController {
     @GetMapping("/simpleCategoryForPrefix")
     public Object getSimpleListPrefix(@RequestParam int userID){
         return categoryService.getCategoryExpenseListHaventExistInPrefix(userID);
+    }
+    
+    @GetMapping("/getMobileCategories")
+    public Object getMobileCategories(@RequestParam int userID){
+        return categoryService.getMobileCategories(userID);
     }
 }
