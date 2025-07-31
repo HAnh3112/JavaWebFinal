@@ -4,6 +4,9 @@
  */
 package com.example.JavaWebFinal.service;
 
+import com.example.JavaWebFinal.dto.LoginRequest;
+import com.example.JavaWebFinal.dto.RegisterRequest;
+import com.example.JavaWebFinal.dto.UserResponse;
 /**
  *
  * @author ADMIN
@@ -61,6 +64,37 @@ public class UserService {
         } catch (Exception e) {
             return "Error updating user: " + e.getMessage();
         }
+    }
+
+     public UserResponse registerUser(RegisterRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+
+      
+         if (userRepository.existsByUsername(request.getUsername())) {
+             throw new RuntimeException("Username already exists");
+         }
+
+        User user = new User(
+                request.getUsername(),
+                request.getEmail(),
+                request.getPassword() // Bổ sung hash nếu cần
+        );
+
+        User savedUser = userRepository.save(user);
+        return new UserResponse(savedUser.getUserId(), savedUser.getUsername(), savedUser.getEmail());
+    }
+
+    public UserResponse loginUser(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Email not found"));
+
+        if (!user.getPasswordHash().equals(request.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+
+        return new UserResponse(user.getUserId(), user.getUsername(), user.getEmail());
     }
 }
 
