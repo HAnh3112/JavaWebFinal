@@ -43,16 +43,30 @@ public class TransactionController {
     // Get all transactions for a specific user
     // Example: /api/transactions/user/1
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Transaction>> getTransactionsByUserId(@PathVariable Integer userId) {
+    public ResponseEntity<List<TransactionDTO>> getTransactionsByUserId(@PathVariable Integer userId) {
         List<Transaction> transactions = transactionService.getTransactionsByUserId(userId);
         if (transactions.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(transactions, HttpStatus.OK);
+
+        List<TransactionDTO> dtos = transactions.stream()
+                .map(transaction -> {
+                    TransactionDTO dto = new TransactionDTO();
+                    dto.setTransactionId(transaction.getTransactionId());
+                    dto.setAmount(transaction.getAmount());
+                    dto.setTransactionDate(transaction.getTransactionDate());
+                    dto.setNote(transaction.getNote());
+                    dto.setCategoryName(
+                            transaction.getCategory() != null ? transaction.getCategory().getName() : "Uncategorized");
+                    return dto;
+                }).toList();
+
+        return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
     // Get transactions for a specific user within a date range
-    // Example: /api/transactions/user/1/date-range?startDate=2023-01-01&endDate=2023-01-31
+    // Example:
+    // /api/transactions/user/1/date-range?startDate=2023-01-01&endDate=2023-01-31
     @GetMapping("/user/{userId}/date-range")
     public ResponseEntity<List<Transaction>> getTransactionsByUserIdAndDateRange(
             @PathVariable Integer userId,
@@ -61,7 +75,8 @@ public class TransactionController {
         try {
             LocalDate startDate = LocalDate.parse(startDateStr);
             LocalDate endDate = LocalDate.parse(endDateStr);
-            List<Transaction> transactions = transactionService.getTransactionsByUserIdAndDateRange(userId, startDate, endDate);
+            List<Transaction> transactions = transactionService.getTransactionsByUserIdAndDateRange(userId, startDate,
+                    endDate);
             if (transactions.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
@@ -86,7 +101,8 @@ public class TransactionController {
 
     // Update an existing transaction
     @PutMapping("/{id}")
-    public ResponseEntity<Transaction> updateTransaction(@PathVariable Integer id, @Valid @RequestBody TransactionDTO transactionDTO) {
+    public ResponseEntity<Transaction> updateTransaction(@PathVariable Integer id,
+            @Valid @RequestBody TransactionDTO transactionDTO) {
         Transaction updatedTransaction = transactionService.updateTransaction(id, transactionDTO);
         if (updatedTransaction != null) {
             return new ResponseEntity<>(updatedTransaction, HttpStatus.OK);
@@ -103,4 +119,5 @@ public class TransactionController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+    
 }

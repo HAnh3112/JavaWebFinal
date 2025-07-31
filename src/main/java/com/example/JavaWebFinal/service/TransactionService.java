@@ -47,7 +47,8 @@ public class TransactionService {
     }
 
     // Get transactions for a specific user within a date range
-    public List<Transaction> getTransactionsByUserIdAndDateRange(Integer userId, LocalDate startDate, LocalDate endDate) {
+    public List<Transaction> getTransactionsByUserIdAndDateRange(Integer userId, LocalDate startDate,
+            LocalDate endDate) {
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.atTime(23, 59, 59, 999999999); // End of day
         return transactionRepository.findByUserIdAndTransactionDateBetween(userId, startDateTime, endDateTime);
@@ -64,7 +65,8 @@ public class TransactionService {
         Optional<Transaction> existingTransactionOptional = transactionRepository.findById(id);
         if (existingTransactionOptional.isPresent()) {
             Transaction existingTransaction = existingTransactionOptional.get();
-            // Assuming userId and categoryId might not change for an update, but if they can, uncomment below
+            // Assuming userId and categoryId might not change for an update, but if they
+            // can, uncomment below
             // existingTransaction.setUserId(transactionDTO.getUserId());
             // existingTransaction.setCategoryId(transactionDTO.getCategoryId());
             existingTransaction.setAmount(transactionDTO.getAmount());
@@ -87,4 +89,22 @@ public class TransactionService {
         }
         return false;
     }
+
+    private TransactionDTO convertToDTO(Transaction transaction) {
+        TransactionDTO dto = new TransactionDTO();
+        dto.setTransactionId(transaction.getTransactionId());
+        dto.setUserId(transaction.getUser().getUserId());
+        dto.setCategoryId(transaction.getCategory().getCategoryId());
+        dto.setAmount(transaction.getAmount());
+        dto.setTransactionDate(transaction.getTransactionDate());
+        dto.setNote(transaction.getNote());
+
+        if (transaction.getCategory() != null) {
+            dto.setCategoryName(transaction.getCategory().getName());
+            dto.setCategoryType(transaction.getCategory().getType());
+        }
+
+        return dto;
+    }
+
 }
