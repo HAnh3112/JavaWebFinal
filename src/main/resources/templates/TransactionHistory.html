@@ -383,7 +383,6 @@
         <input type="date" id="startDate" />
         <input type="date" id="endDate" />
         <button id="clearFilters">Clear Filters</button>
-        <button id="addTransactionBtn" class="add-transaction-btn">Add Transaction</button>
       </div>
     </div>
 
@@ -406,10 +405,6 @@
   <!-- Add/Edit Transaction Modal -->
   <div id="transactionModal" class="modal">
     <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="modalTitle">Add Transaction</h3>
-        <span class="close" id="closeModal">&times;</span>
-      </div>
       <form id="transactionForm">
         <input type="hidden" id="transactionId" />
         <div class="form-group">
@@ -466,7 +461,6 @@
       $('#clearFilters').on('click', clearFilters);
 
       // Modal
-      $('#addTransactionBtn').on('click', openAddModal);
       $('#closeModal, #cancelBtn').on('click', closeModal);
       $('#transactionForm').on('submit', saveTransaction);
 
@@ -652,7 +646,6 @@
 
     // Modal functions
     function openAddModal() {
-      $('#modalTitle').text('Add Transaction');
       $('#transactionForm')[0].reset();
       $('#transactionId').val('');
       $('#transactionDate').val(new Date().toISOString().split('T')[0]);

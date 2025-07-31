@@ -13,29 +13,30 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class PageController {
-    @GetMapping("/budget-screen")
-    public String showBudgetScreen() {
-        return "BudgetScreen"; // BudgetScreen.html
-    }
-
-    @GetMapping("/index")
+    @GetMapping("/")
     public String showIndex() {
         return "index"; // index.html
     }
 
-
-    @GetMapping("/dashboard")
-    public String showDashboard() {
-        return "dashboard"; // dashboard.html
+    
+    // Hiển thị form thêm transaction
+    @GetMapping("/add-transaction")
+    public String showTrans() {
+        return "add_transaction"; // without .html
     }
 
-    @GetMapping("/transactionHis")
-    public String showTransactionHis() {
-        return "TransactionHistory"; // TransactionHistory.html
+    // Trang khác, ví dụ: tổng quan
+    @GetMapping("/budget-screen")
+    public String showBudgetScreen() {
+        return "BudgetScreen";
     }
     @GetMapping("/dashboard")
     public String showDashboard() {
         return "dashboard";
+    }
+    @GetMapping("/transactionHis")
+    public String showTransactionHis() {
+        return "TransactionHistory"; // TransactionHistory.html
     }
 }
 

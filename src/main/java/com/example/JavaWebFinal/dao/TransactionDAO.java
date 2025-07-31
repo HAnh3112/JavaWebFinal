@@ -47,6 +47,8 @@ public class TransactionDAO{
             dto2.setAmount(rs.getBigDecimal("Amount"));
             dto2.setTransactionDate(rs.getDate("TransactionDate"));
             dto2.setCategoryName(rs.getString("CategoryName"));
+            dto2.setcolorCode(rs.getString("ColorCode"));
+            dto2.seticonCode(rs.getInt("IconCode"));
             dto2.setCategoryType(rs.getString("CategoryType"));
             return dto2;
         }
