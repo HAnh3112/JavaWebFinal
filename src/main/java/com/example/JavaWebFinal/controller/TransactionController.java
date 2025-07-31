@@ -27,7 +27,7 @@ public class TransactionController {
 
     // Create a new transaction (income or expense)
     @PostMapping
-    public ResponseEntity<Transaction> createTransaction(@Valid @RequestBody TransactionDTO transactionDTO) {
+    public ResponseEntity<Transaction> createTransaction(@Valid @RequestBody Transaction transactionDTO) {
         Transaction newTransaction = transactionService.createTransaction(transactionDTO);
         return new ResponseEntity<>(newTransaction, HttpStatus.CREATED);
     }
@@ -42,27 +42,27 @@ public class TransactionController {
 
     // Get all transactions for a specific user
     // Example: /api/transactions/user/1
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<TransactionDTO>> getTransactionsByUserId(@PathVariable Integer userId) {
-        List<Transaction> transactions = transactionService.getTransactionsByUserId(userId);
-        if (transactions.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
+    // @GetMapping("/user/{userId}")
+    // public ResponseEntity<List<TransactionDTO>> getTransactionsByUserId(@PathVariable Integer userId) {
+    //     List<Transaction> transactions = transactionService.getTransactionsByUserId(userId);
+    //     if (transactions.isEmpty()) {
+    //         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    //     }
 
-        List<TransactionDTO> dtos = transactions.stream()
-                .map(transaction -> {
-                    TransactionDTO dto = new TransactionDTO();
-                    dto.setTransactionId(transaction.getTransactionId());
-                    dto.setAmount(transaction.getAmount());
-                    dto.setTransactionDate(transaction.getTransactionDate());
-                    dto.setNote(transaction.getNote());
-                    dto.setCategoryName(
-                            transaction.getCategory() != null ? transaction.getCategory().getName() : "Uncategorized");
-                    return dto;
-                }).toList();
+    //     List<TransactionDTO> dtos = transactions.stream()
+    //             .map(transaction -> {
+    //                 TransactionDTO dto = new TransactionDTO();
+    //                 dto.setTransactionId(transaction.getTransactionId());
+    //                 dto.setAmount(transaction.getAmount());
+    //                 dto.setTransactionDate(transaction.getTransactionDate());
+    //                 dto.setNote(transaction.getNote());
+    //                 dto.setCategoryName(
+    //                         transaction.getCategory() != null ? transaction.getCategory().getName() : "Uncategorized");
+    //                 return dto;
+    //             }).toList();
 
-        return new ResponseEntity<>(dtos, HttpStatus.OK);
-    }
+    //     return new ResponseEntity<>(dtos, HttpStatus.OK);
+    // }
 
     // Get transactions for a specific user within a date range
     // Example:
@@ -100,15 +100,15 @@ public class TransactionController {
     }
 
     // Update an existing transaction
-    @PutMapping("/{id}")
-    public ResponseEntity<Transaction> updateTransaction(@PathVariable Integer id,
-            @Valid @RequestBody TransactionDTO transactionDTO) {
-        Transaction updatedTransaction = transactionService.updateTransaction(id, transactionDTO);
-        if (updatedTransaction != null) {
-            return new ResponseEntity<>(updatedTransaction, HttpStatus.OK);
-        }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+    // @PutMapping("/{id}")
+    // public ResponseEntity<Transaction> updateTransaction(@PathVariable Integer id,
+    //         @Valid @RequestBody TransactionDTO transactionDTO) {
+    //     Transaction updatedTransaction = transactionService.updateTransaction(id, transactionDTO);
+    //     if (updatedTransaction != null) {
+    //         return new ResponseEntity<>(updatedTransaction, HttpStatus.OK);
+    //     }
+    //     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    // }
 
     // Delete a transaction by ID
     @DeleteMapping("/{id}")
@@ -120,4 +120,13 @@ public class TransactionController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
     
+    @GetMapping("/recentTransaction")
+    public Object getUserRecentTransactions(@RequestParam int userID){
+        return transactionService.GetUserRecentTransactions(userID);
+    }
+
+    @GetMapping("/transactionHistory")
+    public Object getUserTransactionHistory(@RequestParam int userID){
+        return transactionService.GetUserTransactionHistory(userID);
+    }
 }

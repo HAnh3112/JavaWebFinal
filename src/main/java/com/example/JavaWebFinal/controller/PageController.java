@@ -21,4 +21,8 @@ public class PageController {
     public String showBudgetScreen() {
         return "BudgetScreen";
     }
+    @GetMapping("/dashboard")
+    public String showDashboard() {
+        return "dashboard";
+    }
 }
