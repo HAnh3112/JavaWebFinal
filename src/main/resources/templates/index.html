@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(0deg, rgba(248,250,252,1) 0%, rgba(248,250,252,1) 100%);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            box-shadow: 2px 0px 4px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            padding: 24px;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #3b82f6;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logo-text {
+            margin-left: 12px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        .user-card {
+            margin: 8px 24px;
+            background: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .user-label {
+            font-size: 14px;
+            color: #16a34a;
+            margin-bottom: 4px;
+        }
+
+        .user-name {
+            font-size: 23px;
+            font-weight: bold;
+            color: #15803d;
+        }
+
+        .nav-menu {
+            flex: 1;
+            margin-top: 24px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-item:hover {
+            background: #f1f5f9;
+        }
+
+        .nav-item.active {
+            background: #dbeafe;
+            color: #2563eb;
+            border-right: 3px solid #3b82f6;
+        }
+
+        .nav-icon {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .logout-section {
+            padding: 24px;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            color: #dc2626;
+            background: none;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            width: 100%;
+            padding: 8px 0;
+        }
+
+        .logout-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-frame {
+            flex: 1;
+            border: none;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Header Styles */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 20px 30px;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            font-size: 16px;
+            color: #1e293b;
+        }
+
+        .date-display {
+            font-weight: 500;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-name {
+            font-weight: 500;
+        }
+
+        .user-icon {
+            background: #3b82f6;
+            color: white;
+            font-weight: bold;
+            border-radius: 9999px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Icons using Unicode symbols */
+        .icon-home::before { content: "🏠"; }
+        .icon-plus::before { content: "➕"; }
+        .icon-file::before { content: "📄"; }
+        .icon-chart::before { content: "📊"; }
+        .icon-pie::before { content: "🥧"; }
+        .icon-tag::before { content: "🏷️"; }
+        .icon-bell::before { content: "🔔"; }
+        .icon-download::before { content: "⬇️"; }
+        .icon-settings::before { content: "⚙️"; }
+        .icon-logout::before { content: "🚪"; }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- Logo and Brand -->
+            <div class="logo-section">
+                <div class="logo-icon">$</div>
+                <h1 class="logo-text">Finance Tracker</h1>
+            </div>
+
+            <!-- User Card -->
+            <div class="user-card">
+                <p class="user-label">Welcome</p>
+                <p class="user-name">John Doe</p>
+            </div>
+
+            <!-- Navigation Menu -->
+            <nav class="nav-menu">
+                <button class="nav-item active" onclick="loadPage('dashboard')">
+                    <span class="nav-icon icon-home"></span>
+                    Dashboard
+                </button>
+                <button class="nav-item" onclick="loadPage('add-transaction.html')">
+                    <span class="nav-icon icon-plus"></span>
+                    Add Transaction
+                </button>
+                <button class="nav-item" onclick="loadPage('transactionHis')">
+                    <span class="nav-icon icon-file"></span>
+                    Transactions
+                </button>
+                <button class="nav-item" onclick="loadPage('budget-screen')">
+                    <span class="nav-icon icon-chart"></span>
+                    Budgets
+                </button>
+                <button class="nav-item" onclick="loadPage('charts.html')">
+                    <span class="nav-icon icon-pie"></span>
+                    Charts
+                </button>
+                <button class="nav-item" onclick="loadPage('categories.html')">
+                    <span class="nav-icon icon-tag"></span>
+                    Categories
+                </button>
+                <button class="nav-item" onclick="loadPage('export.html')">
+                    <span class="nav-icon icon-download"></span>
+                    Export
+                </button>
+                <button class="nav-item" onclick="loadPage('settings.html')">
+                    <span class="nav-icon icon-settings"></span>
+                    Settings
+                </button>
+            </nav>
+
+            <!-- Logout Button -->
+            <div class="logout-section">
+                <button class="logout-btn">
+                    <span class="nav-icon icon-logout"></span>
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="date-display" id="dateDisplay"></div>
+                <div class="user-profile">
+                    <span class="user-name">dd</span>
+                    <div class="user-icon">D</div>
+                </div>
+            </header>
+
+            <!-- iframe -->
+            <iframe id="contentFrame" class="content-frame" src="dashboard"></iframe>
+        </main>
+    </div>
+
+    <script>
+        function loadPage(page) {
+            // Update iframe source
+            document.getElementById('contentFrame').src = page;
+            
+            // Update active navigation item
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Show current date in real-time
+        function updateDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const formatted = now.toLocaleDateString('en-US', options);
+            document.getElementById("dateDisplay").textContent = formatted;
+        }
+
+        updateDate();
+    </script>
+</body>
+</html>
