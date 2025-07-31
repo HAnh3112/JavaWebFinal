@@ -33,5 +33,9 @@ public class PageController {
     public String showTransactionHis() {
         return "TransactionHistory"; // TransactionHistory.html
     }
+    @GetMapping("/dashboard")
+    public String showDashboard() {
+        return "dashboard";
+    }
 }
 

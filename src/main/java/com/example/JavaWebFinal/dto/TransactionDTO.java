@@ -8,6 +8,7 @@ package com.example.JavaWebFinal.dto;
 // import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.time.LocalDateTime;
 
 // @Data
@@ -37,49 +38,21 @@ import java.time.LocalDateTime;
 // }
 //@Data
 public class TransactionDTO {
-    private Integer transactionId;
     private BigDecimal amount;
-    private Integer userId;         
-    private Integer categoryId;
-    private LocalDateTime transactionDate;
-    private String note;
+    private Date transactionDate;
     private String categoryName;
     private String categoryType;
-    public Integer getTransactionId() {
-        return transactionId;
-    }
-    public void setTransactionId(Integer transactionId) {
-        this.transactionId = transactionId;
-    }
     public BigDecimal getAmount() {
         return amount;
     }
     public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
-    public Integer getUserId() {
-        return userId;
-    }
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-    public Integer getCategoryId() {
-        return categoryId;
-    }
-    public void setCategoryId(Integer categoryId) {
-        this.categoryId = categoryId;
-    }
-    public LocalDateTime getTransactionDate() {
+    public Date getTransactionDate() {
         return transactionDate;
     }
-    public void setTransactionDate(LocalDateTime transactionDate) {
+    public void setTransactionDate(Date transactionDate) {
         this.transactionDate = transactionDate;
-    }
-    public String getNote() {
-        return note;
-    }
-    public void setNote(String note) {
-        this.note = note;
     }
     public String getCategoryName() {
         return categoryName;
@@ -93,14 +66,9 @@ public class TransactionDTO {
     public void setCategoryType(String categoryType) {
         this.categoryType = categoryType;
     }
-    public TransactionDTO(Integer transactionId, BigDecimal amount, Integer userId, Integer categoryId,
-            LocalDateTime transactionDate, String note, String categoryName, String categoryType) {
-        this.transactionId = transactionId;
+    public TransactionDTO(BigDecimal amount, Date transactionDate, String categoryName, String categoryType) {
         this.amount = amount;
-        this.userId = userId;
-        this.categoryId = categoryId;
         this.transactionDate = transactionDate;
-        this.note = note;
         this.categoryName = categoryName;
         this.categoryType = categoryType;
     }
