@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import com.example.JavaWebFinal.dto.LoginRequest;
 import com.example.JavaWebFinal.dto.RegisterRequest;
 import com.example.JavaWebFinal.dto.UserResponse;
+import org.springframework.http.HttpStatus;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -45,13 +47,21 @@ public class UserController {
     }
 
     @PostMapping("/register")
-public ResponseEntity<UserResponse> registerUser(@RequestBody RegisterRequest request) {
-    return ResponseEntity.ok(userService.registerUser(request));
-}
+    public ResponseEntity<?> registerUser(@RequestBody RegisterRequest request) {
+        try {
+            UserResponse userResponse = userService.registerUser(request);
+            return ResponseEntity.ok(userResponse);
+        } catch (RuntimeException ex) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Map.of("message", ex.getMessage()));
+        }
+    }
 
-@PostMapping("/login")
-public ResponseEntity<UserResponse> loginUser(@RequestBody LoginRequest request) {
-    return ResponseEntity.ok(userService.loginUser(request));
-}
+
+    @PostMapping("/login")
+    public ResponseEntity<UserResponse> loginUser(@RequestBody LoginRequest request) {
+        return ResponseEntity.ok(userService.loginUser(request));
+    }
 }
 
