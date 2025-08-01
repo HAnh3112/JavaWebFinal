@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 // import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -31,7 +32,7 @@ public class Transaction {
     private BigDecimal amount;
 
     @Column(name = "TransactionDate", nullable = false)
-    private LocalDateTime transactionDate;
+    private Date transactionDate;
 
     @Column(name = "Note")
     private String note;
@@ -57,7 +58,7 @@ public class Transaction {
     public Transaction(){}
     
     public Transaction(Integer transactionId, Integer userId, Integer categoryId, BigDecimal amount,
-            LocalDateTime transactionDate, String note, LocalDateTime createdAt, Category category, User user) {
+            Date transactionDate, String note, LocalDateTime createdAt, Category category, User user) {
         this.transactionId = transactionId;
         this.userId = userId;
         this.categoryId = categoryId;
@@ -101,11 +102,11 @@ public class Transaction {
         this.amount = amount;
     }
 
-    public LocalDateTime getTransactionDate() {
+    public Date getTransactionDate() {
         return transactionDate;
     }
 
-    public void setTransactionDate(LocalDateTime transactionDate) {
+    public void setTransactionDate(Date transactionDate) {
         this.transactionDate = transactionDate;
     }
 
