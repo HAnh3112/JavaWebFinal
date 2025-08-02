@@ -1,6 +1,6 @@
---create database PersonalFinace_DB
---drop database PersonalFinace_DB
---use PersonalFinace_DB
+--create database PersonalFinance_DB
+--drop database PersonalFinance_DB
+--use PersonalFinance_DB
 
 GO
 CREATE TABLE Users (

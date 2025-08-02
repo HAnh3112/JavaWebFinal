@@ -27,52 +27,43 @@ VALUES
 (3, 'Entertainment', 'Expense', '#98D8C8', 58856);
 
 
---Insert Prefixes (For Carol (ID=3) only)
+-- Insert Prefixes (Updated Amounts)
 INSERT INTO Prefixes (CategoryID, UserID, Amount)
 VALUES
-(2, 1, 1500),
-(7, 3, 500),
-(8, 3, 1000)
+(2, 1, 1500000),
+(7, 3, 500000),
+(8, 3, 1000000);
 
--- Insert Transactions (match category type)
--- Alice's Transactions
+-- Alice's Transactions (UserID = 1)
 INSERT INTO Transactions (UserID, CategoryID, Amount, TransactionDate, Note)
 VALUES
-(1, 1, 5000.00, '2025-07-01', 'Monthly salary'),
-(1, 1, 5000.00, '2025-06-01', 'Monthly salary'),
-(1, 2, 150.75, '2025-07-05', 'Groceries at supermarket'),
-(1, 2, 120.00, '2025-07-12', 'More groceries'),
-(1, 3, 800.00, '2025-07-10', 'Freelance design work');
+(1, 1, 10000000, '2025-07-01', 'Monthly salary'),
+(1, 1, 10000000, '2025-06-01', 'Monthly salary'),
+(1, 2, 250000, '2025-07-05', 'Groceries at supermarket'),
+(1, 2, 150000, '2025-07-12', 'More groceries'),
+(1, 3, 800000, '2025-07-10', 'Freelance design work');
 
--- Bob's Transactions
+-- Bob's Transactions (UserID = 2)
 INSERT INTO Transactions (UserID, CategoryID, Amount, TransactionDate, Note)
 VALUES
-(2, 4, 200.00, '2025-07-03', 'Stock dividends'),
-(2, 4, 220.00, '2025-06-15', 'Crypto gains'),
-(2, 5, 900.00, '2025-07-01', 'Monthly rent');
+(2, 4, 2000000, '2025-07-03', 'Stock dividends'),
+(2, 4, 3000000, '2025-06-15', 'Crypto gains'),
+(2, 5, 4000000, '2025-07-01', 'Monthly rent');
 
--- Carol's Transactions
+-- Carol's Transactions (UserID = 3)
 INSERT INTO Transactions (UserID, CategoryID, Amount, TransactionDate, Note)
 VALUES
-(3, 6, 700.00, '2025-07-06', 'Online store sales'),
-(3, 6, 650.00, '2025-06-28', 'Craft market sales'),
-(3, 7, 60.00, '2025-07-02', 'Dinner at sushi place'),
-(3, 7, 45.50, '2025-07-09', 'Lunch out'),
-(3, 8, 100.00, '2025-07-04', 'Concert tickets');
+(3, 6, 1500000, '2025-07-06', 'Online store sales'),
+(3, 6, 1300000, '2025-06-28', 'Craft market sales'),
+(3, 7, 600000, '2025-07-02', 'Dinner at sushi place'),
+(3, 7, 450000, '2025-07-09', 'Lunch out'),
+(3, 8, 1000000, '2025-07-04', 'Concert tickets');
 
--- Insert Budgets for each Expense Category
--- Alice's Expense Category: CategoryID = 2
+-- Budgets (only Expense categories, updated Amounts)
 INSERT INTO Budgets (UserID, CategoryID, Amount, Month, Year)
 VALUES
-(1, 2, 400.00, 7, 2025);
+(1, 2, 1000000, 7, 2025),
+(2, 5, 5000000, 7, 2025),
+(3, 7, 1200000, 7, 2025),
+(3, 8, 1500000, 7, 2025);
 
--- Bob's Expense Category: CategoryID = 5
-INSERT INTO Budgets (UserID, CategoryID, Amount, Month, Year)
-VALUES
-(2, 5, 1000.00, 7, 2025);
-
--- Carol's Expense Categories: CategoryID = 7, 8
-INSERT INTO Budgets (UserID, CategoryID, Amount, Month, Year)
-VALUES
-(3, 7, 200.00, 7, 2025),
-(3, 8, 300.00, 7, 2025);
