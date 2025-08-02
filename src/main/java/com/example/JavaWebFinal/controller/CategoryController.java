@@ -1,8 +1,8 @@
 package com.example.JavaWebFinal.controller;
 
-import com.example.JavaWebFinal.dto.CategoryPostDTO;
-import com.example.JavaWebFinal.dto.CategoryResponseDTO;
-import com.example.JavaWebFinal.dto.CategorySimpleDTO;
+import com.example.JavaWebFinal.dto.category.CategoryPostDTO;
+import com.example.JavaWebFinal.dto.category.CategoryResponseDTO;
+import com.example.JavaWebFinal.dto.category.CategorySimpleDTO;
 import com.example.JavaWebFinal.service.CategoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

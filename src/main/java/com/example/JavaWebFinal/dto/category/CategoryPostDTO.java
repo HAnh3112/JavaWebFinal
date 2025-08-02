@@ -1,4 +1,4 @@
-package com.example.JavaWebFinal.dto;
+package com.example.JavaWebFinal.dto.category;
 
 public class CategoryPostDTO {
     private String name;

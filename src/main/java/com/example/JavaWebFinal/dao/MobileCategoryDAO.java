@@ -8,7 +8,7 @@ package com.example.JavaWebFinal.dao;
  *
  * @author ADMIN
  */
-import com.example.JavaWebFinal.dto.MobileCategoryDTO;
+import com.example.JavaWebFinal.dto.category.MobileCategoryDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

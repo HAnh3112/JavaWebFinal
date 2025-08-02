@@ -8,7 +8,8 @@ package com.example.JavaWebFinal.dao;
  *
  * @author ADMIN
  */
-import com.example.JavaWebFinal.dto.SimpleCategoryListDTO;
+import com.example.JavaWebFinal.dto.budget.SimpleCategoryListDTO;
+import com.example.JavaWebFinal.dto.category.CategorySimpleDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -43,4 +44,5 @@ public class SimpleCategoryListDAO {
         String sql = "EXEC GetAvailableExpenseCategoriesForPrefixes ?";
         return jdbcTemplate.query(sql, new Object[]{userId}, new SimpleCategoryRowMapper());
     }
+    
 }

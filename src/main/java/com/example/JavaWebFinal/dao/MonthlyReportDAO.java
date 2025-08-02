@@ -9,8 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
-import com.example.JavaWebFinal.dto.CategoryExpenseDTO;
-import com.example.JavaWebFinal.dto.MonthlySummaryDTO;
+import com.example.JavaWebFinal.dto.monthlysummary.CategoryExpenseDTO;
+import com.example.JavaWebFinal.dto.monthlysummary.MonthlySummaryDTO;
 
 @Service
 public class MonthlyReportDAO {
@@ -46,6 +46,12 @@ public class MonthlyReportDAO {
 
     public List<CategoryExpenseDTO> getMonthlyTotalExpensePerCategory(int userId, int month, int year) {
         String sql = "EXEC GetTotalExpenseOfCategory ?, ?, ?";
+
+        return jdbcTemplate.query(sql, new Object[]{userId, month, year}, new MonthlyExpenseCategoryDTORowMapper());
+    }
+    
+    public List<CategoryExpenseDTO> getTop3MonthlyTotalExpensePerCategory(int userId, int month, int year) {
+        String sql = "EXEC GetTop3TotalExpenseOfCategory ?, ?, ?";
 
         return jdbcTemplate.query(sql, new Object[]{userId, month, year}, new MonthlyExpenseCategoryDTORowMapper());
     }

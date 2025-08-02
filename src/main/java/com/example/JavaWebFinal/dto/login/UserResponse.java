@@ -1,4 +1,4 @@
-package com.example.JavaWebFinal.dto;
+package com.example.JavaWebFinal.dto.login;
 
 public class UserResponse {
     private Integer id;

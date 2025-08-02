@@ -23,4 +23,9 @@ public class MonthlyReportController {
     public Object getMonthlyExpensePerCategory(@RequestParam int userID, @RequestParam int month, @RequestParam int year){
         return monthlyReportService.getTotalMonthlyExpensePerCategory(userID, month, year);
     }
+    
+    @GetMapping("/top3MonthlyExpense")
+    public Object getTop3MonthlyExpensePerCategory(@RequestParam int userID, @RequestParam int month, @RequestParam int year){
+        return monthlyReportService.getTop3TotalMonthlyExpensePerCategory(userID, month, year);
+    }
 }

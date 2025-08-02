@@ -27,4 +27,13 @@ public class MonthlyReportService {
             return "Error getting total expesne per ctegory of the month" + e.getMessage();
         }
     }
+    
+    public Object getTop3TotalMonthlyExpensePerCategory(int userId, int month, int year){
+        try{
+            return monthlyReportDAO.getTop3MonthlyTotalExpensePerCategory(userId, month, year);
+        }catch(Exception e){
+            e.printStackTrace();
+            return "Error getting top 3 total expesne per ctegory of the month" + e.getMessage();
+        }
+    }
 }

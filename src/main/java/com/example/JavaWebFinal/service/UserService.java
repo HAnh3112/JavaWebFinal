@@ -4,9 +4,9 @@
  */
 package com.example.JavaWebFinal.service;
 
-import com.example.JavaWebFinal.dto.LoginRequest;
-import com.example.JavaWebFinal.dto.RegisterRequest;
-import com.example.JavaWebFinal.dto.UserResponse;
+import com.example.JavaWebFinal.dto.login.LoginRequest;
+import com.example.JavaWebFinal.dto.login.RegisterRequest;
+import com.example.JavaWebFinal.dto.login.UserResponse;
 /**
  *
  * @author ADMIN

@@ -3,7 +3,7 @@ package com.example.JavaWebFinal.service;
 import com.example.JavaWebFinal.model.Transaction;
 import com.example.JavaWebFinal.repository.TransactionRepository;
 import com.example.JavaWebFinal.dao.TransactionDAO;
-import com.example.JavaWebFinal.dto.TransactionDTO;
+import com.example.JavaWebFinal.dto.transactions.TransactionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;

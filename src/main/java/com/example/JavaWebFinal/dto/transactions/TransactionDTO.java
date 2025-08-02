@@ -1,4 +1,4 @@
-package com.example.JavaWebFinal.dto;
+package com.example.JavaWebFinal.dto.transactions;
 
 //import lombok.Data;
 // import lombok.NoArgsConstructor;

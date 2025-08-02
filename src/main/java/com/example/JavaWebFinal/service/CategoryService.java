@@ -1,8 +1,8 @@
 package com.example.JavaWebFinal.service;
 
-import com.example.JavaWebFinal.dto.CategoryPostDTO;
-import com.example.JavaWebFinal.dto.CategoryResponseDTO;
-import com.example.JavaWebFinal.dto.CategorySimpleDTO;
+import com.example.JavaWebFinal.dto.category.CategoryPostDTO;
+import com.example.JavaWebFinal.dto.category.CategoryResponseDTO;
+import com.example.JavaWebFinal.dto.category.CategorySimpleDTO;
 import com.example.JavaWebFinal.dao.SimpleCategoryListDAO;
 import com.example.JavaWebFinal.dao.MobileCategoryDAO;
 import com.example.JavaWebFinal.model.Category;
@@ -39,7 +39,7 @@ public class CategoryService {
     private User getCurrentUser() {
         // Nếu có Spring Security, lấy auth từ context:
         // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        // String username = auth.getName();
+        // String username = auth.getName();username
         String username = "carol"; // fake username
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));

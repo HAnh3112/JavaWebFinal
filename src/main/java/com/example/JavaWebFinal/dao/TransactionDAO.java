@@ -1,8 +1,8 @@
 package com.example.JavaWebFinal.dao;
 
-import com.example.JavaWebFinal.dto.BudgetWithSpendingDTO;
-import com.example.JavaWebFinal.dto.TransactionDTO;
-import com.example.JavaWebFinal.dto.TransactionHistoryDTO;
+import com.example.JavaWebFinal.dto.budget.BudgetWithSpendingDTO;
+import com.example.JavaWebFinal.dto.transactions.TransactionDTO;
+import com.example.JavaWebFinal.dto.transactions.TransactionHistoryDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

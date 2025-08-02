@@ -12,9 +12,9 @@ import com.example.JavaWebFinal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.JavaWebFinal.dto.LoginRequest;
-import com.example.JavaWebFinal.dto.RegisterRequest;
-import com.example.JavaWebFinal.dto.UserResponse;
+import com.example.JavaWebFinal.dto.login.LoginRequest;
+import com.example.JavaWebFinal.dto.login.RegisterRequest;
+import com.example.JavaWebFinal.dto.login.UserResponse;
 import org.springframework.http.HttpStatus;
 import java.util.Map;
 

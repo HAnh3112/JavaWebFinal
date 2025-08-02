@@ -2,7 +2,7 @@ package com.example.JavaWebFinal.controller;
 
 import com.example.JavaWebFinal.model.Transaction;
 import com.example.JavaWebFinal.service.TransactionService;
-import com.example.JavaWebFinal.dto.TransactionDTO;
+import com.example.JavaWebFinal.dto.transactions.TransactionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

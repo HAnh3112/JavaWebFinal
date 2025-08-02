@@ -16,7 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import com.example.JavaWebFinal.dto.PrefixDTO;
+import com.example.JavaWebFinal.dto.budget.PrefixDTO;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;

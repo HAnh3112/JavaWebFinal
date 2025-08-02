@@ -1,16 +1,18 @@
-package com.example.JavaWebFinal.dto;
+package com.example.JavaWebFinal.dto.category;
 
-public class CategorySimpleDTO {
+public class CategoryResponseDTO {
     private Integer categoryId;
     private Integer userId;
     private String name;
+    private String type;
 
-    public CategorySimpleDTO() {}
+    public CategoryResponseDTO() {}
 
-    public CategorySimpleDTO(Integer categoryId, Integer userId, String name) {
+    public CategoryResponseDTO(Integer categoryId, Integer userId, String name, String type) {
         this.categoryId = categoryId;
         this.userId = userId;
         this.name = name;
+        this.type = type;
     }
 
     public Integer getCategoryId() {
@@ -23,5 +25,9 @@ public class CategorySimpleDTO {
 
     public String getName() {
         return name;
+    }
+
+    public String getType() {
+        return type;
     }
 }
