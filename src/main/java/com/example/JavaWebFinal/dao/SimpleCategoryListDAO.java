@@ -25,7 +25,7 @@ public class SimpleCategoryListDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    private static class SimpleCategoryRowMapper implements RowMapper<SimpleCategoryListDTO> {
+    private static class SimpleCategoryListRowMapper implements RowMapper<SimpleCategoryListDTO> {
         @Override
         public SimpleCategoryListDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
             return new SimpleCategoryListDTO(
@@ -37,12 +37,33 @@ public class SimpleCategoryListDAO {
 
     public List<SimpleCategoryListDTO> getAvailableExpenseCategoriesForBudget(int userId, int month, int year) {
         String sql = "EXEC GetAvailableExpenseCategoriesForBudget ?, ?, ?";
-        return jdbcTemplate.query(sql, new Object[]{userId, month, year}, new SimpleCategoryRowMapper());
+        return jdbcTemplate.query(sql, new Object[]{userId, month, year}, new SimpleCategoryListRowMapper());
     }
     
     public List<SimpleCategoryListDTO> getAvailableExpenseCategoriesForPrefix(int userId) {
         String sql = "EXEC GetAvailableExpenseCategoriesForPrefixes ?";
-        return jdbcTemplate.query(sql, new Object[]{userId}, new SimpleCategoryRowMapper());
+        return jdbcTemplate.query(sql, new Object[]{userId}, new SimpleCategoryListRowMapper());
     }
     
+    private static class CategorySimpleRowMapper implements RowMapper<CategorySimpleDTO> {
+        @Override
+        public CategorySimpleDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new CategorySimpleDTO(
+                rs.getInt("CategoryID"),
+                rs.getString("Name"),
+                rs.getInt("IconCode"),
+                rs.getString("ColorCodeHex")
+            );
+        }
+    }
+
+    public List<CategorySimpleDTO> getExpesneCategory(int userId) {
+        String sql = "SELECT CategoryID, Name, IconCode, ColorCodeHex FROM Categories WHERE UserID = ? AND Type = 'Expense'";
+        return jdbcTemplate.query(sql, new Object[]{userId}, new CategorySimpleRowMapper());
+    }
+    
+    public List<CategorySimpleDTO> getIncomeCategory(int userId) {
+        String sql = "SELECT CategoryID, Name, IconCode, ColorCodeHex FROM Categories WHERE UserID = ? AND Type = 'Income'";
+        return jdbcTemplate.query(sql, new Object[]{userId}, new CategorySimpleRowMapper());
+    }
 }

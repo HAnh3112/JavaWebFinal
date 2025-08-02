@@ -1,27 +1,50 @@
 package com.example.JavaWebFinal.dto.category;
-
+        
 public class CategorySimpleDTO {
-    private Integer categoryId;
-    private Integer userId;
-    private String name;
+    private int categoryId;
+    private String categoryName;
+    private int iconCode;
+    private String colorCode;
 
-    public CategorySimpleDTO() {}
-
-    public CategorySimpleDTO(Integer categoryId, Integer userId, String name) {
+    // Full constructor
+    public CategorySimpleDTO(int categoryId, String categoryName, int iconCode, String iconColor) {
         this.categoryId = categoryId;
-        this.userId = userId;
-        this.name = name;
+        this.categoryName = categoryName;
+        this.iconCode = iconCode;
+        this.colorCode = iconColor;
     }
 
-    public Integer getCategoryId() {
+    // Getters and Setters
+    public int getCategoryId() {
         return categoryId;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
-    public String getName() {
-        return name;
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public int getIconCode() {
+        return iconCode;
+    }
+
+    public void setIconCode(int iconCode) {
+        this.iconCode = iconCode;
+    }
+
+    public String getIconColor() {
+        return colorCode;
+    }
+
+    public void setIconColor(String iconColor) {
+        this.colorCode = iconColor;
     }
 }
+

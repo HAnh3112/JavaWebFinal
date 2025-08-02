@@ -34,14 +34,14 @@ public class CategoryController {
 
     // Lấy income category (không show type)
     @GetMapping("/income")
-    public ResponseEntity<List<CategorySimpleDTO>> getIncomeCategories() {
-        return ResponseEntity.ok(categoryService.getIncomeCategories());
+    public ResponseEntity<List<CategorySimpleDTO>> getIncomeCategories(@RequestParam int userID) {
+        return ResponseEntity.ok(categoryService.getIncomeCategories(userID));
     }
 
     // Lấy expense category (không show type)
     @GetMapping("/expense")
-    public ResponseEntity<List<CategorySimpleDTO>> getExpenseCategories() {
-        return ResponseEntity.ok(categoryService.getExpenseCategories());
+    public ResponseEntity<List<CategorySimpleDTO>> getExpenseCategories(@RequestParam int userID) {
+        return ResponseEntity.ok(categoryService.getExpenseCategories(userID));
     }
 
     // Cập nhật category

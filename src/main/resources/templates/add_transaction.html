@@ -160,6 +160,7 @@
 </div>
 
 <script>
+    var userID = 1;
     document.addEventListener("DOMContentLoaded", function () {
         const transactionType = document.getElementById("transactionType");
         const category = document.getElementById("category");
@@ -168,7 +169,7 @@
 
         function loadCategories(type) {
             category.innerHTML = '<option>Loading...</option>';
-            fetch(`/api/categories/${type.toLowerCase()}`)
+            fetch(`/api/categories/${type.toLowerCase()}?userID=${userID}`)
                 .then(response => {
                     if (!response.ok) throw new Error("Failed to load categories");
                     return response.json();
@@ -181,7 +182,7 @@
                         data.forEach(c => {
                             const option = document.createElement("option");
                             option.value = c.categoryId;
-                            option.textContent = c.name;
+                            option.textContent = c.categoryName;
                             category.appendChild(option);
                         });
                     }
@@ -214,7 +215,7 @@
                 //date: formattedDate,
                 transactionDate: formattedDate,
                 note: document.getElementById("description").value,
-                userId: 1 // Tạm thời hardcoded; thay bằng giá trị thực nếu có đăng nhập
+                userId: userID // Tạm thời hardcoded; thay bằng giá trị thực nếu có đăng nhập
             };
 
             console.log(data);

@@ -66,18 +66,12 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
-    public List<CategorySimpleDTO> getIncomeCategories() {
-        return categoryRepository.findByUserAndType(getCurrentUser(), "Income")
-                .stream()
-                .map(this::toSimpleDTO)
-                .collect(Collectors.toList());
+    public List<CategorySimpleDTO> getIncomeCategories(int userID) {
+        return simpleCategoryDAO.getIncomeCategory(userID);
     }
 
-    public List<CategorySimpleDTO> getExpenseCategories() {
-        return categoryRepository.findByUserAndType(getCurrentUser(), "Expense")
-                .stream()
-                .map(this::toSimpleDTO)
-                .collect(Collectors.toList());
+    public List<CategorySimpleDTO> getExpenseCategories(int userID) {
+        return simpleCategoryDAO.getExpesneCategory(userID);
     }
 
     public String updateCategory(int id, String name, int iconCode, String colorCode) {
@@ -115,14 +109,6 @@ public class CategoryService {
                 category.getUser().getUserId(),
                 category.getName(),
                 category.getType()
-        );
-    }
-
-    private CategorySimpleDTO toSimpleDTO(Category category) {
-        return new CategorySimpleDTO(
-                category.getCategoryId(),
-                category.getUser().getUserId(),
-                category.getName()
         );
     }
     
