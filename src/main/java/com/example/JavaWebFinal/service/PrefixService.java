@@ -51,7 +51,7 @@ public class PrefixService {
             return("Successfully applied prefixes!");
         } catch(Exception e){
             e.printStackTrace();
-            return("Error when applying prefixes");
+            return("Error when applying prefixes" + e.getMessage());
         }
     }
     

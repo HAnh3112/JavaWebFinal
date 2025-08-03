@@ -13,6 +13,7 @@ BEGIN
     SELECT 
         c.CategoryID,
         c.Name AS CategoryName,
+		c.ColorCodeHex AS ColorCode,
         SUM(t.Amount) AS TotalSpent
     FROM Transactions t
     JOIN Categories c 
@@ -23,7 +24,7 @@ BEGIN
         AND c.Type = 'Expense'
         AND t.TransactionDate >= @StartDate AND t.TransactionDate < @EndDate
     GROUP BY 
-        c.CategoryID, c.Name
+        c.CategoryID, c.Name, c.ColorCodeHex
     ORDER BY 
         TotalSpent DESC;
 END

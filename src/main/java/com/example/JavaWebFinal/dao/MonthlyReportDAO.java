@@ -39,6 +39,18 @@ public class MonthlyReportDAO {
             CategoryExpenseDTO dto = new CategoryExpenseDTO();
             dto.setCategoryId(rs.getInt("CategoryID"));
             dto.setCategoryName(rs.getString("CategoryName"));
+            dto.setColorCode(rs.getString("ColorCode"));
+            dto.setTotalSpent(rs.getBigDecimal("TotalSpent"));
+            return dto;
+        }
+    }
+    
+    private static class MonthlyTop3ExpenseCategoryDTORowMapper implements RowMapper<CategoryExpenseDTO> {
+        @Override
+        public CategoryExpenseDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+            CategoryExpenseDTO dto = new CategoryExpenseDTO();
+            dto.setCategoryId(rs.getInt("CategoryID"));
+            dto.setCategoryName(rs.getString("CategoryName"));
             dto.setTotalSpent(rs.getBigDecimal("TotalSpent"));
             return dto;
         }
@@ -53,6 +65,6 @@ public class MonthlyReportDAO {
     public List<CategoryExpenseDTO> getTop3MonthlyTotalExpensePerCategory(int userId, int month, int year) {
         String sql = "EXEC GetTop3TotalExpenseOfCategory ?, ?, ?";
 
-        return jdbcTemplate.query(sql, new Object[]{userId, month, year}, new MonthlyExpenseCategoryDTORowMapper());
+        return jdbcTemplate.query(sql, new Object[]{userId, month, year}, new MonthlyTop3ExpenseCategoryDTORowMapper());
     }
 }
