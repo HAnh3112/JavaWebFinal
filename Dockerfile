@@ -42,7 +42,7 @@ EXPOSE 8080
 
 
 
-# # 1️⃣ Remove old container if it exists
+# # 1️⃣ Remove old container if it exists 
 # docker rm -f sql2022
 
 # # 2️⃣ Run a new SQL Server container (NO volume for /var/opt/mssql, so DB stays in image)
