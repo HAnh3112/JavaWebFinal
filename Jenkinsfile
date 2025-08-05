@@ -112,26 +112,35 @@ pipeline {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
 
-                        // Variables
-                        def containerId = powershell(
-                            script: "docker ps -q --filter 'ancestor=${SQL_IMAGE_LOCAL}'",
-                            returnStdout: true
-                        ).trim()
+                        // Make sure container is running without a volume
+                        bat "docker rm -f sql2022 || exit 0"
+                        bat """
+                            docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Test!@#1234" ^
+                                -p 1437:1433 --name sql2022 ^
+                                --network myapp-net ^
+                                -d ${SQL_IMAGE_LOCAL}
+                        """
 
-                        if (!containerId) {
-                            error "No running container found for image: ${SQL_IMAGE_LOCAL}"
-                        }
+                        // Copy backup file into container
+                        bat "docker cp D:/GitHub_D/PersonalFinance_DB.bak sql2022:/var/opt/mssql/backup/PersonalFinance_DB.bak"
 
-                        // Commit the running container to a new image tag
+                        // Restore DB inside container
+                        bat """
+                            docker exec sql2022 /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "Test!@#1234" -N -C -Q ^
+                            "RESTORE DATABASE PersonalFinance_DB FROM DISK='/var/opt/mssql/backup/PersonalFinance_DB.bak' WITH MOVE 'PersonalFinance_DB' TO '/var/opt/mssql/data/PersonalFinance_DB.mdf', MOVE 'PersonalFinance_DB_log' TO '/var/opt/mssql/data/PersonalFinance_DB_log.ldf';"
+                        """
+
+                        // Commit to a new image
                         def committedImage = "${SQL_IMAGE_REMOTE}:${SQL_TAG}-with-db"
                         bat """
-                            docker commit ${containerId} ${committedImage}
+                            docker commit sql2022 ${committedImage}
                             docker push ${committedImage} --quiet
                         """
                     }
                 }
             }
         }
+
     }
     
 }
