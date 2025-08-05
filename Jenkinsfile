@@ -54,28 +54,28 @@ pipeline {
         }
 
     
-        // stage('Build WAR with Maven') {
-        //     steps {
-        //         bat 'mvn clean package -DskipTests'
-        //     }
-        // }
+        stage('Build WAR with Maven') {
+            steps {
+                bat 'mvn clean package -DskipTests'
+            }
+        }
 
-        // stage('Build Docker Image') {
-        //     steps {
-        //         bat '''
-        //             docker build -t springbootapp:latest -f "%WORKSPACE%\\Dockerfile" .
-        //         '''
-        //     }
-        // }
+        stage('Build Docker Image') {
+            steps {
+                bat '''
+                    docker build -t springbootapp:latest -f "%WORKSPACE%\\Dockerfile" .
+                '''
+            }
+        }
 
-        // stage('Run Docker Container') {
-        //     steps {
-        //         bat '''
-        //         docker rm -f springbootapp-run || echo "Container not found, skipping removal"
-        //         docker run -d --name springbootapp-run -p 8091:8080 springbootapp:latest
-        //         '''
-        //     }
-        // 
+        stage('Run Docker Container') {
+            steps {
+                bat '''
+                docker rm -f springbootapp-run || echo "Container not found, skipping removal"
+                docker run -d --name springbootapp-run -p 8091:8080 springbootapp:latest
+                '''
+            }
+        }
     }
 }
 
