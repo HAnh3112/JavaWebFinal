@@ -53,28 +53,26 @@ pipeline {
             }
         }
 
-        // stage('Build WAR with Maven') {
-        //     steps {
-        //         bat 'docker run --rm -v "%cd%":/app -w /app maven:3.9.6-eclipse-temurin-21 mvn clean package -DskipTests'
-        //     }
-        // }
+    
+        stage('Build WAR with Maven') {
+            steps {
+                bat 'mvn clean package -DskipTests'
+            }
+        }
 
-        // stage('Build Docker Image') {
-        //     steps {
-        //         bat 'docker build -t my-java-webapp:latest -f "%WORKSPACE%\\Dockerfile" .'
-        //     }
-        // }
+        stage('Build Docker Image') {
+            steps {
+                bat '''
+                    docker build -t springbootapp:latest -f "%WORKSPACE%\\Dockerfile" .
+                '''
+            }
+        }
 
-        // stage('Run Docker Container') {
-        //     steps {
-        //         // Stop & remove old container if exists
-        //         bat '''
-        //             docker stop my-java-webapp-container || echo "No existing container"
-        //             docker rm my-java-webapp-container || echo "Nothing to remove"
-        //             docker run -d --name my-java-webapp-container -p 8091:8080 my-java-webapp:latest
-        //         '''
-        //     }
-        // }
+        stage('Run Docker Container') {
+            steps {
+                bat 'docker run -d --name springbootapp-run -p 8081:8080 springbootapp:latest'
+            }
+        }
     }
 }
 
