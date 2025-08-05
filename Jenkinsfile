@@ -70,7 +70,10 @@ pipeline {
 
         stage('Run Docker Container') {
             steps {
-                bat 'docker run -d --name springbootapp-run -p 8091:8080 springbootapp:latest'
+                bat '''
+                docker rm -f springbootapp-run || echo "Container not found, skipping removal"
+                docker run -d --name springbootapp-run -p 8091:8080 springbootapp:latest
+                '''
             }
         }
     }
