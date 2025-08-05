@@ -11,7 +11,7 @@ pipeline {
 		DOCKERHUB_CREDENTIALS = 'hubdocker'  // ID credentials
         IMAGE_NAME = 'nha311205/springbootapp '  // name of image on Docker Hub -- create repo on hub.docker
 		DOCKER_IMAGE_NAME = 'nha311205/springbootapp'  //  Docker image name
-        DOCKER_TAG = 'lastest'  // Tag cho Docker image
+        DOCKER_TAG = 'latest'  // Tag cho Docker image
     }
 
     tools {
