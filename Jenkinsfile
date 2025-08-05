@@ -114,9 +114,8 @@ pipeline {
                         // Tag local SQL Server image
                         bat """
                             docker tag ${SQL_IMAGE_LOCAL} ${SQL_IMAGE_REMOTE}:${SQL_TAG}
+                            docker push ${SQL_IMAGE_REMOTE}:${SQL_TAG} --quiet
                         """
-                        // Push to Docker Hub
-                        docker.image("${SQL_IMAGE_REMOTE}:${SQL_TAG}").push()
                     }
                 }
             }
