@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sql2022-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sql2022
+  template:
+    metadata:
+      labels:
+        app: sql2022
+    spec:
+      containers:
+      - name: sql2022-container
+        image: nha311205/sqlserver2022:latest
+        ports:
+        - containerPort: 1433
+        env:
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: SA_PASSWORD
+          value: "Test!@#1234"
