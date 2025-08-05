@@ -66,7 +66,7 @@ pipeline {
             steps {
                 bat '''
                 docker rm -f springbootapp-run || echo "Container not found, skipping removal"
-                docker run -d --name springbootapp-run -p 8091:8080 springbootapp:latest
+                docker run -d --name springbootapp-run --network myapp-net -p 8091:8080 springbootapp:latest
                 '''
             }
         }
