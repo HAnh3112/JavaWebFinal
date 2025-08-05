@@ -107,14 +107,26 @@ pipeline {
             }
         }
 
-        stage('Push SQL Server Image to Docker Hub') {
+        stage('Commit SQL Container and Push to Docker Hub') {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
-                        // Tag local SQL Server image
+
+                        // Variables
+                        def containerId = powershell(
+                            script: "docker ps -q --filter 'ancestor=${SQL_IMAGE_LOCAL}'",
+                            returnStdout: true
+                        ).trim()
+
+                        if (!containerId) {
+                            error "No running container found for image: ${SQL_IMAGE_LOCAL}"
+                        }
+
+                        // Commit the running container to a new image tag
+                        def committedImage = "${SQL_IMAGE_REMOTE}:${SQL_TAG}-with-db"
                         bat """
-                            docker tag ${SQL_IMAGE_LOCAL} ${SQL_IMAGE_REMOTE}:${SQL_TAG}
-                            docker push ${SQL_IMAGE_REMOTE}:${SQL_TAG} --quiet
+                            docker commit ${containerId} ${committedImage}
+                            docker push ${committedImage} --quiet
                         """
                     }
                 }
