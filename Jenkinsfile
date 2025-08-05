@@ -4,6 +4,14 @@ pipeline {
     environment {
         TOMCAT_PATH = 'D:\\apache-tomcat-11.0.7'
         WAR_NAME = 'JavaWebFinal.war'
+
+
+        LANG = 'en_US.UTF-8'
+        LC_ALL = 'en_US.UTF-8'
+		DOCKERHUB_CREDENTIALS = 'dockerhub'  // ID credentials
+        IMAGE_NAME = 'nha311205/springbootapp '  // name of image on Docker Hub -- create repo on hub.docker
+		DOCKER_IMAGE_NAME = 'nha311205/springbootapp'  //  Docker image name
+        DOCKER_TAG = 'lastest'  // Tag cho Docker image
     }
 
     tools {
@@ -70,6 +78,30 @@ pipeline {
                 '''
             }
         }
+
+        stage('Login to Docker Hub') {
+            steps {
+                script {
+                    // login Docker Hub to push image
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
+                        // login Docker Hub credentials
+                    }
+                }
+            }
+        }
+		 
+        stage('Push Docker Image') {
+            steps {
+				 
+                script {
+                    // push Docker image to Docker Hub
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
+                        docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_TAG}").push()
+                    }
+                }
+            }
+        }
     }
+    
 }
 
