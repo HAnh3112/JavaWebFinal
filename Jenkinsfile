@@ -8,7 +8,7 @@ pipeline {
 
         LANG = 'en_US.UTF-8'
         LC_ALL = 'en_US.UTF-8'
-		DOCKERHUB_CREDENTIALS = 'dockerhub'  // ID credentials
+		DOCKERHUB_CREDENTIALS = 'hubdocker'  // ID credentials
         IMAGE_NAME = 'nha311205/springbootapp '  // name of image on Docker Hub -- create repo on hub.docker
 		DOCKER_IMAGE_NAME = 'nha311205/springbootapp'  //  Docker image name
         DOCKER_TAG = 'lastest'  // Tag cho Docker image
