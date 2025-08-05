@@ -12,6 +12,11 @@ pipeline {
         IMAGE_NAME = 'nha311205/springbootapp '  // name of image on Docker Hub -- create repo on hub.docker
 		DOCKER_IMAGE_NAME = 'nha311205/springbootapp'  //  Docker image name
         DOCKER_TAG = 'latest'  // Tag cho Docker image
+
+
+        SQL_IMAGE_LOCAL = 'mcr.microsoft.com/mssql/server:2022-latest' // local SQL Server image
+        SQL_IMAGE_REMOTE = 'nha311205/sqlserver2022' // Docker Hub repo for SQL Server
+        SQL_TAG = 'latest'
     }
 
     tools {
@@ -97,6 +102,21 @@ pipeline {
                     // push Docker image to Docker Hub
                     docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
                         docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_TAG}").push()
+                    }
+                }
+            }
+        }
+
+        stage('Push SQL Server Image to Docker Hub') {
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
+                        // Tag local SQL Server image
+                        bat """
+                            docker tag ${SQL_IMAGE_LOCAL} ${SQL_IMAGE_REMOTE}:${SQL_TAG}
+                        """
+                        // Push to Docker Hub
+                        docker.image("${SQL_IMAGE_REMOTE}:${SQL_TAG}").push()
                     }
                 }
             }
