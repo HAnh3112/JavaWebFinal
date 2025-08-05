@@ -128,7 +128,7 @@ pipeline {
 
                         // Restore DB inside container
                         bat """
-                            docker exec sql2022 /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "Test!@#1234" -N -C -Q ^
+                            docker exec sql2022 /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "123" -N -C -Q ^
                             "RESTORE DATABASE PersonalFinance_DB FROM DISK='/var/opt/mssql/backup/PersonalFinance_DB.bak' WITH MOVE 'PersonalFinance_DB' TO '/var/opt/mssql/data/PersonalFinance_DB.mdf', MOVE 'PersonalFinance_DB_log' TO '/var/opt/mssql/data/PersonalFinance_DB_log.ldf';"
                         """
 
