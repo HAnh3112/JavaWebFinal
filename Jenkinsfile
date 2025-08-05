@@ -112,23 +112,19 @@ pipeline {
         }
 
         stage('Prepare SQL Dockerfile') {
-            steps {
-                script {
-                    writeFile file: 'Dockerfile.sql', text: '''
+    steps {
+        script {
+            writeFile file: 'Dockerfile.sql', text: '''
 FROM mcr.microsoft.com/mssql/server:2022-latest
 
-# Accept EULA
 ENV ACCEPT_EULA=Y
-
-# Password as build argument
-ARG SA_PASSWORD
-ENV SA_PASSWORD=${SA_PASSWORD}
 
 USER root
 RUN apt-get update -qq && \
-    apt-get install -y -qq curl apt-transport-https gnupg > /dev/null && \
-    curl -s https://packages.microsoft.com/keys/microsoft.asc | apt-key add - > /dev/null && \
-    curl -s https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
+    apt-get install -y -qq curl apt-transport-https gnupg ca-certificates > /dev/null && \
+    update-ca-certificates && \
+    curl --tlsv1.2 -s https://packages.microsoft.com/keys/microsoft.asc | apt-key add - > /dev/null && \
+    curl --tlsv1.2 -s https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
     apt-get update -qq && ACCEPT_EULA=Y apt-get install -y -qq mssql-tools18 unixodbc-dev > /dev/null && \
     rm -rf /var/lib/apt/lists/*
 
@@ -137,7 +133,9 @@ ENV PATH="$PATH:/opt/mssql-tools18/bin"
 RUN mkdir -p /var/opt/mssql/backup
 COPY PersonalFinance_DB.bak /var/opt/mssql/backup/
 
-# Start SQL Server quietly, wait until ready, restore DB quietly
+# Pass SA_PASSWORD at build time
+ARG SA_PASSWORD
+
 RUN (/opt/mssql/bin/sqlservr > /dev/null 2>&1 & \
     for i in {1..60}; do \
         /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" -Q "SELECT 1" -b -W -h -1 > /dev/null 2>&1 && break; \
@@ -147,9 +145,10 @@ RUN (/opt/mssql/bin/sqlservr > /dev/null 2>&1 & \
     -Q "RESTORE DATABASE [PersonalFinance_DB] FROM DISK = '/var/opt/mssql/backup/PersonalFinance_DB.bak' WITH MOVE 'PersonalFinance_DB' TO '/var/opt/mssql/data/PersonalFinance_DB.mdf', MOVE 'PersonalFinance_DB_log' TO '/var/opt/mssql/data/PersonalFinance_DB_log.ldf'" > /dev/null 2>&1 && \
     pkill sqlservr)
 '''
-                }
-            }
         }
+    }
+}
+
 
         stage('Build and Push SQL Image with DB') {
             steps {
