@@ -12,11 +12,6 @@ pipeline {
         IMAGE_NAME = 'nha311205/springbootapp '  // name of image on Docker Hub -- create repo on hub.docker
 		DOCKER_IMAGE_NAME = 'nha311205/springbootapp'  //  Docker image name
         DOCKER_TAG = 'latest'  // Tag cho Docker image
-
-
-        SQL_IMAGE_LOCAL = 'mcr.microsoft.com/mssql/server:2022-latest' // local SQL Server image
-        SQL_IMAGE_REMOTE = 'nha311205/sqlserver2022' // Docker Hub repo for SQL Server
-        SQL_TAG = 'latest'
     }
 
     tools {
@@ -102,43 +97,6 @@ pipeline {
                     // push Docker image to Docker Hub
                     docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
                         docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_TAG}").push()
-                    }
-                }
-            }
-        }
-
-        stage('Commit SQL Container and Push to Docker Hub') {
-            steps {
-                script {
-                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
-
-                        // Make sure container is running without a volume
-                        bat "docker rm -f sql2022 || exit 0"
-                        bat """
-                            docker run -e "ACCEPT_EULA=Y" -e "SA_PASSWORD=Test!@#1234" ^
-                                -p 1437:1433 --name sql2022 ^
-                                --network myapp-net ^
-                                -d ${SQL_IMAGE_LOCAL}
-                        """
-
-                        bat "docker exec sql2022 mkdir -p /var/opt/mssql/backup"
-
-                        // Copy backup file into container
-                        bat "docker cp D:/GitHub_D/PersonalFinance_DB.bak sql2022:/var/opt/mssql/backup/PersonalFinance_DB.bak"
-
-                        // Restore DB inside container
-                        bat """
-                            docker exec sql2022 /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P "123" -N -C -Q ^
-                            "RESTORE DATABASE PersonalFinance_DB FROM DISK='/var/opt/mssql/backup/PersonalFinance_DB.bak' WITH MOVE 'PersonalFinance_DB' TO '/var/opt/mssql/data/PersonalFinance_DB.mdf', MOVE 'PersonalFinance_DB_log' TO '/var/opt/mssql/data/PersonalFinance_DB_log.ldf';"
-                        """
-
-
-                        // Commit to a new image
-                        def committedImage = "${SQL_IMAGE_REMOTE}:${SQL_TAG}-with-db"
-                        bat """
-                            docker commit sql2022 ${committedImage}
-                            docker push ${committedImage} --quiet
-                        """
                     }
                 }
             }
