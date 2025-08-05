@@ -54,11 +54,11 @@ pipeline {
         }
 
     
-        stage('Build WAR with Maven') {
-            steps {
-                bat 'mvn clean package -DskipTests'
-            }
-        }
+        // stage('Build WAR with Maven') {
+        //     steps {
+        //         bat 'mvn clean package -DskipTests'
+        //     }
+        // }
 
         stage('Build Docker Image') {
             steps {
