@@ -132,6 +132,7 @@ pipeline {
                             "RESTORE DATABASE PersonalFinance_DB FROM DISK='/var/opt/mssql/backup/PersonalFinance_DB.bak' WITH MOVE 'PersonalFinance_DB' TO '/var/opt/mssql/data/PersonalFinance_DB.mdf', MOVE 'PersonalFinance_DB_log' TO '/var/opt/mssql/data/PersonalFinance_DB_log.ldf';"
                         """
 
+
                         // Commit to a new image
                         def committedImage = "${SQL_IMAGE_REMOTE}:${SQL_TAG}-with-db"
                         bat """
