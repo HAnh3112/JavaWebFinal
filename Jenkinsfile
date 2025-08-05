@@ -17,10 +17,6 @@ pipeline {
         SQL_IMAGE_LOCAL = 'mcr.microsoft.com/mssql/server:2022-latest' // local SQL Server image
         SQL_IMAGE_REMOTE = 'nha311205/sqlserver2022' // Docker Hub repo for SQL Server
         SQL_TAG = 'latest'
-        SQL_CONTAINER_NAME = 'sql2022'
-        SQL_DB_NAME = 'PersonalFinance_DB'
-        SQL_BAK_FILE = 'PersonalFinance_DB.bak'
-        SQL_PASSWORD = 'Test!@#1234'
     }
 
     tools {
@@ -111,52 +107,26 @@ pipeline {
             }
         }
 
-        stage('Prepare SQL Dockerfile') {
-    steps {
-        script {
-            writeFile file: 'Dockerfile.sql', text: '''
-FROM mcr.microsoft.com/mssql/server:2022-latest
-
-ENV ACCEPT_EULA=Y
-
-USER root
-RUN apt-get update -qq && \
-    apt-get install -y -qq curl apt-transport-https gnupg ca-certificates > /dev/null && \
-    update-ca-certificates && \
-    curl --tlsv1.2 -s https://packages.microsoft.com/keys/microsoft.asc | apt-key add - > /dev/null && \
-    curl --tlsv1.2 -s https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
-    apt-get update -qq && ACCEPT_EULA=Y apt-get install -y -qq mssql-tools18 unixodbc-dev > /dev/null && \
-    rm -rf /var/lib/apt/lists/*
-
-ENV PATH="$PATH:/opt/mssql-tools18/bin"
-
-RUN mkdir -p /var/opt/mssql/backup
-COPY PersonalFinance_DB.bak /var/opt/mssql/backup/
-
-# Pass SA_PASSWORD at build time
-ARG SA_PASSWORD
-
-RUN (/opt/mssql/bin/sqlservr > /dev/null 2>&1 & \
-    for i in {1..60}; do \
-        /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" -Q "SELECT 1" -b -W -h -1 > /dev/null 2>&1 && break; \
-        sleep 2; \
-    done && \
-    /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" -b -W -h -1 \
-    -Q "RESTORE DATABASE [PersonalFinance_DB] FROM DISK = '/var/opt/mssql/backup/PersonalFinance_DB.bak' WITH MOVE 'PersonalFinance_DB' TO '/var/opt/mssql/data/PersonalFinance_DB.mdf', MOVE 'PersonalFinance_DB_log' TO '/var/opt/mssql/data/PersonalFinance_DB_log.ldf'" > /dev/null 2>&1 && \
-    pkill sqlservr)
-'''
-        }
-    }
-}
-
-
-        stage('Build and Push SQL Image with DB') {
+        stage('Commit SQL Container and Push to Docker Hub') {
             steps {
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
+
+                        // Variables
+                        def containerId = powershell(
+                            script: "docker ps -q --filter 'ancestor=${SQL_IMAGE_LOCAL}'",
+                            returnStdout: true
+                        ).trim()
+
+                        if (!containerId) {
+                            error "No running container found for image: ${SQL_IMAGE_LOCAL}"
+                        }
+
+                        // Commit the running container to a new image tag
+                        def committedImage = "${SQL_IMAGE_REMOTE}:${SQL_TAG}-with-db"
                         bat """
-                            docker build -t ${SQL_IMAGE_REMOTE}:${SQL_TAG}-with-db -f Dockerfile.sql .
-                            docker push ${SQL_IMAGE_REMOTE}:${SQL_TAG}-with-db
+                            docker commit ${containerId} ${committedImage}
+                            docker push ${committedImage} --quiet
                         """
                     }
                 }
