@@ -111,38 +111,42 @@ pipeline {
             }
         }
 
-        stage('Build & Push SQL Server Image with DB') {
+        stage('Build SQL Server Image with DB') {
             steps {
                 script {
+                    // Create Dockerfile.sql dynamically
+                    writeFile file: 'Dockerfile.sql', text: """
+FROM mcr.microsoft.com/mssql/server:2022-latest
+
+ENV ACCEPT_EULA=Y
+ENV SA_PASSWORD=Test!@#1234
+
+USER root
+RUN apt-get update && \\
+    apt-get install -y curl apt-transport-https gnupg && \\
+    curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \\
+    curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list && \\
+    apt-get update && ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev && \\
+    rm -rf /var/lib/apt/lists/*
+
+ENV PATH="\\$PATH:/opt/mssql-tools/bin"
+
+RUN mkdir -p /var/opt/mssql/backup
+COPY PersonalFinance_DB.bak /var/opt/mssql/backup/
+
+RUN (/opt/mssql/bin/sqlservr & \\
+    sleep 25 && \\
+    /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "Test!@#1234" \\
+    -Q "RESTORE DATABASE [PersonalFinance_DB] FROM DISK = '/var/opt/mssql/backup/PersonalFinance_DB.bak' WITH MOVE 'PersonalFinance_DB' TO '/var/opt/mssql/data/PersonalFinance_DB.mdf', MOVE 'PersonalFinance_DB_log' TO '/var/opt/mssql/data/PersonalFinance_DB_log.ldf'" \\
+    && pkill sqlservr)
+"""
+
+                    // Build and push SQL Server image
                     docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
-
-                        // Backup DB from running container
-                        bat """
-                            docker exec ${SQL_CONTAINER_NAME} /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "${SQL_PASSWORD}" -Q "BACKUP DATABASE [${SQL_DB_NAME}] TO DISK = '/var/opt/mssql/backup/${SQL_BAK_FILE}'"
-                            docker cp ${SQL_CONTAINER_NAME}:/var/opt/mssql/backup/${SQL_BAK_FILE} ${SQL_BAK_FILE}
-                        """
-
-                        // Create temporary Dockerfile for SQL image
-                        writeFile file: 'Dockerfile.sql', text: """
-                            FROM mcr.microsoft.com/mssql/server:2022-latest
-                            ENV ACCEPT_EULA=Y
-                            ENV SA_PASSWORD=${SQL_PASSWORD}
-                            RUN mkdir -p /var/opt/mssql/backup
-                            COPY ${SQL_BAK_FILE} /var/opt/mssql/backup/
-                            RUN (/opt/mssql/bin/sqlservr & \\
-                                sleep 25 && \\
-                                /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "${SQL_PASSWORD}" \\
-                                -Q "RESTORE DATABASE [${SQL_DB_NAME}] FROM DISK = '/var/opt/mssql/backup/${SQL_BAK_FILE}' WITH MOVE '${SQL_DB_NAME}' TO '/var/opt/mssql/data/${SQL_DB_NAME}.mdf', MOVE '${SQL_DB_NAME}_log' TO '/var/opt/mssql/data/${SQL_DB_NAME}_log.ldf'" \\
-                                && pkill sqlservr)
-                        """
-
-                        // Build SQL Server image with DB included
                         bat """
                             docker build -t ${SQL_IMAGE_REMOTE}:${SQL_TAG} -f Dockerfile.sql .
+                            docker push ${SQL_IMAGE_REMOTE}:${SQL_TAG}
                         """
-
-                        // Push SQL Server image to Docker Hub
-                        docker.image("${SQL_IMAGE_REMOTE}:${SQL_TAG}").push()
                     }
                 }
             }
