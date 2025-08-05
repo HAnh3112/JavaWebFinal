@@ -75,7 +75,7 @@ pipeline {
         //         docker run -d --name springbootapp-run -p 8091:8080 springbootapp:latest
         //         '''
         //     }
-        // }
+        // 
     }
 }
 
