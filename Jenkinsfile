@@ -19,46 +19,40 @@ pipeline {
             }
         }
 
-        // stage('Build with Maven') {
-        //     steps {
-        //         echo 'Running Maven build'
-        //         bat 'mvn clean package -DskipTests'
-        //     }
-        // }
-
-        // stage('Deploy WAR to Tomcat') {
-        //     steps {
-        //         echo 'Deploying WAR file to Tomcat'
-        //         bat '''
-        //             if not exist "%TOMCAT_PATH%\\webapps" (
-        //                 echo Tomcat webapps folder not found!
-        //                 exit /b 1
-        //             )
-        //             for %%f in (target\\*.war) do (
-        //                 echo Copying %%f to Tomcat
-        //                 copy "%%f" "%TOMCAT_PATH%\\webapps\\%WAR_NAME%" /Y
-        //             )
-        //         '''
-        //     }
-        // }
-
-        // stage('Restart Tomcat') {
-        //     steps {
-        //         echo 'Restarting Tomcat server'
-        //         bat '''
-        //             call "%TOMCAT_PATH%\\bin\\shutdown.bat"
-        //             timeout /t 5 > NUL
-        //             call "%TOMCAT_PATH%\\bin\\startup.bat"
-        //         '''
-        //     }
-        // }
-
-    
-        stage('Build WAR with Maven') {
+        stage('Build with Maven') {
             steps {
+                echo 'Running Maven build'
                 bat 'mvn clean package -DskipTests'
             }
         }
+
+        stage('Deploy WAR to Tomcat') {
+            steps {
+                echo 'Deploying WAR file to Tomcat'
+                bat '''
+                    if not exist "%TOMCAT_PATH%\\webapps" (
+                        echo Tomcat webapps folder not found!
+                        exit /b 1
+                    )
+                    for %%f in (target\\*.war) do (
+                        echo Copying %%f to Tomcat
+                        copy "%%f" "%TOMCAT_PATH%\\webapps\\%WAR_NAME%" /Y
+                    )
+                '''
+            }
+        }
+
+        stage('Restart Tomcat') {
+            steps {
+                echo 'Restarting Tomcat server'
+                bat '''
+                    call "%TOMCAT_PATH%\\bin\\shutdown.bat"
+                    timeout /t 5 > NUL
+                    call "%TOMCAT_PATH%\\bin\\startup.bat"
+                '''
+            }
+        }
+
 
         stage('Build Docker Image') {
             steps {
