@@ -121,6 +121,8 @@ pipeline {
                                 -d ${SQL_IMAGE_LOCAL}
                         """
 
+                        bat "docker exec sql2022 mkdir -p /var/opt/mssql/backup"
+
                         // Copy backup file into container
                         bat "docker cp D:/GitHub_D/PersonalFinance_DB.bak sql2022:/var/opt/mssql/backup/PersonalFinance_DB.bak"
 
