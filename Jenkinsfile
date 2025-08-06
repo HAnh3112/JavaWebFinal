@@ -70,6 +70,14 @@ pipeline {
             }
         }
 
+        stage('Run Docker Compose') {
+            steps {
+                bat '''
+                docker compose up -d || echo "Compose not found, skipping compose"
+                '''
+            }
+        }
+
         stage('Run Docker Container') {
             steps {
                 bat '''
