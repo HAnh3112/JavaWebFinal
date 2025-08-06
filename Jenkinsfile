@@ -73,10 +73,19 @@ pipeline {
         stage('Run Docker Compose') {
             steps {
                 bat '''
-                docker compose up -d || echo "Compose not found, skipping compose"
+                REM Check if services are already running
+                docker compose ps -q
+                if %ERRORLEVEL%==0 (
+                    echo "Services already running. Restarting..."
+                    docker compose restart
+                ) else (
+                    echo "Services not running. Starting..."
+                    docker compose up -d
+                )
                 '''
             }
         }
+
 
         stage('Run Docker Container') {
             steps {

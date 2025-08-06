@@ -6,6 +6,8 @@ networks:
 
 volumes:
   sql2022data:
+  grafana-data:
+  prometheus-data:
 
 services:
   sql2022:
@@ -22,12 +24,12 @@ services:
       - sql2022data:/var/opt/mssql
       - "D:/GitHub_D:/var/opt/mssql/backup"
 
-
   prometheus:
     image: prom/prometheus
     container_name: prometheus
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
     ports:
       - "9090:9090"
     networks:
@@ -42,3 +44,5 @@ services:
       - myapp-net
     depends_on:
       - prometheus
+    volumes:
+      - grafana-data:/var/lib/grafana
