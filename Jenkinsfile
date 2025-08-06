@@ -73,20 +73,13 @@ pipeline {
         stage('Run Docker Compose') {
             steps {
                 bat '''
-                REM Check if services are already running
-                docker compose ps -q
-                if %ERRORLEVEL%==0 (
-                    echo "Services already running. Restarting..."
-                    docker compose restart
-                ) else (
-                    echo "Services not running. Starting..."
-                    docker compose up -d
-                )
+                    docker compose down
+                    docker compose up -d --build
                 '''
             }
         }
 
-        stage('Run MinIO Container') {
+        stage('Run MinIO Container') {//
             steps {
                 bat '''
                     docker start minio || echo MinIO already running, skipping startup...
