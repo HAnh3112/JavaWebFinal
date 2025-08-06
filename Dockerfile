@@ -49,3 +49,6 @@ EXPOSE 8080
 # docker run -d --name springbootapp-run `
 #   --network myapp-net `
 #   -p 8091:8080 springboot-app
+
+
+# (MinIO cmd) mc cp myfile.jpg local/mybucket
