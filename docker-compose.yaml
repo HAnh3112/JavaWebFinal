@@ -1,0 +1,54 @@
+version: "3.9"
+
+networks:
+  myapp-net:
+    driver: bridge
+
+volumes:
+  sql2022data:
+
+services:
+  sql2022:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql2022
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "Test!@#1234"
+    ports:
+      - "1437:1433"
+    networks:
+      - myapp-net
+    volumes:
+      - sql2022data:/var/opt/mssql
+      - "D:/GitHub_D:/var/opt/mssql/backup"
+
+
+  springboot-app:
+    image: springboot-app
+    container_name: springbootapp-run
+    ports:
+      - "8091:8080"
+    networks:
+      - myapp-net
+    depends_on:
+      - sql2022
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - myapp-net
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - myapp-net
+    depends_on:
+      - prometheus
