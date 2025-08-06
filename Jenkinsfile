@@ -69,6 +69,26 @@ pipeline {
                 '''
             }
         }
+
+        stage('Run Docker Container') {
+            steps {
+                bat '''
+                docker rm -f springbootapp-run || echo "Container not found, skipping removal"
+                docker run -d --name springbootapp-run --network myapp-net -p 8091:8080 springbootapp:latest
+                '''
+            }
+        }
+
+        stage('Login to Docker Hub') {
+            steps {
+                script {
+                    // login Docker Hub to push image
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
+                        // login Docker Hub credentials
+                    }
+                }
+            }
+        }
 		 
         stage('Push Docker Image') {
             steps {
@@ -79,16 +99,6 @@ pipeline {
                         docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_TAG}").push()
                     }
                 }
-            }
-        }
-
-        stage('Run with Docker Compose') {
-            steps {
-                bat '''
-                docker compose down || true
-                docker compose up -d --build
-                '''
-                
             }
         }
 
