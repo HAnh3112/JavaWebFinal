@@ -23,16 +23,6 @@ services:
       - "D:/GitHub_D:/var/opt/mssql/backup"
 
 
-  springboot-app:
-    image: springboot-app
-    container_name: springbootapp-run
-    ports:
-      - "8091:8080"
-    networks:
-      - myapp-net
-    depends_on:
-      - sql2022
-
   prometheus:
     image: prom/prometheus
     container_name: prometheus
