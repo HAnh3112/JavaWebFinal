@@ -79,7 +79,7 @@ pipeline {
             }
         }
 
-        stage('Run MinIO Container') {//
+        stage('Run MinIO Container') {
             steps {
                 bat '''
                     docker start minio || echo MinIO already running, skipping startup...
