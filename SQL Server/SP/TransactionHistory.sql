@@ -20,8 +20,10 @@ BEGIN
 END;
 
 GO
-CREATE PROCEDURE GetUserRecentTransactions
-    @UserID INT
+CREATE PROCEDURE GetUserRecentTransactionsByMonth
+    @UserID INT,
+	@Month INT,
+	@Year INT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -34,5 +36,9 @@ BEGIN
     FROM Transactions t
     INNER JOIN Categories c ON t.CategoryID = c.CategoryID
     WHERE t.UserID = @UserID
+		AND MONTH(t.TransactionDate) = @Month
+		AND YEAR(t.TransactionDate) = @Year
     ORDER BY t.TransactionDate DESC;
 END;
+
+exec GetUserRecentTransactions 1

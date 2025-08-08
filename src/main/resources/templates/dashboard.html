@@ -133,7 +133,13 @@
 <body>
   <div class="dashboard-header">
     <h2>Dashboard</h2>
-    <div class="overview-text">July 2025 Overview</div>
+    <div class="overview-text">
+      <select id="monthSelect">
+      <option value="2025-07">July 2025</option>
+      <option value="2025-08">August 2025</option>
+      <option value="2025-09">September 2025</option>
+    </select>
+    </div>
   </div>
 
   <div class="cards-container">
@@ -198,6 +204,21 @@
 <script>
   const userId = 1; // ⚠️ TODO: thay bằng ID người dùng thực tế (có thể lấy từ session hoặc Thymeleaf)
 
+
+
+  const monthSelect = document.getElementById('monthSelect');
+  const overviewText = document.getElementById('overviewText');
+
+  monthSelect.addEventListener('change', function () {
+    // Lấy text từ option đã chọn
+    const selectedText = monthSelect.options[monthSelect.selectedIndex].text;
+    overviewText.textContent = `${selectedText} Overview`;
+    
+    // TODO: Gọi API hoặc render dữ liệu tương ứng với tháng được chọn
+  });
+
+
+  // lấy dữ liệu theo người dùng
   fetch(`/api/transactions/recentTransaction?userID=${userId}`)
     .then(response => {
       if (!response.ok) throw new Error("No transactions found.");
@@ -237,4 +258,8 @@
     .catch(error => {
       console.error(error);
     });
+
+  
+ 
+
 </script>
