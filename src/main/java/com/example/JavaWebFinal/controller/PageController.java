@@ -38,5 +38,10 @@ public class PageController {
     public String showTransactionHis() {
         return "TransactionHistory"; // TransactionHistory.html
     }
+    @GetMapping("/categories")
+    public String showCategories() {
+        return "Categories"; 
+    }
+
 }
 

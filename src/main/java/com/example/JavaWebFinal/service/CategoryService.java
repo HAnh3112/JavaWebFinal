@@ -103,12 +103,14 @@ public class CategoryService {
         }
     }
 
-    private CategoryResponseDTO toFullDTO(Category category) {
+    private CategoryResponseDTO toFullDTO(Category category) { 
         return new CategoryResponseDTO(
                 category.getCategoryId(),
                 category.getUser().getUserId(),
                 category.getName(),
-                category.getType()
+                category.getType(),
+                category.getColorCodeHex(),
+                category.getIconCode()
         );
     }
     
