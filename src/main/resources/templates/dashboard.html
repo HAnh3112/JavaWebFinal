@@ -148,6 +148,34 @@
     .dot.blue {
       background-color: #3b82f6;
     }
+    #monthSelect {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db; /* xám nhạt */
+  background-color: #ffffff;
+  color: #374151; /* xám đậm */
+  font-size: 14px;
+  outline: none;
+  appearance: none; /* ẩn style mặc định */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.41 0L6 4.58 10.59 0 12 1.41l-6 6-6-6L1.41 0z' fill='%236b7280'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  min-width: 150px; 
+
+}
+
+#monthSelect:hover {
+  border-color: #9ca3af; /* xám đậm hơn khi hover */
+}
+
+#monthSelect:focus {
+  border-color: #3b82f6; /* xanh khi focus */
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
   </style>
 </head>
 
