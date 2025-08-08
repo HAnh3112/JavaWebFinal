@@ -40,7 +40,7 @@ public class PageController {
     }
     @GetMapping("/categories")
     public String showCategories() {
-        return "Categories"; 
+        return "categories"; 
     }
 
 }

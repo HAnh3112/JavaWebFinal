@@ -20,7 +20,7 @@ BEGIN
 END;
 
 GO
-CREATE PROCEDURE GetUserRecentTransactionsByMonth
+CREATE OR ALTER PROCEDURE GetUserRecentTransactionsByMonth
     @UserID INT,
 	@Month INT,
 	@Year INT
@@ -40,5 +40,3 @@ BEGIN
 		AND YEAR(t.TransactionDate) = @Year
     ORDER BY t.TransactionDate DESC;
 END;
-
-exec GetUserRecentTransactions 1
