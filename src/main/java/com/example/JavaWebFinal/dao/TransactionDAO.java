@@ -59,4 +59,10 @@ public class TransactionDAO{
 
         return jdbcTemplate.query(sql, new Object[]{userId}, new TransactionHistoryRowMapper());
     }
+
+    public List<TransactionHistoryDTO> GetUserTransactionHistoryByMonth(int userId) {
+        String sql = "EXEC GetUserTransactionsByMonth ?";
+
+        return jdbcTemplate.query(sql, new Object[]{userId}, new TransactionHistoryRowMapper());
+    }
 }
