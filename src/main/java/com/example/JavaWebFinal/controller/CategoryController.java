@@ -32,7 +32,7 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.getCategories());
     }
 
-    // Lấy income category (không show type)
+    // Lấy income category (không show type) 
     @GetMapping("/income")
     public ResponseEntity<List<CategorySimpleDTO>> getIncomeCategories(@RequestParam int userID) {
         return ResponseEntity.ok(categoryService.getIncomeCategories(userID));
