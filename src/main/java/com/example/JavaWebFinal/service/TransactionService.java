@@ -103,4 +103,7 @@ public class TransactionService {
     public Object GetUserTransactionHistory(int userID){
         return transactionDAO.GetUserTransactionHistory(userID);
     }
+    public Object GetUserRecentTransactionsByMonths(int userID, int month, int year){
+        return transactionDAO.GetUserTransactionHistoryByMonth(userID, month, year);
+    }
 }

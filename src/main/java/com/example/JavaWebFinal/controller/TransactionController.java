@@ -129,4 +129,8 @@ public class TransactionController {
     public Object getUserTransactionHistory(@RequestParam int userID){
         return transactionService.GetUserTransactionHistory(userID);
     }
+    @GetMapping("/recentTransactionByMonth")
+    public Object getUserRecentTransactionsByMonth(@RequestParam int userID, @RequestParam int month, @RequestParam int year){
+        return transactionService.GetUserRecentTransactionsByMonths(userID, month, year);
+    }
 }

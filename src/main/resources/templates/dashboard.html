@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <title>Dashboard</title>
@@ -66,9 +67,17 @@
       font-size: 20px;
     }
 
-    .green { color: #10b981; }
-    .red { color: #ef4444; }
-    .blue { color: #3b82f6; }
+    .green {
+      color: #10b981;
+    }
+
+    .red {
+      color: #ef4444;
+    }
+
+    .blue {
+      color: #3b82f6;
+    }
 
     .main-content {
       display: flex;
@@ -124,21 +133,31 @@
       display: inline-block;
     }
 
-    .dot.red { background-color: #ef4444; }
-    .dot.orange { background-color: #f97316; }
-    .dot.pink { background-color: #ec4899; }
-    .dot.blue { background-color: #3b82f6; }
+    .dot.red {
+      background-color: #ef4444;
+    }
+
+    .dot.orange {
+      background-color: #f97316;
+    }
+
+    .dot.pink {
+      background-color: #ec4899;
+    }
+
+    .dot.blue {
+      background-color: #3b82f6;
+    }
   </style>
 </head>
+
 <body>
   <div class="dashboard-header">
     <h2>Dashboard</h2>
     <div class="overview-text">
       <select id="monthSelect">
-      <option value="2025-07">July 2025</option>
-      <option value="2025-08">August 2025</option>
-      <option value="2025-09">September 2025</option>
-    </select>
+
+      </select>
     </div>
   </div>
 
@@ -200,66 +219,79 @@
     </div>
   </div>
 </body>
+
 </html>
 <script>
-  const userId = 1; // ⚠️ TODO: thay bằng ID người dùng thực tế (có thể lấy từ session hoặc Thymeleaf)
-
-
+  const userId = 1;
+  const currentYear = new Date().getFullYear();
 
   const monthSelect = document.getElementById('monthSelect');
-  const overviewText = document.getElementById('overviewText');
+  const overviewText = document.querySelector('.overview-text');
 
+  // Load danh sách tháng ngay khi load trang
+  fetch('/api/months')
+    .then(res => res.json())
+    .then(months => {
+      months.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m.value; // 2025-07
+        opt.textContent = m.label; // tháng năm bằng chữ
+        monthSelect.appendChild(opt);
+      });
+
+      // Chọn tháng hiện tại mặc định
+      const now = new Date();
+    const currentValue = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    monthSelect.value = currentValue; // chọn đúng option
+
+    const [year, month] = currentValue.split('-').map(Number);
+    loadTransactionsByMonth(month, year);
+
+    })
+    .catch(err => console.error('Error loading months:', err));
+
+  // Khi người dùng đổi tháng
   monthSelect.addEventListener('change', function () {
-    // Lấy text từ option đã chọn
-    const selectedText = monthSelect.options[monthSelect.selectedIndex].text;
-    overviewText.textContent = `${selectedText} Overview`;
-    
-    // TODO: Gọi API hoặc render dữ liệu tương ứng với tháng được chọn
+    const [year, month] = this.value.split('-').map(Number);
+    loadTransactionsByMonth(month, year);
   });
 
+  // Hàm gọi API lấy giao dịch theo tháng
+  function loadTransactionsByMonth(month, year) {
+    fetch(`/api/transactions/recentTransactionByMonth?userID=${userId}&month=${month}&year=${year}`)
+      .then(response => {
+        if (!response.ok) throw new Error("No transactions found.");
+        return response.json();
+      })
+      .then(transactions => {
+        const panel = document.querySelector(".panel h3 + .empty-message")?.parentElement || document.querySelector(".panel");
+        if (!panel) return;
 
-  // lấy dữ liệu theo người dùng
-  fetch(`/api/transactions/recentTransaction?userID=${userId}`)
-    .then(response => {
-      if (!response.ok) throw new Error("No transactions found.");
-      return response.json();
-    })
-    .then(transactions => {
-      const panel = document.querySelector(".panel h3 + .empty-message")?.parentElement;
-      if (!panel) return;
+        panel.innerHTML = '<h3>Recent Transactions</h3>';
 
-      // Clear nội dung cũ
-      panel.innerHTML = '<h3>Recent Transactions</h3>';
+        if (!transactions || transactions.length === 0) {
+          panel.innerHTML += '<div class="empty-message">No transactions yet</div>';
+          return;
+        }
 
-      // Chỉ lấy 5 giao dịch mới nhất (có thể load thêm sau)
-      const recent = transactions.slice(0, 5);
-
-      if (recent.length === 0) {
-        panel.innerHTML += '<div class="empty-message">No transactions yet</div>';
-        return;
-      }
-
-      recent.forEach(tx => {
-        const div = document.createElement("div");
-        div.className = "category";
-        div.innerHTML = `
-          <div class="category-name">
-            <span class="dot ${(tx.categoryType == "Expense") ? 'red' : 'blue'}"></span>
-            ${tx.categoryName || 'Uncategorized'}
-          </div>
-          <div>
-            $${Math.abs(tx.amount).toFixed(2)}<br>
-            <small>${new Date(tx.transactionDate).toLocaleDateString()}</small>
-          </div>
-        `;
-        panel.appendChild(div);
+        transactions.forEach(tx => {
+          const div = document.createElement("div");
+          div.className = "category";
+          div.innerHTML = `
+            <div class="category-name">
+              <span class="dot ${(tx.categoryType == "Expense") ? 'red' : 'blue'}"></span>
+              ${tx.categoryName || 'Uncategorized'}
+            </div>
+            <div>
+              ${Math.abs(tx.amount).toFixed(2)} đ<br>
+              <small>${new Date(tx.transactionDate).toLocaleDateString()}</small>
+            </div>
+          `;
+          panel.appendChild(div);
+        });
+      })
+      .catch(error => {
+        console.error(error);
       });
-    })
-    .catch(error => {
-      console.error(error);
-    });
-
-  
- 
-
+  }
 </script>
