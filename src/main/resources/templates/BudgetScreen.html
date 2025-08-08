@@ -233,7 +233,7 @@
       prefixes.forEach(prefix => {
         const item = `
           <div class="flex justify-between items-center bg-gray-100 px-4 py-2 rounded">
-            <span class="text-gray-700 font-medium">${prefix.categoryName}: ${prefix.amount} đ</span>
+            <span class="text-gray-700 font-medium">${prefix.categoryName}: ${prefix.amount.toLocaleString('de-DE')} đ</span>
             <div class="flex gap-2">
               <button class="text-sm text-red-500 hover:underline delete-prefix" data-id="${prefix.prefixId}">Remove</button>
             </div>
@@ -311,15 +311,15 @@
             <div class="grid grid-cols-4 gap-4 mb-4 text-center">
               <div>
                 <p class="text-gray-500 text-sm">Total Budget (VND)</p>
-                <p id="totalBudget" class="text-lg font-semibold text-gray-700">${totalBudget} đ</p>
+                <p id="totalBudget" class="text-lg font-semibold text-gray-700">${totalBudget.toLocaleString('de-DE')} đ</p>
               </div>
               <div>
                 <p class="text-gray-500 text-sm">Total Spent (VND)</p>
-                <p id="totalSpent" class="text-lg font-semibold text-green-600">${totalSpent} đ</p>
+                <p id="totalSpent" class="text-lg font-semibold text-green-600">${totalSpent.toLocaleString('de-DE')} đ</p>
               </div>
               <div>
                 <p class="text-gray-500 text-sm">Remaining (VND)</p>
-                <p id="totalRemaining" class="text-lg font-semibold ${remaining < 0 ? 'text-red-600' : 'text-green-600'}">${remaining} đ</p>
+                <p id="totalRemaining" class="text-lg font-semibold ${remaining < 0 ? 'text-red-600' : 'text-green-600'}">${remaining.toLocaleString('de-DE')} đ</p>
               </div>
               <div>
                 <p class="text-gray-500">Progress</p>
@@ -368,16 +368,16 @@
           <div class="grid grid-cols-4 gap-4 mt-4 text-sm">
             <div>
               <p class="text-gray-500">Budget</p>
-              <p class="font-semibold">${budget.amount} đ</p>
+              <p class="font-semibold">${budget.amount.toLocaleString('de-DE')} đ</p>
             </div>
             <div>
               <p class="text-gray-500">Spent</p>
-              <p class="font-semibold text-green-600">${budget.spentAmount} đ</p>
+              <p class="font-semibold text-green-600">${budget.spentAmount.toLocaleString('de-DE')} đ</p>
             </div>
             <div>
               <p class="text-gray-500">Remaining</p>
               <p class="font-semibold ${remaining < 0 ? 'text-red-600' : 'text-green-600'}">
-                $${remaining} đ
+                $${remaining.toLocaleString('de-DE')} đ
               </p>
             </div>
             <div>
