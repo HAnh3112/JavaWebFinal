@@ -297,7 +297,7 @@
         const pickedDate = $("#monthPicker").val();
         const progress = totalBudget === 0 ? 0 : Math.min((totalSpent / totalBudget) * 100, 100).toFixed(1);
         const visualProgress = Math.min(progress, 100); // prevents overflow
-        const progressColor = progress > 100 ? "bg-red-500" : "bg-green-500";
+        const progressColor = (progress == 100) ? "bg-red-500" : "bg-green-500";
         
         
         return`
