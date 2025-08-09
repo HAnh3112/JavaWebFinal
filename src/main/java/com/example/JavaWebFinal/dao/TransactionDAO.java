@@ -29,6 +29,7 @@ public class TransactionDAO{
             dto.setTransactionDate(rs.getDate("TransactionDate"));
             dto.setCategoryName(rs.getString("CategoryName"));
             dto.setCategoryType(rs.getString("CategoryType"));
+            dto.setNote(rs.getString("Note"));
             return dto;
         }
     }
@@ -50,6 +51,7 @@ public class TransactionDAO{
             dto2.setcolorCode(rs.getString("ColorCode"));
             dto2.seticonCode(rs.getInt("IconCode"));
             dto2.setCategoryType(rs.getString("CategoryType"));
+             dto2.setNote(rs.getString("Note"));
             return dto2;
         }
     }

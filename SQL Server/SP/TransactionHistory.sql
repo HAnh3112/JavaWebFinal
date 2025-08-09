@@ -1,3 +1,4 @@
+-- Updated GetUserTransactions procedure with Note field
 GO
 CREATE OR ALTER PROCEDURE GetUserTransactions
     @UserID INT
@@ -6,18 +7,23 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT 
-		t.TransactionID,
+        t.TransactionID,
         t.Amount,
         t.TransactionDate,
+        t.Note,
         c.Name AS CategoryName,
-		c.ColorCodeHex AS ColorCode,
-		c.IconCode AS IconCode,
+        c.ColorCodeHex AS ColorCode,
+        c.IconCode AS IconCode,
         c.Type AS CategoryType
     FROM Transactions t
     INNER JOIN Categories c ON t.CategoryID = c.CategoryID
     WHERE t.UserID = @UserID
     ORDER BY t.TransactionDate DESC;
 END;
+
+-- DROP
+DROP PROCEDURE IF EXISTS GetUserTransactions;
+DROP PROCEDURE IF EXISTS GetUserRecentTransactions;
 
 GO
 CREATE OR ALTER PROCEDURE GetUserRecentTransactionsByMonth
