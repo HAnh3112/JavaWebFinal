@@ -21,10 +21,6 @@ BEGIN
     ORDER BY t.TransactionDate DESC;
 END;
 
--- DROP
-DROP PROCEDURE IF EXISTS GetUserTransactions;
-DROP PROCEDURE IF EXISTS GetUserRecentTransactions;
-
 GO
 CREATE OR ALTER PROCEDURE GetUserRecentTransactionsByMonth
     @UserID INT,
