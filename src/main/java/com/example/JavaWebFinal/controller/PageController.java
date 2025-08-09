@@ -42,6 +42,10 @@ public class PageController {
     public String showCategories() {
         return "categories"; 
     }
+    @GetMapping("/chart")
+    public String showChart() {
+        return "chart"; 
+    }
 
 }
 
