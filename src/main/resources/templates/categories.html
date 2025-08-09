@@ -79,7 +79,7 @@
   </div>
 
 <script>
-const userId = 3;
+const userId = 1;
 const iconMap = {
   57946: "fastfood",
   57815: "directions_car",
@@ -113,7 +113,7 @@ iconGrid.addEventListener("click", e => {
 
 // Load categories
 function loadCategories(){
-  fetch(`/api/categories`)
+  fetch(`/api/categories?userId=${userId}`)
     .then(res => res.json())
     .then(data => {
       allCategories = data;
@@ -166,7 +166,7 @@ function openModal(isEdit, data){
   if(isEdit && data){
     editId = data.categoryId;
     document.getElementById("catName").value = data.name;
-    document.getElementById("catType").value = data.type;
+    document.getElementById("catType").value = data.type.charAt(0).toUpperCase() + data.type.slice(1).toLowerCase();
     document.getElementById("catColor").value = data.colorCodeHex;
     previewDot.style.backgroundColor = data.colorCodeHex;
     previewText.textContent = data.colorCodeHex;
@@ -203,7 +203,7 @@ document.getElementById("saveAddCat").addEventListener("click", () => {
   if (duplicate) { alert("Category already exists in this type"); return; }
 
   if (editMode) {
-    fetch(`/api/categories/update?id=${editId}&name=${encodeURIComponent(name)}&iconCode=${selectedIconCode}&colorCode=${encodeURIComponent(color)}`, { method: "PUT" })
+    fetch(`/api/categories/update?id=${editId}&name=${encodeURIComponent(name)}&iconCode=${selectedIconCode}&colorCode=${encodeURIComponent(color)}&type=${encodeURIComponent(type)}`, {method:"PUT"})
       .then(() => {
         alert("Category updated successfully");
         modal.style.display = "none";

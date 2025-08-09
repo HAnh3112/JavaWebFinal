@@ -11,6 +11,7 @@ import com.example.JavaWebFinal.repository.CategoryRepository;
 import com.example.JavaWebFinal.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -36,12 +37,11 @@ public class CategoryService {
         this.userRepository = userRepository;
     }
 
-    private User getCurrentUser() {
+    private User getCurrentUser(@RequestParam Integer userId) {
         // Nếu có Spring Security, lấy auth từ context:
         // Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         // String username = auth.getName();username
-        String username = "carol"; // fake username
-        return userRepository.findByUsername(username)
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
 
@@ -59,8 +59,8 @@ public class CategoryService {
         }
     }
 
-    public List<CategoryResponseDTO> getCategories() {
-        return categoryRepository.findByUser(getCurrentUser())
+    public List<CategoryResponseDTO> getCategories(Integer userId) {
+        return categoryRepository.findByUser(getCurrentUser(userId))
                 .stream()
                 .map(this::toFullDTO)
                 .collect(Collectors.toList());
@@ -74,7 +74,7 @@ public class CategoryService {
         return simpleCategoryDAO.getExpesneCategory(userID);
     }
 
-    public String updateCategory(int id, String name, int iconCode, String colorCode) {
+    public String updateCategory(int id, String name, int iconCode, String colorCode, String type) {
         try{
             Category cate = categoryRepository.findById(id).orElse(null);
             if(cate == null){
@@ -83,6 +83,7 @@ public class CategoryService {
             cate.setName(name);
             cate.setIconCode(iconCode);
             cate.setColorCodeHex(colorCode);
+            cate.setType(type);
             categoryRepository.save(cate);
             return "Successfuly updated category id: " + id;
         }catch(Exception e){

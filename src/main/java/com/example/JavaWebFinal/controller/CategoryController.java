@@ -27,12 +27,12 @@ public class CategoryController {
     }
 
     // Lấy tất cả category (full info, có type)
-    @GetMapping
-    public ResponseEntity<List<CategoryResponseDTO>> getAllCategories() {
-        return ResponseEntity.ok(categoryService.getCategories());
+    @GetMapping() 
+    public ResponseEntity<List<CategoryResponseDTO>> getAllCategories(@RequestParam int userId) {
+        return ResponseEntity.ok(categoryService.getCategories(userId));
     }
 
-    // Lấy income category (không show type) 
+    // Lấy income category (không show type)
     @GetMapping("/income")
     public ResponseEntity<List<CategorySimpleDTO>> getIncomeCategories(@RequestParam int userID) {
         return ResponseEntity.ok(categoryService.getIncomeCategories(userID));
@@ -47,8 +47,8 @@ public class CategoryController {
     // Cập nhật category
     @PutMapping("/update")
     public String updateCategory(@RequestParam int id,@RequestParam String name,@RequestParam int iconCode,
-                                @RequestParam String colorCode){
-        return categoryService.updateCategory(id, name, iconCode, colorCode);
+                                @RequestParam String colorCode, @RequestParam String type){
+        return categoryService.updateCategory(id, name, iconCode, colorCode,type);
     }
 
     // Xoá category
