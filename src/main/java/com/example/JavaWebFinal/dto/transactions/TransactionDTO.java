@@ -42,14 +42,7 @@ public class TransactionDTO {
     private Date transactionDate;
     private String categoryName;
     private String categoryType;
-    private String note;
 
-    public String getNote() {
-        return note;
-    }
-    public void setNote(String note) {
-        this.note = note;
-    }
     public BigDecimal getAmount() {
         return amount;
     }
@@ -79,7 +72,6 @@ public class TransactionDTO {
         this.transactionDate = transactionDate;
         this.categoryName = categoryName;
         this.categoryType = categoryType;
-        this.note = note;
     }
     public TransactionDTO(){}
 }
