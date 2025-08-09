@@ -11,6 +11,9 @@ public class TransactionHistoryDTO {
     private int iconCode;
     private String colorCode;
     private String categoryType;
+    private String note;
+
+    
 
     public int geticonCode(){
         return iconCode;
@@ -58,8 +61,16 @@ public class TransactionHistoryDTO {
     public void setTransactionID(int transactionID){
         this.transactionID = transactionID;
     }
+
+    public String getNote() {
+        return note;
+    }
+    
+    public void setNote(String note) {
+        this.note = note;
+    }
     public TransactionHistoryDTO(int transactionID, BigDecimal amount, Date transactionDate, String categoryName,
-                                String colorCode, int iconCode, String categoryType) {
+                                String colorCode, int iconCode, String categoryType, String note) {
         this.transactionID = transactionID;
         this.amount = amount;
         this.transactionDate = transactionDate;
@@ -67,7 +78,8 @@ public class TransactionHistoryDTO {
         this.colorCode = colorCode;
         this.iconCode = iconCode;
         this.categoryType = categoryType;
-    }
+        this.note = note;
+    }   
 
     public TransactionHistoryDTO(){}
 }

@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Transactions</title>
+  <title>Transaction History</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <style>
     * {
@@ -19,37 +20,30 @@
       padding: 0;
       color: #1e293b;
     }
-    .date-display {
-      font-weight: 500;
-      font-size: 16px;
-    }
-
-    .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .user-name {
-      font-weight: 500;
-    }
-
-    .user-icon {
-      background: #3b82f6;
-      color: white;
-      font-weight: bold;
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
 
     .container {
       padding: 32px;
-      max-width: 1200px;
+      max-width: 1400px;
       margin: auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .user-selector {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .summary-cards {
@@ -144,15 +138,6 @@
       background: #cbd5e1;
     }
 
-    .add-transaction-btn {
-      background: #22c55e !important;
-      color: white !important;
-    }
-
-    .add-transaction-btn:hover {
-      background: #16a34a !important;
-    }
-
     .transactions-container {
       background: white;
       border-radius: 12px;
@@ -163,7 +148,7 @@
     .transactions-header,
     .transaction-row {
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr 1fr 1.5fr 1fr 0.8fr;
+      grid-template-columns: 1fr 0.8fr 1fr 1.5fr 1fr 0.8fr;
       padding: 16px 24px;
       align-items: center;
     }
@@ -194,6 +179,7 @@
     .transaction-description {
       font-size: 13px;
       color: #64748b;
+      margin-top: 2px;
     }
 
     .transaction-category {
@@ -207,7 +193,7 @@
       font-weight: 500;
     }
 
-    .transaction-category.expense {
+    .transaction-category.Expense {
       background: #fee2e2;
       color: #991b1b;
     }
@@ -235,10 +221,6 @@
       padding: 4px;
     }
 
-    .transaction-actions .edit {
-      color: #3b82f6;
-    }
-
     .transaction-actions .delete {
       color: #dc2626;
     }
@@ -258,98 +240,49 @@
       margin: 20px 0;
     }
 
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.5);
-    }
-
-    .modal-content {
-      background-color: white;
-      margin: 5% auto;
-      padding: 20px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 500px;
-    }
-
-    .modal-header {
+    .category-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .modal-header h3 {
-      margin: 0;
-    }
-
-    .close {
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-      color: #aaa;
-    }
-
-    .close:hover {
-      color: #000;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 500;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      width: 100%;
-      padding: 8px 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 6px;
-      background: white;
-    }
-
-    .form-buttons {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-    }
-
-    .form-buttons button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 500;
-    }
-
-    .btn-primary {
-      background: #3b82f6;
+      justify-content: center;
+      font-size: 18px;
+      margin-right: 12px;
       color: white;
     }
 
-    .btn-secondary {
-      background: #e5e7eb;
+    .category-icon .material-icons {
+      font-size: 18px;
+    }
+
+    .transaction-date {
+      font-weight: 500;
       color: #374151;
     }
 
+    .no-transactions {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6b7280;
+    }
 
+    .no-transactions h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .no-transactions p {
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-
+    <!-- Header -->
+    <div class="header">
+      <h1>Transaction History - User 2</h1>
+    </div>
 
     <!-- Summary Cards -->
     <div class="summary-cards">
@@ -371,14 +304,14 @@
     <div class="filters-panel">
       <h2>🔍 Filters</h2>
       <div class="filters">
-        <input type="text" id="searchInput" placeholder="Search transactions" />
+        <input type="text" id="searchInput" placeholder="Search transactions or notes..." />
         <select id="categoryFilter">
           <option value="">All Categories</option>
         </select>
         <select id="typeFilter">
           <option value="">All Types</option>
-          <option value="INCOME">Income</option>
-          <option value="EXPENSE">Expense</option>
+          <option value="Income">Income</option>
+          <option value="Expense">Expense</option>
         </select>
         <input type="date" id="startDate" />
         <input type="date" id="endDate" />
@@ -392,7 +325,7 @@
         <div>DATE</div>
         <div>TYPE</div>
         <div>CATEGORY</div>
-        <div>DESCRIPTION</div>
+        <div>NOTE</div>
         <div>AMOUNT</div>
         <div>ACTIONS</div>
       </div>
@@ -402,49 +335,33 @@
     </div>
   </div>
 
-  <!-- Add/Edit Transaction Modal -->
-  <div id="transactionModal" class="modal">
-    <div class="modal-content">
-      <form id="transactionForm">
-        <input type="hidden" id="transactionId" />
-        <div class="form-group">
-          <label for="amount">Amount:</label>
-          <input type="number" id="amount" step="0.01" required />
-        </div>
-        <div class="form-group">
-          <label for="type">Type:</label>
-          <select id="type" required>
-            <option value="">Select Type</option>
-            <option value="INCOME">Income</option>
-            <option value="EXPENSE">Expense</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="categoryId">Category ID:</label>
-          <input type="number" id="categoryId" required />
-        </div>
-        <div class="form-group">
-          <label for="description">Description:</label>
-          <textarea id="description" rows="3"></textarea>
-        </div>
-        <div class="form-group">
-          <label for="transactionDate">Date:</label>
-          <input type="date" id="transactionDate" required />
-        </div>
-        <div class="form-buttons">
-          <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
-          <button type="submit" class="btn-primary" id="saveBtn">Save</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <script>
     // Configuration
     const API_BASE_URL = 'http://localhost:8080/api/transactions';
-    let currentUserId = 2; // Fixed user ID - changed to match your working API
+    let currentUserId = 1;
     let allTransactions = [];
     let filteredTransactions = [];
+
+    // Icon mapping from Unicode codes to Material Design icon names
+    const iconMap = {
+      57946: "fastfood",
+      57815: "directions_car",
+      58778: "shopping_bag",
+      58235: "lightbulb",
+      58381: "movie",
+      57522: "attach_money",
+      58136: "home",
+      58822: "smartphone",
+      58328: "medical_services",
+      58713: "school",
+      58007: "flight",
+      58856: "sports_esports",
+    };
+
+    // Function to get Material Icon name from icon code
+    function getIconName(iconCode) {
+      return iconMap[iconCode] || "account_balance_wallet"; // Default icon if not found
+    }
 
     // Initialize the application
     $(document).ready(function() {
@@ -459,61 +376,62 @@
       $('#typeFilter').on('change', applyFilters);
       $('#startDate, #endDate').on('change', applyFilters);
       $('#clearFilters').on('click', clearFilters);
-
-      // Modal
-      $('#closeModal, #cancelBtn').on('click', closeModal);
-      $('#transactionForm').on('submit', saveTransaction);
-
-      // Close modal when clicking outside
-      $(window).on('click', function(event) {
-        if (event.target.id === 'transactionModal') {
-          closeModal();
-        }
-      });
     }
 
-    // Load transactions from backend
+    // Load transactions from backend using the transactionHistory endpoint
     function loadTransactions() {
       showLoading();
       
-      console.log(`Loading transactions for user ${currentUserId}...`);
+      console.log(`Loading transaction history for user ${currentUserId}...`);
       
       $.ajax({
-        url: `${API_BASE_URL}/user/${currentUserId}`,
+        url: `${API_BASE_URL}/transactionHistory?userID=${currentUserId}`,
         method: 'GET',
         success: function(data, textStatus, xhr) {
-          console.log('API Response:', data);
+          console.log('Transaction History API Response:', data);
           console.log('Status Code:', xhr.status);
           
-          // Handle both successful data and 204 No Content
           if (xhr.status === 204 || !data || data.length === 0) {
             allTransactions = [];
             filteredTransactions = [];
             displayTransactions();
             updateSummaryCards();
             updateCategoryFilter();
-            console.log('No transactions found for this user');
+            console.log('No transaction history found for this user');
             return;
           }
           
-          allTransactions = data;
+          // Transform the transaction history data to match our frontend format
+          allTransactions = data.map(transaction => ({
+            transactionID: transaction.transactionID,
+            amount: parseFloat(transaction.amount),
+            transactionDate: transaction.transactionDate,
+            categoryName: transaction.categoryName,
+            categoryType: transaction.categoryType,
+            iconCode: transaction.iconCode,
+            colorCode: transaction.colorCode,
+            note: transaction.note || 'No note', // Handle null/empty notes
+            // Determine if it's income based on categoryType
+            isIncome: transaction.categoryType === 'Income'
+          }));
+          
           filteredTransactions = [...allTransactions];
           displayTransactions();
           updateSummaryCards();
           updateCategoryFilter();
-          console.log(`Loaded ${allTransactions.length} transactions`);
+          console.log(`Loaded ${allTransactions.length} transaction history records`);
         },
         error: function(xhr, status, error) {
-          console.error('Error loading transactions:', error);
+          console.error('Error loading transaction history:', error);
           console.error('Status:', xhr.status);
           console.error('Response:', xhr.responseText);
           
           if (xhr.status === 404) {
-            showError('User not found. Please check if the user exists.');
+            showError('User not found or no transaction history available.');
           } else if (xhr.status === 0) {
             showError('Cannot connect to server. Please check if the backend is running on http://localhost:8080');
           } else {
-            showError(`Failed to load transactions. Error: ${error} (Status: ${xhr.status})`);
+            showError(`Failed to load transaction history. Error: ${error} (Status: ${xhr.status})`);
           }
         }
       });
@@ -524,7 +442,12 @@
       const tbody = $('#transactionsBody');
       
       if (filteredTransactions.length === 0) {
-        tbody.html('<div style="text-align: center; padding: 40px; color: #6b7280;">No transactions found</div>');
+        tbody.html(`
+          <div class="no-transactions">
+            <h3>No transactions found</h3>
+            <p>Try adjusting your filters or check if there are transactions for this user.</p>
+          </div>
+        `);
         return;
       }
 
@@ -536,19 +459,32 @@
           day: 'numeric'
         });
         
-        const typeClass = transaction.type.toLowerCase();
-        const amountPrefix = transaction.type === 'INCOME' ? '+' : '-';
+        const typeClass = transaction.categoryType.toLowerCase();
+        const amountPrefix = transaction.isIncome ? '+' : '-';
+        const amountClass = transaction.isIncome ? 'income' : 'expense';
+        
+        // Get the Material Icon name from the icon code
+        const iconName = getIconName(transaction.iconCode);
+        
+        // Create a colored circle for the category icon with Material Icons
+        const iconStyle = `background-color: ${transaction.colorCode || '#3b82f6'};`;
         
         html += `
-          <div class="transaction-row" data-id="${transaction.id}">
-            <div>${date}</div>
-            <div><span class="transaction-category ${typeClass}">${transaction.type.toLowerCase()}</span></div>
-            <div>Category ${transaction.categoryId}</div>
-            <div class="transaction-description">${transaction.description || '-'}</div>
-            <div class="transaction-amount ${typeClass}">${amountPrefix} $${Math.abs(transaction.amount).toFixed(2)}</div>
+          <div class="transaction-row" data-id="${transaction.transactionID}">
+            <div class="transaction-date">${date}</div>
+            <div><span class="transaction-category ${transaction.categoryType}">${transaction.categoryType}</span></div>
+            <div class="transaction-info">
+              <div style="display: flex; align-items: center;">
+                <div class="category-icon" style="${iconStyle}">
+                  <span class="material-icons">${iconName}</span>
+                </div>
+                <span class="transaction-title">${transaction.categoryName}</span>
+              </div>
+            </div>
+            <div class="transaction-description">${transaction.note}</div>
+            <div class="transaction-amount ${amountClass}">${amountPrefix} $${Math.abs(transaction.amount).toFixed(2)}</div>
             <div class="transaction-actions">
-              <button class="edit" onclick="editTransaction(${transaction.id})" title="Edit">✏️</button>
-              <button class="delete" onclick="deleteTransaction(${transaction.id})" title="Delete">🗑️</button>
+              <button class="delete" onclick="deleteTransaction(${transaction.transactionID})" title="Delete">🗑️</button>
             </div>
           </div>
         `;
@@ -564,8 +500,8 @@
       let totalExpenses = 0;
 
       filteredTransactions.forEach(transaction => {
-        if (transaction.type === 'INCOME') {
-          totalIncome += transaction.amount;
+        if (transaction.isIncome) {
+          totalIncome += Math.abs(transaction.amount);
         } else {
           totalExpenses += Math.abs(transaction.amount);
         }
@@ -578,14 +514,14 @@
 
     // Update category filter options
     function updateCategoryFilter() {
-      const categories = [...new Set(allTransactions.map(t => t.categoryId))];
+      const categories = [...new Set(allTransactions.map(t => t.categoryName))];
       const categoryFilter = $('#categoryFilter');
       
       // Keep the "All Categories" option
       categoryFilter.find('option:not(:first)').remove();
       
-      categories.forEach(categoryId => {
-        categoryFilter.append(`<option value="${categoryId}">Category ${categoryId}</option>`);
+      categories.forEach(categoryName => {
+        categoryFilter.append(`<option value="${categoryName}">${categoryName}</option>`);
       });
     }
 
@@ -598,18 +534,22 @@
       const endDate = $('#endDate').val();
 
       filteredTransactions = allTransactions.filter(transaction => {
-        // Search filter
-        if (searchTerm && !transaction.description.toLowerCase().includes(searchTerm)) {
-          return false;
+        // Search filter (search in category name and note)
+        if (searchTerm) {
+          const categoryMatch = transaction.categoryName.toLowerCase().includes(searchTerm);
+          const noteMatch = (transaction.note || '').toLowerCase().includes(searchTerm);
+          if (!categoryMatch && !noteMatch) {
+            return false;
+          }
         }
 
         // Category filter
-        if (categoryFilter && transaction.categoryId.toString() !== categoryFilter) {
+        if (categoryFilter && transaction.categoryName !== categoryFilter) {
           return false;
         }
 
         // Type filter
-        if (typeFilter && transaction.type !== typeFilter) {
+        if (typeFilter && transaction.categoryType !== typeFilter) {
           return false;
         }
 
@@ -644,77 +584,6 @@
       updateSummaryCards();
     }
 
-    // Modal functions
-    function openAddModal() {
-      $('#transactionForm')[0].reset();
-      $('#transactionId').val('');
-      $('#transactionDate').val(new Date().toISOString().split('T')[0]);
-      $('#transactionModal').show();
-    }
-
-    function openEditModal(transaction) {
-      $('#modalTitle').text('Edit Transaction');
-      $('#transactionId').val(transaction.id);
-      $('#amount').val(Math.abs(transaction.amount));
-      $('#type').val(transaction.type);
-      $('#categoryId').val(transaction.categoryId);
-      $('#description').val(transaction.description);
-      $('#transactionDate').val(transaction.transactionDate);
-      $('#transactionModal').show();
-    }
-
-    function closeModal() {
-      $('#transactionModal').hide();
-    }
-
-    // Edit transaction
-    function editTransaction(id) {
-      const transaction = allTransactions.find(t => t.id === id);
-      if (transaction) {
-        openEditModal(transaction);
-      }
-    }
-
-    // Save transaction (create or update)
-    function saveTransaction(e) {
-      e.preventDefault();
-      
-      const transactionData = {
-        amount: parseFloat($('#amount').val()),
-        type: $('#type').val(),
-        categoryId: parseInt($('#categoryId').val()),
-        description: $('#description').val(),
-        transactionDate: $('#transactionDate').val(),
-        userId: currentUserId
-      };
-
-      // Make amount negative for expenses
-      if (transactionData.type === 'EXPENSE') {
-        transactionData.amount = -Math.abs(transactionData.amount);
-      }
-
-      const transactionId = $('#transactionId').val();
-      const isEdit = transactionId !== '';
-      
-      const url = isEdit ? `${API_BASE_URL}/${transactionId}` : API_BASE_URL;
-      const method = isEdit ? 'PUT' : 'POST';
-
-      $.ajax({
-        url: url,
-        method: method,
-        contentType: 'application/json',
-        data: JSON.stringify(transactionData),
-        success: function(data) {
-          closeModal();
-          loadTransactions();
-        },
-        error: function(xhr, status, error) {
-          console.error('Error saving transaction:', error);
-          alert('Failed to save transaction. Please try again.');
-        }
-      });
-    }
-
     // Delete transaction
     function deleteTransaction(id) {
       if (confirm('Are you sure you want to delete this transaction?')) {
@@ -722,7 +591,8 @@
           url: `${API_BASE_URL}/${id}`,
           method: 'DELETE',
           success: function() {
-            loadTransactions();
+            console.log('Transaction deleted successfully');
+            loadTransactions(); // Reload the transaction history
           },
           error: function(xhr, status, error) {
             console.error('Error deleting transaction:', error);
@@ -734,7 +604,7 @@
 
     // Utility functions
     function showLoading() {
-      $('#transactionsBody').html('<div class="loading">Loading transactions...</div>');
+      $('#transactionsBody').html('<div class="loading">Loading transaction history...</div>');
     }
 
     function showError(message) {

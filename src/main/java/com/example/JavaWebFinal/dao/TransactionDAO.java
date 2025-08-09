@@ -50,6 +50,7 @@ public class TransactionDAO{
             dto2.setcolorCode(rs.getString("ColorCode"));
             dto2.seticonCode(rs.getInt("IconCode"));
             dto2.setCategoryType(rs.getString("CategoryType"));
+            dto2.setNote(rs.getString("Note"));
             return dto2;
         }
     }
