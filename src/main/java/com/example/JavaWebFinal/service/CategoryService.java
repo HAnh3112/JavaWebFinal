@@ -3,6 +3,7 @@ package com.example.JavaWebFinal.service;
 import com.example.JavaWebFinal.dto.category.CategoryPostDTO;
 import com.example.JavaWebFinal.dto.category.CategoryResponseDTO;
 import com.example.JavaWebFinal.dto.category.CategorySimpleDTO;
+import com.example.JavaWebFinal.dto.category.SpendingforCateDTO;
 import com.example.JavaWebFinal.dao.SimpleCategoryListDAO;
 import com.example.JavaWebFinal.dao.MobileCategoryDAO;
 import com.example.JavaWebFinal.model.Category;
@@ -138,4 +139,9 @@ public class CategoryService {
             return "Error showing category list (mobile)" + e.getMessage();
         }
     }
+
+public Object GetSpendingCate(int userID, int month, int year) {
+    return mobileCategoryDAO.getSpendingCategories(userID, month, year);
+}
+
 }

@@ -71,4 +71,10 @@ public class CategoryController {
     public Object getMobileCategories(@RequestParam int userID){
         return categoryService.getMobileCategories(userID);
     }
+
+    //tqa
+    @GetMapping("/getSpendingCate")
+    public Object getSpendingCate(@RequestParam int userID, @RequestParam int month, @RequestParam int year){
+        return categoryService.GetSpendingCate(userID, month, year);
+    }
 }

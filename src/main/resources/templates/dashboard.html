@@ -231,7 +231,7 @@
       <div class="empty-message">No transactions yet</div>
     </div>
 
-    <div class="panel">
+    <div class="panel" id="topCategoriesPanel">
       <h3>Top Spending Categories</h3>
       <div class="category">
         <div class="category-name"><span class="dot red"></span> Food</div>
@@ -280,6 +280,8 @@
       const [year, month] = currentValue.split('-').map(Number);
       loadTransactionsByMonth(month, year);
       loadMonthlySummary(month, year);
+      loadSpendingCategories(month, year);
+
     })
     .catch(err => console.error('Error loading months:', err));
 
@@ -288,6 +290,7 @@
     const [year, month] = this.value.split('-').map(Number);
     loadTransactionsByMonth(month, year);
     loadMonthlySummary(month, year);
+    loadSpendingCategories(month, year);
   });
 
   // Hàm gọi API lấy giao dịch theo tháng
@@ -362,5 +365,45 @@
       console.error('Lỗi khi tải dữ liệu:', err);
     }
   }
+
+  async function loadSpendingCategories(month, year) {
+  try {
+    const res = await fetch(`/api/categories/getSpendingCate?userID=${userId}&month=${month}&year=${year}`);
+    const data = await res.json();
+
+    if (!data || data.length === 0) {
+      console.log("Không có dữ liệu chi tiêu");
+      return;
+    }
+
+    // 1. Tính tổng chi tiêu
+    const totalExpense = data.reduce((sum, item) => sum + item.amount, 0);
+
+    // 2. Lấy panel hiển thị
+    const panel = document.querySelector("#topCategoriesPanel");
+    panel.innerHTML = `<h3>Top Spending Categories</h3>`;
+
+    // 3. Hiển thị từng category kèm %
+    data.forEach(item => {
+      const percent = totalExpense > 0 ? (item.amount / totalExpense * 100).toFixed(1) : 0;
+
+      panel.innerHTML += `
+        <div class="category">
+          <div class="category-name">
+            <span class="dot red"></span> ${item.categoryName}
+          </div>
+          <div>
+            ${item.amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}
+            <br><small>${percent}%</small>
+          </div>
+        </div>
+      `;
+    });
+  } catch (err) {
+    console.error("Lỗi khi tải dữ liệu:", err);
+  }
+}
+
+// Ví dụ gọi
 
 </script>
