@@ -133,4 +133,8 @@ public class TransactionController {
     public Object getUserRecentTransactionsByMonth(@RequestParam int userID, @RequestParam int month, @RequestParam int year){
         return transactionService.GetUserRecentTransactionsByMonths(userID, month, year);
     }
+    @GetMapping("/summaryTransactionByMonth")
+    public Object GetMonthlyOverviewByMonth(@RequestParam int userID, @RequestParam int month, @RequestParam int year){
+        return transactionService.GetMonthlyOverviewByMonth(userID, month, year);
+    }
 }

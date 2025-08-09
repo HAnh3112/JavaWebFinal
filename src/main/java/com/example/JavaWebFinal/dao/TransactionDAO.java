@@ -3,6 +3,7 @@ package com.example.JavaWebFinal.dao;
 import com.example.JavaWebFinal.dto.budget.BudgetWithSpendingDTO;
 import com.example.JavaWebFinal.dto.transactions.TransactionDTO;
 import com.example.JavaWebFinal.dto.transactions.TransactionHistoryDTO;
+import com.example.JavaWebFinal.dto.transactions.TransactionSummaryDTO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -61,12 +62,31 @@ public class TransactionDAO{
         return jdbcTemplate.query(sql, new Object[]{userId}, new TransactionHistoryRowMapper());
     }
 
+    private static class TransactionSummaryRowMapper implements RowMapper<TransactionSummaryDTO> {
+    @Override
+    public TransactionSummaryDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+        TransactionSummaryDTO dto = new TransactionSummaryDTO();
+        dto.setIncome(rs.getBigDecimal("TotalIncome"));
+        dto.setExpense(rs.getBigDecimal("TotalExpense"));
+        return dto;
+    }
+}
+
+
     public List<TransactionDTO> GetUserTransactionHistoryByMonth(int userId, int month, int year) {
     String sql = "EXEC GetUserRecentTransactionsByMonth ?, ?, ?";
     return jdbcTemplate.query(
         sql,
         new Object[]{userId, month, year},
         new RecentTransactionRowMapper()
+    );
+    }
+    public List<TransactionSummaryDTO> GetMonthlyOverviewByMonth(int userId, int month, int year) {
+    String sql = "EXEC GetMonthlySummary ?, ?, ?";
+    return jdbcTemplate.query(
+        sql,
+        new Object[]{userId, month, year},
+        new TransactionSummaryRowMapper()
     );
 
 }

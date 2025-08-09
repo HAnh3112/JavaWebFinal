@@ -148,34 +148,39 @@
     .dot.blue {
       background-color: #3b82f6;
     }
+
     #monthSelect {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db; /* xám nhạt */
-  background-color: #ffffff;
-  color: #374151; /* xám đậm */
-  font-size: 14px;
-  outline: none;
-  appearance: none; /* ẩn style mặc định */
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.41 0L6 4.58 10.59 0 12 1.41l-6 6-6-6L1.41 0z' fill='%236b7280'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 12px;
-  cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  min-width: 150px; 
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      /* xám nhạt */
+      background-color: #ffffff;
+      color: #374151;
+      /* xám đậm */
+      font-size: 14px;
+      outline: none;
+      appearance: none;
+      /* ẩn style mặc định */
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg width='12' height='8' viewBox='0 0 12 8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.41 0L6 4.58 10.59 0 12 1.41l-6 6-6-6L1.41 0z' fill='%236b7280'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 12px;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      min-width: 150px;
 
-}
+    }
 
-#monthSelect:hover {
-  border-color: #9ca3af; /* xám đậm hơn khi hover */
-}
+    #monthSelect:hover {
+      border-color: #9ca3af;
+      /* xám đậm hơn khi hover */
+    }
 
-#monthSelect:focus {
-  border-color: #3b82f6; /* xanh khi focus */
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
-}
-
+    #monthSelect:focus {
+      border-color: #3b82f6;
+      /* xanh khi focus */
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+    }
   </style>
 </head>
 
@@ -200,21 +205,21 @@
     <div class="card">
       <div>
         <h4>Monthly Income</h4>
-        <h3>$0.00</h3>
+        <h3 id="monthyIncome">$0.00</h3>
       </div>
       <div class="card-icon green">📈</div>
     </div>
     <div class="card">
       <div>
         <h4>Monthly Expenses</h4>
-        <h3>$0.00</h3>
+        <h3 id="monthyExpense">$0.00</h3>
       </div>
       <div class="card-icon red">📉</div>
     </div>
     <div class="card">
       <div>
         <h4>Monthly Balance</h4>
-        <h3>$0.00</h3>
+        <h3 id = "monthlyBalance">$0.00</h3>
       </div>
       <div class="card-icon blue">💳</div>
     </div>
@@ -269,12 +274,12 @@
 
       // Chọn tháng hiện tại mặc định
       const now = new Date();
-    const currentValue = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    monthSelect.value = currentValue; // chọn đúng option
+      const currentValue = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      monthSelect.value = currentValue; // chọn đúng option
 
-    const [year, month] = currentValue.split('-').map(Number);
-    loadTransactionsByMonth(month, year);
-
+      const [year, month] = currentValue.split('-').map(Number);
+      loadTransactionsByMonth(month, year);
+      loadMonthlySummary(month, year);
     })
     .catch(err => console.error('Error loading months:', err));
 
@@ -282,6 +287,7 @@
   monthSelect.addEventListener('change', function () {
     const [year, month] = this.value.split('-').map(Number);
     loadTransactionsByMonth(month, year);
+    loadMonthlySummary(month, year);
   });
 
   // Hàm gọi API lấy giao dịch theo tháng
@@ -301,6 +307,7 @@
           panel.innerHTML += '<div class="empty-message">No transactions yet</div>';
           return;
         }
+        const formatVND = amount => amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
 
         transactions.forEach(tx => {
           const div = document.createElement("div");
@@ -311,7 +318,7 @@
               ${tx.categoryName || 'Uncategorized'}
             </div>
             <div>
-              ${Math.abs(tx.amount).toFixed(2)} đ<br>
+              ${formatVND(Math.abs(tx.amount))}<br>
               <small>${new Date(tx.transactionDate).toLocaleDateString()}</small>
             </div>
           `;
@@ -322,4 +329,38 @@
         console.error(error);
       });
   }
+  //load income and expenses
+  async function loadMonthlySummary(month, year) {
+    try {
+      const res = await fetch(`/api/transactions/summaryTransactionByMonth?userID=${userId}&month=${month}&year=${year}`);
+      const data = await res.json();
+
+      if (data.length > 0) {
+        const summary = data[0]; // vì API trả về mảng có 1 object
+
+        // Định dạng số tiền VND
+        const formatVND = amount => amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+
+        // Gán vào HTML
+        document.getElementById('monthyIncome').textContent = formatVND(summary.income);
+        document.getElementById('monthyExpense').textContent = formatVND(summary.expense);
+
+        const balance = summary.income - summary.expense;
+      const balanceEl = document.getElementById('monthlyBalance');
+      balanceEl.textContent = formatVND(balance);
+
+      // 👉 Đổi màu theo giá trị
+      if (balance > 0) {
+        balanceEl.style.color = 'green';
+      } else if (balance < 0) {
+        balanceEl.style.color = 'red';
+      } else {
+        balanceEl.style.color = 'black';
+      }
+      }
+    } catch (err) {
+      console.error('Lỗi khi tải dữ liệu:', err);
+    }
+  }
+
 </script>
