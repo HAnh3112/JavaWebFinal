@@ -4,24 +4,41 @@
  */
 package com.example.JavaWebFinal.service;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.example.JavaWebFinal.dto.login.LoginRequest;
 import com.example.JavaWebFinal.dto.login.RegisterRequest;
 import com.example.JavaWebFinal.dto.login.UserResponse;
-/**
- *
- * @author ADMIN
- */
 import com.example.JavaWebFinal.model.User;
 import com.example.JavaWebFinal.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.example.JavaWebFinal.security.JwtUtil;
 
 @Service
 public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    private JwtUtil jwtUtil;
+    public Map<String, Object> loginUserWithToken(LoginRequest request) {
+    User user = userRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new RuntimeException("Email not found"));
 
+    if (!user.getPasswordHash().equals(request.getPassword())) {
+        throw new RuntimeException("Invalid password");
+    }
+
+    String token = jwtUtil.generateToken(user.getEmail());
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("token", token);
+    response.put("user", new UserResponse(user.getUserId(), user.getUsername(), user.getEmail()));
+
+    return response;
+}
     public Object showUsers() {
         try {
             return userRepository.findAll();

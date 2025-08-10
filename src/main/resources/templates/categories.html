@@ -36,6 +36,11 @@
   </style>
 </head>
 <body>
+   <!-- Auth check -->
+  <script src="/static/js/auth.js"></script>
+  <script>
+    checkAuth(); // Kiểm tra token trước khi hiển thị nội dung
+  </script>
   <div class="page-header">
     <h2>Category Management</h2>
     <button id="openAddCategory" class="btn-primary">+ Add Category</button>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,21 +12,29 @@
       background-color: #f9f9f9;
       padding: 20px;
     }
+
     .chart-container {
       background: white;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
       max-width: 900px;
       margin: auto;
     }
+
     h2 {
       text-align: center;
       margin-bottom: 20px;
     }
   </style>
 </head>
+
 <body>
+  <!-- Auth check -->
+  <script src="/static/js/auth.js"></script>
+  <script>
+    checkAuth(); // Kiểm tra token trước khi hiển thị nội dung
+  </script>
   <div class="chart-container">
     <h2>Balance vs Expenses vs Income</h2>
     <canvas id="financeChart"></canvas>
@@ -33,70 +42,70 @@
 
 
 </body>
+
 </html>
 <script>
-async function loadChartData() {
-  try {
-    // 1. Gọi API lấy dữ liệu
-    const res = await fetch('/api/transactions/summaryTransactionAllMonth?userID=1');
-    const monthsData = await res.json();
+  async function loadChartData() {
+    try {
+      // 1. Gọi API lấy dữ liệu
+      const res = await fetch('/api/transactions/summaryTransactionAllMonth?userID=1');
+      const monthsData = await res.json();
 
-    // 2. Sắp xếp theo thời gian tăng dần
-    monthsData.sort((a, b) => new Date(a.monthValue) - new Date(b.monthValue));
+      // 2. Sắp xếp theo thời gian tăng dần
+      monthsData.sort((a, b) => new Date(a.monthValue) - new Date(b.monthValue));
 
-    // 3. Tạo labels và datasets
-    const labels = monthsData.map(m => m.monthLabel);
-    const incomes = monthsData.map(m => m.totalIncome);
-    const expenses = monthsData.map(m => m.totalExpense);
-    const balances = monthsData.map(m => m.totalIncome - m.totalExpense);
+      // 3. Tạo labels và datasets
+      const labels = monthsData.map(m => m.monthLabel);
+      const incomes = monthsData.map(m => m.totalIncome);
+      const expenses = monthsData.map(m => m.totalExpense);
+      const balances = monthsData.map(m => m.totalIncome - m.totalExpense);
 
-    // 4. Tạo chart
-    const data = {
-      labels: labels,
-      datasets: [
-        {
-          label: 'Balance',
-          data: balances,
-          borderColor: 'blue',
-          backgroundColor: 'rgba(0,0,255,0.2)',
-          fill: false,
-          tension: 0.3
-        },
-        {
-          label: 'Expenses',
-          data: expenses,
-          borderColor: 'red',
-          backgroundColor: 'rgba(255,0,0,0.2)',
-          fill: false,
-          tension: 0.3
-        },
-        {
-          label: 'Income',
-          data: incomes,
-          borderColor: 'green',
-          backgroundColor: 'rgba(0,255,0,0.2)',
-          fill: false,
-          tension: 0.3
+      // 4. Tạo chart
+      const data = {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Balance',
+            data: balances,
+            borderColor: 'blue',
+            backgroundColor: 'rgba(0,0,255,0.2)',
+            fill: false,
+            tension: 0.3
+          },
+          {
+            label: 'Expenses',
+            data: expenses,
+            borderColor: 'red',
+            backgroundColor: 'rgba(255,0,0,0.2)',
+            fill: false,
+            tension: 0.3
+          },
+          {
+            label: 'Income',
+            data: incomes,
+            borderColor: 'green',
+            backgroundColor: 'rgba(0,255,0,0.2)',
+            fill: false,
+            tension: 0.3
+          }
+        ]
+      };
+
+      new Chart(document.getElementById('financeChart'), {
+        type: 'line',
+        data: data,
+        options: {
+          responsive: true,
+          plugins: { legend: { position: 'bottom' } },
+          scales: { y: { beginAtZero: true } }
         }
-      ]
-    };
+      });
 
-    new Chart(document.getElementById('financeChart'), {
-      type: 'line',
-      data: data,
-      options: {
-        responsive: true,
-        plugins: { legend: { position: 'bottom' } },
-        scales: { y: { beginAtZero: true } }
-      }
-    });
-
-  } catch (error) {
-    console.error('Lỗi khi load chart data:', error);
+    } catch (error) {
+      console.error('Lỗi khi load chart data:', error);
+    }
   }
-}
 
-// Gọi khi load trang
-loadChartData();
+  // Gọi khi load trang
+  loadChartData();
 </script>
-
