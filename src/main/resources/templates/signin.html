@@ -6,7 +6,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #ffecd2, #fcb69f);
+            background: linear-gradient(to right, #43cea2, #185a9d);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -15,11 +15,15 @@
         }
         .form-container {
             background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            width: 320px;
+            padding: 40px 50px;
+            border-radius: 16px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+            width: 480px;
+            max-width: 90vw;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
         }
         h2 {
             margin-bottom: 20px;
@@ -27,21 +31,28 @@
         }
         input {
             width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border: 1px solid #ccc;
-            border-radius: 8px;
+            padding: 14px;
+            border: 1.5px solid #ccc;
+            border-radius: 12px;
             box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        input:focus {
+            border-color: #f78a65;
+            outline: none;
         }
         button {
             width: 100%;
-            padding: 10px;
+            padding: 14px;
             background: #f78a65;
             border: none;
             color: white;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 18px;
+            font-weight: 600;
+            transition: background 0.3s ease;
         }
         button:hover {
             background: #d86a4a;
@@ -54,6 +65,10 @@
             color: #f78a65;
             text-decoration: none;
         }
+        #message {
+            font-weight: bold;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -64,7 +79,7 @@
     <input type="email" id="email" placeholder="Email">
     <input type="password" id="password" placeholder="Mật khẩu">
     <button onclick="register()">Đăng ký</button>
-    <div id="message" style="margin-top:10px; color: red; font-weight: bold;"></div>
+    <div id="message"></div>
     <div class="switch">
         Đã có tài khoản? <a href="login.html">Đăng nhập</a>
     </div>
@@ -84,25 +99,21 @@
     })
     .then(res => {
         if (res.ok) {
-            // Đăng ký thành công, chuyển trang luôn
             messageDiv.style.color = 'green';
             messageDiv.textContent = "Đăng ký thành công!";
             setTimeout(() => {
                 window.location.href = "login.html";
             }, 1500);
         } else {
-            // Đăng ký thất bại, show message đỏ lè dưới nút
             messageDiv.style.color = 'red';
             messageDiv.textContent = "Đăng ký thất bại! Vui lòng thử lại.";
         }
     })
     .catch(err => {
-        // Trường hợp lỗi mạng hay gì đó
         messageDiv.style.color = 'red';
         messageDiv.textContent = "Có lỗi xảy ra, xin vui lòng thử lại sau.";
     });
 }
-
 </script>
 
 </body>
