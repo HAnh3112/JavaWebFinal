@@ -110,4 +110,8 @@ public class TransactionService {
     public Object GetMonthlyOverviewByMonth(int userID, int month, int year){
         return transactionDAO.GetMonthlyOverviewByMonth(userID, month, year);
     }
+
+    public Object GetMonthlySummaryAll(int userID){
+        return transactionDAO.GetMonthlySummaryAll(userID);
+    }
 }

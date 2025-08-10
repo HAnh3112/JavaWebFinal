@@ -31,15 +31,32 @@
     <canvas id="financeChart"></canvas>
   </div>
 
-  <script>
-    const ctx = document.getElementById('financeChart').getContext('2d');
 
+</body>
+</html>
+<script>
+async function loadChartData() {
+  try {
+    // 1. Gọi API lấy dữ liệu
+    const res = await fetch('/api/transactions/summaryTransactionAllMonth?userID=1');
+    const monthsData = await res.json();
+
+    // 2. Sắp xếp theo thời gian tăng dần
+    monthsData.sort((a, b) => new Date(a.monthValue) - new Date(b.monthValue));
+
+    // 3. Tạo labels và datasets
+    const labels = monthsData.map(m => m.monthLabel);
+    const incomes = monthsData.map(m => m.totalIncome);
+    const expenses = monthsData.map(m => m.totalExpense);
+    const balances = monthsData.map(m => m.totalIncome - m.totalExpense);
+
+    // 4. Tạo chart
     const data = {
-      labels: ['Mar 2025', 'Apr 2025', 'May 2025', 'Jun 2025', 'Jul 2025', 'Aug 2025'],
+      labels: labels,
       datasets: [
         {
           label: 'Balance',
-          data: [2, 3, 2.5, 3.2, 3.8, 4],
+          data: balances,
           borderColor: 'blue',
           backgroundColor: 'rgba(0,0,255,0.2)',
           fill: false,
@@ -47,7 +64,7 @@
         },
         {
           label: 'Expenses',
-          data: [1.5, 2, 1.8, 2.2, 2.4, 2.7],
+          data: expenses,
           borderColor: 'red',
           backgroundColor: 'rgba(255,0,0,0.2)',
           fill: false,
@@ -55,7 +72,7 @@
         },
         {
           label: 'Income',
-          data: [2.5, 3.2, 3, 3.5, 4, 4.2],
+          data: incomes,
           borderColor: 'green',
           backgroundColor: 'rgba(0,255,0,0.2)',
           fill: false,
@@ -64,25 +81,22 @@
       ]
     };
 
-    const options = {
-      responsive: true,
-      plugins: {
-        legend: {
-          position: 'bottom',
-        }
-      },
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    };
-
-    new Chart(ctx, {
+    new Chart(document.getElementById('financeChart'), {
       type: 'line',
       data: data,
-      options: options
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } },
+        scales: { y: { beginAtZero: true } }
+      }
     });
-  </script>
-</body>
-</html>
+
+  } catch (error) {
+    console.error('Lỗi khi load chart data:', error);
+  }
+}
+
+// Gọi khi load trang
+loadChartData();
+</script>
+

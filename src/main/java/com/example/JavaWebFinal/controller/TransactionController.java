@@ -137,4 +137,9 @@ public class TransactionController {
     public Object GetMonthlyOverviewByMonth(@RequestParam int userID, @RequestParam int month, @RequestParam int year){
         return transactionService.GetMonthlyOverviewByMonth(userID, month, year);
     }
+
+    @GetMapping("/summaryTransactionAllMonth")
+    public Object GetMonthlySummaryAll(@RequestParam int userID){
+        return transactionService.GetMonthlySummaryAll(userID);
+    }
 }

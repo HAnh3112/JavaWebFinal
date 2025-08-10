@@ -1,6 +1,7 @@
 package com.example.JavaWebFinal.dao;
 
 import com.example.JavaWebFinal.dto.budget.BudgetWithSpendingDTO;
+import com.example.JavaWebFinal.dto.transactions.MonthlySummaryDTO;
 import com.example.JavaWebFinal.dto.transactions.TransactionDTO;
 import com.example.JavaWebFinal.dto.transactions.TransactionHistoryDTO;
 import com.example.JavaWebFinal.dto.transactions.TransactionSummaryDTO;
@@ -31,6 +32,18 @@ public class TransactionDAO{
             dto.setCategoryName(rs.getString("CategoryName"));
             dto.setCategoryType(rs.getString("CategoryType"));
             return dto;
+        }
+    }
+
+    private static class GetMonthlySummaryAllRowMapper implements RowMapper<MonthlySummaryDTO> {
+        @Override
+        public MonthlySummaryDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+            return new MonthlySummaryDTO(
+            rs.getString("MonthValue"),
+            rs.getString("MonthLabel"),
+            rs.getBigDecimal("TotalIncome"),
+            rs.getBigDecimal("TotalExpense")
+        );
         }
     }
 
@@ -71,7 +84,7 @@ public class TransactionDAO{
         return dto;
     }
 }
-
+    
 
     public List<TransactionDTO> GetUserTransactionHistoryByMonth(int userId, int month, int year) {
     String sql = "EXEC GetUserRecentTransactionsByMonth ?, ?, ?";
@@ -90,5 +103,12 @@ public class TransactionDAO{
     );
 
 }
+
+
+public List<MonthlySummaryDTO> GetMonthlySummaryAll(int userId) {
+        String sql = "EXEC GetMonthlySummaryAll ?";
+
+        return jdbcTemplate.query(sql, new Object[]{userId}, new GetMonthlySummaryAllRowMapper());
+    }
 
 }
