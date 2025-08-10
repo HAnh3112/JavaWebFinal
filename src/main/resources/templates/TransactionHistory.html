@@ -292,11 +292,11 @@
       </div>
       <div class="card income">
         <div class="card-title">Total Income</div>
-        <div class="card-value" id="totalIncome">$0.00</div>
+        <div class="card-value" id="totalIncome">VND0</div>
       </div>
       <div class="card expenses">
         <div class="card-title">Total Expenses</div>
-        <div class="card-value" id="totalExpenses">$0.00</div>
+        <div class="card-value" id="totalExpenses">VND0</div>
       </div>
     </div>
 
@@ -361,6 +361,11 @@
     // Function to get Material Icon name from icon code
     function getIconName(iconCode) {
       return iconMap[iconCode] || "account_balance_wallet"; // Default icon if not found
+    }
+
+    // Function to format VND currency
+    function formatVND(amount) {
+      return `${Math.abs(amount).toLocaleString('vi-VN')} VND`;
     }
 
     // Initialize the application
@@ -482,7 +487,7 @@
               </div>
             </div>
             <div class="transaction-description">${transaction.note}</div>
-            <div class="transaction-amount ${amountClass}">${amountPrefix} $${Math.abs(transaction.amount).toFixed(2)}</div>
+            <div class="transaction-amount ${amountClass}">${amountPrefix} ${formatVND(transaction.amount)}</div>
             <div class="transaction-actions">
               <button class="delete" onclick="deleteTransaction(${transaction.transactionID})" title="Delete">🗑️</button>
             </div>
@@ -508,8 +513,8 @@
       });
 
       $('#totalTransactions').text(totalTransactions);
-      $('#totalIncome').text(`$${totalIncome.toFixed(2)}`);
-      $('#totalExpenses').text(`$${totalExpenses.toFixed(2)}`);
+      $('#totalIncome').text(formatVND(totalIncome));
+      $('#totalExpenses').text(formatVND(totalExpenses));
     }
 
     // Update category filter options
