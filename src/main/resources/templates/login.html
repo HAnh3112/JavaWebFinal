@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng nhập</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #88a4af, #2b6891);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            width: 320px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #2980b9;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #2980b9;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #1f6391;
+        }
+        .switch {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .switch a {
+            color: #2980b9;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Đăng nhập</h2>
+    <input type="text" id="username" placeholder="Tên đăng nhập">
+    <input type="password" id="password" placeholder="Mật khẩu">
+    <button onclick="login()">Đăng nhập</button>
+    <div id="login-message" style="margin-top:10px; font-weight: bold;"></div>
+    <div class="switch">
+        Chưa có tài khoản? <a href="signin.html">Đăng ký</a>
+    </div>
+</div>
+
+<script>
+   function login() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const messageDiv = document.getElementById("login-message");
+
+    fetch("/api/users/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ username, password })
+    })
+    .then(res => {
+        if (res.ok) {
+            messageDiv.style.color = 'green';
+            messageDiv.textContent = "Đăng nhập thành công!";
+            setTimeout(() => {
+                window.location.href = "/"; 
+            }, 1500);
+        } else {
+            messageDiv.style.color = 'red';
+            messageDiv.textContent = "Sai tài khoản hoặc mật khẩu!";
+        }
+    })
+    .catch(() => {
+        messageDiv.style.color = 'red';
+        messageDiv.textContent = "Có lỗi xảy ra, xin vui lòng thử lại sau.";
+    });
+}
+
+</script>
+
+</body>
+</html>
