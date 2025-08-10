@@ -142,4 +142,147 @@ public class TransactionController {
     public Object GetMonthlySummaryAll(@RequestParam int userID){
         return transactionService.GetMonthlySummaryAll(userID);
     }
+
+    @GetMapping("/filtered")
+    public ResponseEntity<?> getFilteredTransactionHistory(
+            @RequestParam("userID") int userID,
+            @RequestParam(value = "transactionType", required = false) String transactionType,
+            @RequestParam(value = "categoryName", required = false) String categoryName,
+            @RequestParam(value = "searchTerm", required = false) String searchTerm,
+            @RequestParam(value = "startDate", required = false) String startDateStr,
+            @RequestParam(value = "endDate", required = false) String endDateStr) {
+        
+        try {
+            // Parse date strings to LocalDate (handle null/empty values)
+            LocalDate startDate = null;
+            LocalDate endDate = null;
+            
+            if (startDateStr != null && !startDateStr.trim().isEmpty()) {
+                startDate = LocalDate.parse(startDateStr);
+            }
+            
+            if (endDateStr != null && !endDateStr.trim().isEmpty()) {
+                endDate = LocalDate.parse(endDateStr);
+            }
+
+            // Log parameters for debugging
+            System.out.println("=== Filtered Transaction Request ===");
+            System.out.println("userID: " + userID);
+            System.out.println("transactionType: " + transactionType);
+            System.out.println("categoryName: " + categoryName);
+            System.out.println("searchTerm: " + searchTerm);
+            System.out.println("startDate: " + startDate);
+            System.out.println("endDate: " + endDate);
+            System.out.println("=====================================");
+
+            // Validate userID
+            if (userID <= 0) {
+                return ResponseEntity.badRequest().body("Invalid user ID");
+            }
+
+            // Call service method
+            Object result = transactionService.GetFilteredTransactionHistory(
+                userID, transactionType, categoryName, searchTerm, startDate, endDate);
+            
+            // Handle empty results
+            if (result == null) {
+                System.out.println("Service returned null result");
+                return ResponseEntity.noContent().build();
+            }
+            
+            // Check if result is a list and if it's empty
+            if (result instanceof List<?>) {
+                List<?> transactions = (List<?>) result;
+                System.out.println("Found " + transactions.size() + " transactions");
+                if (transactions.isEmpty()) {
+                    return ResponseEntity.noContent().build();
+                }
+            }
+            
+            return ResponseEntity.ok(result);
+            
+        } catch (DateTimeParseException e) {
+            System.err.println("Date parsing error: " + e.getMessage());
+            return ResponseEntity.badRequest()
+                .body("Invalid date format. Expected YYYY-MM-DD, got: " + e.getParsedString());
+        } catch (Exception e) {
+            System.err.println("Error in filtered transaction history: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Internal server error: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Get transactions by type only (Income/Expense)
+     */
+    @GetMapping("/by-type")
+    public ResponseEntity<?> getTransactionsByType(
+            @RequestParam("userID") int userID,
+            @RequestParam("transactionType") String transactionType) {
+        
+        try {
+            Object result = transactionService.GetTransactionsByType(userID, transactionType);
+            
+            if (result == null || (result instanceof List<?> && ((List<?>) result).isEmpty())) {
+                return ResponseEntity.noContent().build();
+            }
+            
+            return ResponseEntity.ok(result);
+            
+        } catch (Exception e) {
+            System.err.println("Error getting transactions by type: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Search transactions by note content
+     */
+    @GetMapping("/search")
+    public ResponseEntity<?> searchTransactionsByNote(
+            @RequestParam("userID") int userID,
+            @RequestParam("searchTerm") String searchTerm) {
+        
+        try {
+            Object result = transactionService.SearchTransactionsByNote(userID, searchTerm);
+            
+            if (result == null || (result instanceof List<?> && ((List<?>) result).isEmpty())) {
+                return ResponseEntity.noContent().build();
+            }
+            
+            return ResponseEntity.ok(result);
+            
+        } catch (Exception e) {
+            System.err.println("Error searching transactions: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Get transactions by category name
+     */
+    @GetMapping("/by-category")
+    public ResponseEntity<?> getTransactionsByCategoryName(
+            @RequestParam("userID") int userID,
+            @RequestParam("categoryName") String categoryName) {
+        
+        try {
+            Object result = transactionService.GetTransactionsByCategoryName(userID, categoryName);
+            
+            if (result == null || (result instanceof List<?> && ((List<?>) result).isEmpty())) {
+                return ResponseEntity.noContent().build();
+            }
+            
+            return ResponseEntity.ok(result);
+            
+        } catch (Exception e) {
+            System.err.println("Error getting transactions by category: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error: " + e.getMessage());
+        }
+    }
 }
+

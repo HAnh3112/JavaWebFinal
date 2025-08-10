@@ -4,6 +4,8 @@ import com.example.JavaWebFinal.model.Transaction;
 import com.example.JavaWebFinal.repository.TransactionRepository;
 import com.example.JavaWebFinal.dao.TransactionDAO;
 import com.example.JavaWebFinal.dto.transactions.TransactionDTO;
+import com.example.JavaWebFinal.dto.transactions.TransactionSummaryDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
@@ -113,5 +115,54 @@ public class TransactionService {
 
     public Object GetMonthlySummaryAll(int userID){
         return transactionDAO.GetMonthlySummaryAll(userID);
+    }
+
+     // NEW METHODS FOR COMPREHENSIVE FILTERING
+    
+    /**
+     * Get filtered transaction history with multiple filter options
+     */
+    public Object GetFilteredTransactionHistory(int userID, String transactionType, 
+            String categoryName, String searchTerm, LocalDate startDate, LocalDate endDate) {
+        return transactionDAO.GetFilteredTransactionHistory(userID, transactionType, 
+                categoryName, searchTerm, startDate, endDate);
+    }
+
+    /**
+     * Get transactions filtered by transaction type (Income/Expense)
+     */
+    public Object GetTransactionsByType(int userID, String transactionType) {
+        return transactionDAO.GetTransactionsByType(userID, transactionType);
+    }
+
+    /**
+     * Search transactions by note/description content
+     */
+    public Object SearchTransactionsByNote(int userID, String searchTerm) {
+        return transactionDAO.SearchTransactionsByNote(userID, searchTerm);
+    }
+
+    /**
+     * Get transactions by category name (more flexible than categoryId)
+     */
+    public Object GetTransactionsByCategoryName(int userID, String categoryName) {
+        return transactionDAO.GetTransactionsByCategoryName(userID, categoryName);
+    }
+
+    /**
+     * Get paginated and filtered transaction history
+     */
+    public Object GetPaginatedTransactionHistory(int userID, int page, int size, 
+            String transactionType, String categoryName, String searchTerm, 
+            LocalDate startDate, LocalDate endDate, String sortBy, String sortDirection) {
+        return transactionDAO.GetPaginatedTransactionHistory(userID, page, size, 
+                transactionType, categoryName, searchTerm, startDate, endDate, sortBy, sortDirection);
+    }
+
+    /**
+     * Get transaction statistics with filters applied
+     */
+    public Object GetFilteredTransactionStats(int userID, String transactionType, String categoryName, String searchTerm, LocalDate startDate, LocalDate endDate) {
+        return transactionDAO.GetFilteredTransactionStats(userID, transactionType, categoryName, searchTerm, startDate, endDate);
     }
 }

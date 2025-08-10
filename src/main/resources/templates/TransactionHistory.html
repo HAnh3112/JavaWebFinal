@@ -138,6 +138,15 @@
       background: #cbd5e1;
     }
 
+    .filters button.apply-btn {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .filters button.apply-btn:hover {
+      background: #2563eb;
+    }
+
     .transactions-container {
       background: white;
       border-radius: 12px;
@@ -275,6 +284,20 @@
     .no-transactions p {
       font-size: 14px;
     }
+
+    .filter-status {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 16px;
+      padding: 8px 12px;
+      background: #f1f5f9;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .filter-status.active {
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -309,6 +332,9 @@
     <!-- Filter Panel -->
     <div class="filters-panel">
       <h2>🔍 Filters</h2>
+      <div class="filter-status" id="filterStatus">
+        Filters applied - showing filtered results
+      </div>
       <div class="filters">
         <input type="text" id="searchInput" placeholder="Search transactions or notes..." />
         <select id="categoryFilter">
@@ -321,6 +347,7 @@
         </select>
         <input type="date" id="startDate" />
         <input type="date" id="endDate" />
+        <button id="applyFilters" class="apply-btn">Apply Filters</button>
         <button id="clearFilters">Clear Filters</button>
       </div>
     </div>
@@ -353,8 +380,9 @@
     // Configuration - use relative URL for better flexibility
     const API_BASE_URL = '/api/transactions';
     
-    let allTransactions = [];
-    let filteredTransactions = [];
+    let currentTransactions = [];
+    let allCategories = []; // Store categories for filter dropdown
+    let isFiltered = false; // Track if filters are applied
 
     // Icon mapping from Unicode codes to Material Design icon names
     const iconMap = {
@@ -371,6 +399,19 @@
       58007: "flight",
       58856: "sports_esports",
     };
+
+    // Debounce function for search input
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
 
     // Function to get Material Icon name from icon code
     function getIconName(iconCode) {
@@ -391,46 +432,113 @@
       }
 
       initializeEventListeners();
-      loadTransactions();
+      loadCategories(); // Load categories for filter dropdown
+      loadTransactions(); // Load initial transactions (unfiltered)
     });
 
     function initializeEventListeners() {
-      // Filters
-      $('#searchInput').on('input', applyFilters);
-      $('#categoryFilter').on('change', applyFilters);
-      $('#typeFilter').on('change', applyFilters);
-      $('#startDate, #endDate').on('change', applyFilters);
+      // Apply filters button
+      $('#applyFilters').on('click', applyFilters);
+      
+      // Clear filters button
       $('#clearFilters').on('click', clearFilters);
+      
+      // Debounced search input (wait 500ms after user stops typing)
+      $('#searchInput').on('input', debounce(applyFilters, 500));
+      
+      // Date filters - apply immediately when changed
+      $('#startDate, #endDate').on('change', applyFilters);
+      
+      // Dropdown filters - apply immediately when changed
+      $('#categoryFilter, #typeFilter').on('change', applyFilters);
     }
 
-    // Load transactions from backend using the transactionHistory endpoint
-    function loadTransactions() {
+    // Load categories for the filter dropdown
+    function loadCategories() {
+      $.ajax({
+        url: `/api/categories/all?userID=${currentUserId}`,
+        method: 'GET',
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+        success: function(data) {
+          allCategories = data;
+          updateCategoryFilter();
+        },
+        error: function(xhr, status, error) {
+          console.warn('Could not load categories for filter:', error);
+          // Not a critical error, continue without category filter options
+        }
+      });
+    }
+
+    // Update category filter dropdown with available categories
+    function updateCategoryFilter() {
+      const categoryFilter = $('#categoryFilter');
+      
+      // Keep the "All Categories" option
+      categoryFilter.find('option:not(:first)').remove();
+      
+      allCategories.forEach(category => {
+        categoryFilter.append(`<option value="${category.categoryName}">${category.categoryName}</option>`);
+      });
+    }
+
+    // Load transactions from backend (with or without filters)
+    function loadTransactions(filters = {}) {
       showLoading();
       
-      console.log(`Loading transaction history for user ${currentUserId}...`);
+      console.log(`Loading transactions for user ${currentUserId} with filters:`, filters);
+      
+      // Build query parameters
+      const params = new URLSearchParams({
+        userID: currentUserId
+      });
+
+      // Add filter parameters if they exist and are not empty
+      if (filters.searchTerm && filters.searchTerm.trim()) {
+        params.append('searchTerm', filters.searchTerm.trim());
+      }
+      if (filters.categoryName) {
+        params.append('categoryName', filters.categoryName);
+      }
+      if (filters.transactionType) {
+        params.append('transactionType', filters.transactionType);
+      }
+      if (filters.startDate) {
+        params.append('startDate', filters.startDate);
+      }
+      if (filters.endDate) {
+        params.append('endDate', filters.endDate);
+      }
+
+      // Determine which endpoint to use
+      const hasFilters = Object.keys(filters).some(key => filters[key] && filters[key].toString().trim());
+      const endpoint = hasFilters ? 'filtered' : 'transactionHistory';
       
       $.ajax({
-        url: `${API_BASE_URL}/transactionHistory?userID=${currentUserId}`,
+        url: `${API_BASE_URL}/${endpoint}?${params}`,
         method: 'GET',
         headers: {
           "Authorization": `Bearer ${token}`
         },
         success: function(data, textStatus, xhr) {
-          console.log('Transaction History API Response:', data);
+          console.log('API Response:', data);
           console.log('Status Code:', xhr.status);
           
+          isFiltered = hasFilters;
+          updateFilterStatus();
+
           if (xhr.status === 204 || !data || data.length === 0) {
-            allTransactions = [];
-            filteredTransactions = [];
+            currentTransactions = [];
             displayTransactions();
             updateSummaryCards();
-            updateCategoryFilter();
-            console.log('No transaction history found for this user');
+            console.log('No transactions found');
             return;
           }
           
-          // Transform the transaction history data to match our frontend format
-          allTransactions = data.map(transaction => ({
+          // Transform the transaction data
+          currentTransactions = data.map(transaction => ({
             transactionID: transaction.transactionID,
             amount: parseFloat(transaction.amount),
             transactionDate: transaction.transactionDate,
@@ -438,53 +546,82 @@
             categoryType: transaction.categoryType,
             iconCode: transaction.iconCode,
             colorCode: transaction.colorCode,
-            note: transaction.note || 'No note', // Handle null/empty notes
-            // Determine if it's income based on categoryType
+            note: transaction.note || 'No note',
             isIncome: transaction.categoryType === 'Income'
           }));
           
-          filteredTransactions = [...allTransactions];
           displayTransactions();
           updateSummaryCards();
-          updateCategoryFilter();
-          console.log(`Loaded ${allTransactions.length} transaction history records`);
+          console.log(`Loaded ${currentTransactions.length} transactions`);
         },
         error: function(xhr, status, error) {
-          console.error('Error loading transaction history:', error);
+          console.error('Error loading transactions:', error);
           console.error('Status:', xhr.status);
           console.error('Response:', xhr.responseText);
           
           if (xhr.status === 401) {
             showError('Authentication failed. Please log in again.');
-            // Optionally redirect to login page
-            // window.location.href = '/login.html';
           } else if (xhr.status === 404) {
-            showError('User not found or no transaction history available.');
+            showError('No transactions found or endpoint not available.');
           } else if (xhr.status === 0) {
             showError('Cannot connect to server. Please check if the backend is running.');
           } else {
-            showError(`Failed to load transaction history. Error: ${error} (Status: ${xhr.status})`);
+            showError(`Failed to load transactions. Error: ${error} (Status: ${xhr.status})`);
           }
         }
       });
+    }
+
+    // Update filter status indicator
+    function updateFilterStatus() {
+      const statusElement = $('#filterStatus');
+      if (isFiltered) {
+        statusElement.addClass('active');
+      } else {
+        statusElement.removeClass('active');
+      }
+    }
+
+    // Apply filters by making an API call
+    function applyFilters() {
+      const filters = {
+        searchTerm: $('#searchInput').val(),
+        categoryName: $('#categoryFilter').val(),
+        transactionType: $('#typeFilter').val(),
+        startDate: $('#startDate').val(),
+        endDate: $('#endDate').val()
+      };
+
+      loadTransactions(filters);
+    }
+
+    // Clear all filters and reload unfiltered data
+    function clearFilters() {
+      $('#searchInput').val('');
+      $('#categoryFilter').val('');
+      $('#typeFilter').val('');
+      $('#startDate').val('');
+      $('#endDate').val('');
+      
+      loadTransactions(); // Load without filters
     }
 
     // Display transactions in the table
     function displayTransactions() {
       const tbody = $('#transactionsBody');
       
-      if (filteredTransactions.length === 0) {
+      if (currentTransactions.length === 0) {
         tbody.html(`
           <div class="no-transactions">
             <h3>No transactions found</h3>
-            <p>Try adjusting your filters or check if there are transactions for this user.</p>
+            <p>${isFiltered ? 'Try adjusting your filters to see more results.' : 'No transactions available for this user.'}</p>
           </div>
         `);
         return;
       }
 
       let html = '';
-      filteredTransactions.forEach(transaction => {
+      currentTransactions.forEach(transaction => {
         const date = new Date(transaction.transactionDate).toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'short',
@@ -525,13 +662,13 @@
       tbody.html(html);
     }
 
-    // Update summary cards
+    // Update summary cards based on currently displayed transactions
     function updateSummaryCards() {
-      const totalTransactions = filteredTransactions.length;
+      const totalTransactions = currentTransactions.length;
       let totalIncome = 0;
       let totalExpenses = 0;
 
-      filteredTransactions.forEach(transaction => {
+      currentTransactions.forEach(transaction => {
         if (transaction.isIncome) {
           totalIncome += Math.abs(transaction.amount);
         } else {
@@ -542,78 +679,6 @@
       $('#totalTransactions').text(totalTransactions);
       $('#totalIncome').text(formatVND(totalIncome));
       $('#totalExpenses').text(formatVND(totalExpenses));
-    }
-
-    // Update category filter options
-    function updateCategoryFilter() {
-      const categories = [...new Set(allTransactions.map(t => t.categoryName))];
-      const categoryFilter = $('#categoryFilter');
-      
-      // Keep the "All Categories" option
-      categoryFilter.find('option:not(:first)').remove();
-      
-      categories.forEach(categoryName => {
-        categoryFilter.append(`<option value="${categoryName}">${categoryName}</option>`);
-      });
-    }
-
-    // Apply filters
-    function applyFilters() {
-      const searchTerm = $('#searchInput').val().toLowerCase();
-      const categoryFilter = $('#categoryFilter').val();
-      const typeFilter = $('#typeFilter').val();
-      const startDate = $('#startDate').val();
-      const endDate = $('#endDate').val();
-
-      filteredTransactions = allTransactions.filter(transaction => {
-        // Search filter (search in category name and note)
-        if (searchTerm) {
-          const categoryMatch = transaction.categoryName.toLowerCase().includes(searchTerm);
-          const noteMatch = (transaction.note || '').toLowerCase().includes(searchTerm);
-          if (!categoryMatch && !noteMatch) {
-            return false;
-          }
-        }
-
-        // Category filter
-        if (categoryFilter && transaction.categoryName !== categoryFilter) {
-          return false;
-        }
-
-        // Type filter
-        if (typeFilter && transaction.categoryType !== typeFilter) {
-          return false;
-        }
-
-        // Date range filter
-        if (startDate || endDate) {
-          const transactionDate = new Date(transaction.transactionDate);
-          if (startDate && transactionDate < new Date(startDate)) {
-            return false;
-          }
-          if (endDate && transactionDate > new Date(endDate)) {
-            return false;
-          }
-        }
-
-        return true;
-      });
-
-      displayTransactions();
-      updateSummaryCards();
-    }
-
-    // Clear all filters
-    function clearFilters() {
-      $('#searchInput').val('');
-      $('#categoryFilter').val('');
-      $('#typeFilter').val('');
-      $('#startDate').val('');
-      $('#endDate').val('');
-      
-      filteredTransactions = [...allTransactions];
-      displayTransactions();
-      updateSummaryCards();
     }
 
     // Delete transaction
@@ -627,7 +692,12 @@
           },
           success: function() {
             console.log('Transaction deleted successfully');
-            loadTransactions(); // Reload the transaction history
+            // Reload with current filters applied
+            if (isFiltered) {
+              applyFilters();
+            } else {
+              loadTransactions();
+            }
           },
           error: function(xhr, status, error) {
             console.error('Error deleting transaction:', error);
@@ -643,7 +713,7 @@
 
     // Utility functions
     function showLoading() {
-      $('#transactionsBody').html('<div class="loading">Loading transaction history...</div>');
+      $('#transactionsBody').html('<div class="loading">Loading transactions...</div>');
     }
 
     function showError(message) {
