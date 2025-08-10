@@ -278,16 +278,16 @@
   </style>
 </head>
 <body>
-      <!-- Auth check -->
+  <!-- Auth check -->
   <script src="/js/auth.js"></script>
   <script>
-    requireAuth(); // Kiểm tra token trước khi hiển thị nội dung
+    requireAuth(); // Check token before displaying content
   </script>
   
   <div class="container">
     <!-- Header -->
     <div class="header">
-      <h1 id="historyTitle"></h1>
+      <h1 id="historyTitle">Transaction History</h1>
     </div>
 
     <!-- Summary Cards -->
@@ -342,11 +342,17 @@
   </div>
 
   <script>
+    // Get token and user info from JWT
     const token = getToken();
-    $("#historyTitle").text("Transaction History - " + getUsernameFromToken(token));
-    // Configuration
-    const API_BASE_URL = 'http://localhost:8080/api/transactions';
-    let currentUserId = getUserIdFromToken(token);
+    const currentUserId = getUserIdFromToken(token);
+    const username = getUsernameFromToken(token);
+    
+    // Update title with username
+    $("#historyTitle").text(`Transaction History - ${username}`);
+
+    // Configuration - use relative URL for better flexibility
+    const API_BASE_URL = '/api/transactions';
+    
     let allTransactions = [];
     let filteredTransactions = [];
 
@@ -378,6 +384,12 @@
 
     // Initialize the application
     $(document).ready(function() {
+      // Validate token and user ID
+      if (!token || !currentUserId) {
+        showError('Authentication required. Please log in again.');
+        return;
+      }
+
       initializeEventListeners();
       loadTransactions();
     });
@@ -400,7 +412,9 @@
       $.ajax({
         url: `${API_BASE_URL}/transactionHistory?userID=${currentUserId}`,
         method: 'GET',
-        headers:{"Authorization": `Bearer ${token}`},
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
         success: function(data, textStatus, xhr) {
           console.log('Transaction History API Response:', data);
           console.log('Status Code:', xhr.status);
@@ -440,10 +454,14 @@
           console.error('Status:', xhr.status);
           console.error('Response:', xhr.responseText);
           
-          if (xhr.status === 404) {
+          if (xhr.status === 401) {
+            showError('Authentication failed. Please log in again.');
+            // Optionally redirect to login page
+            // window.location.href = '/login.html';
+          } else if (xhr.status === 404) {
             showError('User not found or no transaction history available.');
           } else if (xhr.status === 0) {
-            showError('Cannot connect to server. Please check if the backend is running on http://localhost:8080');
+            showError('Cannot connect to server. Please check if the backend is running.');
           } else {
             showError(`Failed to load transaction history. Error: ${error} (Status: ${xhr.status})`);
           }
@@ -604,14 +622,20 @@
         $.ajax({
           url: `${API_BASE_URL}/${id}`,
           method: 'DELETE',
-          headers:{"Authorization": `Bearer ${token}`},
+          headers: {
+            "Authorization": `Bearer ${token}`
+          },
           success: function() {
             console.log('Transaction deleted successfully');
             loadTransactions(); // Reload the transaction history
           },
           error: function(xhr, status, error) {
             console.error('Error deleting transaction:', error);
-            alert('Failed to delete transaction. Please try again.');
+            if (xhr.status === 401) {
+              alert('Authentication failed. Please log in again.');
+            } else {
+              alert('Failed to delete transaction. Please try again.');
+            }
           }
         });
       }
