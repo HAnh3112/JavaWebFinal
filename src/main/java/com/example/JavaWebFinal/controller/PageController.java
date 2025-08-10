@@ -46,6 +46,16 @@ public class PageController {
     public String showChart() {
         return "chart"; 
     }
+    
+    @GetMapping("/login")
+    public String login(){
+        return "login";
+    }
+    
+    @GetMapping("/signin")
+    public String signin(){
+        return "signin";
+    }
 
 }
 
