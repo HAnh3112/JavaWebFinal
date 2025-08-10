@@ -11,9 +11,9 @@
 
 <body class="bg-pink-50 min-h-screen p-6">
   <!-- Auth check -->
-  <script src="/static/js/auth.js"></script>
+  <script src="/js/auth.js"></script>
   <script>
-    checkAuth(); // Kiểm tra token trước khi hiển thị nội dung
+    requireAuth(); // Kiểm tra token trước khi hiển thị nội dung
   </script>
 
   <div class="flex justify-between items-center mb-6">
@@ -135,7 +135,8 @@
   </div>
 
   <script>
-    var userID = 1; // Temporaly hard-coded
+    const token = getToken();
+    const userID = getUserIdFromToken(token); // Temporaly hard-coded
     const MONTHS = [
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
@@ -212,7 +213,9 @@
     });
 
     function fetchPrefixes(userID) {
-      fetch(`/api/prefix/show?userID=${userID}`)
+      fetch(`/api/prefix/show?userID=${userID}`,{
+          headers:{"Authorization": `Bearer ${token}`}
+      })
         .then(res => res.json())
         .then(data => {
           renderPrefixList(data);
@@ -222,14 +225,17 @@
 
     function fetchApplyPrefix(userID, month, year) {
       fetch(`/api/prefix/applyPrefix?userID=${userID}&month=${month}&year=${year}`, {
-        method: "POST"
+        method: "POST",
+        headers:{"Authorization": `Bearer ${token}`}
       })
         .then(res => res.text())
         .catch(err => console.error("Error applying prefixes:", err));
     }
 
     function fetchAvailableCategoriesPrefix() {
-      fetch(`/api/categories/simpleCategoryForPrefix?userID=${userID}`)
+      fetch(`/api/categories/simpleCategoryForPrefix?userID=${userID}`,{
+          headers:{"Authorization": `Bearer ${token}`}
+      })
         .then(res => res.json())
         .then(data => {
           const $select = $('#categoryPrefixSelect');
@@ -264,7 +270,8 @@
 
     function deletePrefix(id) {
       fetch(`/api/prefix/delete?id=${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers:{"Authorization": `Bearer ${token}`}
       })
         .then(res => {
           if (!res.ok) throw new Error("Failed to delete prefix");
@@ -414,7 +421,9 @@
     function loadBudgetsForMonth(id, month, year) {
       $container.html('<p class="text-gray-400">Loading...</p>');
 
-      fetch(`/api/budget/showByMonth?userID=${id}&month=${month}&year=${year}`)
+      fetch(`/api/budget/showByMonth?userID=${id}&month=${month}&year=${year}`,{
+          headers:{"Authorization": `Bearer ${token}`}
+      })
         .then(res => {
           if (!res.ok) throw new Error("Failed to load budget data");
           return res.json();
@@ -441,7 +450,9 @@
     function fetchAvailableCategories() {
       const [year, month] = monthPicker.value.split('-').map(Number);
 
-      fetch(`/api/categories/simpleCategoryExpense?userID=${userID}&month=${month}&year=${year}`)
+      fetch(`/api/categories/simpleCategoryExpense?userID=${userID}&month=${month}&year=${year}`,{
+          headers:{"Authorization": `Bearer ${token}`}
+      })
         .then(res => res.json())
         .then(data => {
           const $select = $('#categorySelect');
@@ -525,7 +536,8 @@
           const params = new URLSearchParams({ id, amount });
 
           fetch(`/api/budget/update?${params.toString()}`, {
-            method: 'PUT'
+            method: 'PUT',
+            headers:{"Authorization": `Bearer ${token}`}
           })
             .then(res => res.text())
             .then(response => {
@@ -542,7 +554,6 @@
 
         // ADD mode
         const categoryID = $('#categorySelect').val();
-        const userID = 3; // Hardcoded
         const [year, month] = monthPicker.value.split('-').map(Number);
 
         if (!categoryID || !month || !year) {
@@ -559,7 +570,8 @@
         });
 
         fetch(`/api/budget/insert?${params.toString()}`, {
-          method: 'POST'
+          method: 'POST',
+          headers:{"Authorization": `Bearer ${token}`}
         })
           .then(res => res.text())
           .then(response => {
@@ -600,7 +612,8 @@
         if (!confirm("Are you sure you want to delete this budget?")) return;
 
         fetch(`/api/budget/delete?id=${budgetId}`, {
-          method: 'DELETE'
+          method: 'DELETE',
+          headers:{"Authorization": `Bearer ${token}`}
         })
           .then(res => {
             if (!res.ok) throw new Error("Delete failed");
@@ -637,16 +650,7 @@
         $('#monthSelect').text(`${month}/${year}`);
 
         // Load categories and select current one
-        fetch('/api/categories')
-          .then(res => res.json())
-          .then(data => {
-            const $select = $('#categorySelect');
-            $select.empty().append('<option value="">Select category...</option>');
-            data.forEach(cat => {
-              const selected = cat.categoryId === categoryId ? 'selected' : '';
-              $select.append(`<option value="${cat.categoryId}" ${selected}>${cat.categoryName}</option>`);
-            });
-          });
+        const $select = $('#categorySelect');
       });
 
 
@@ -715,7 +719,8 @@
         }
 
         fetch(`/api/prefix/insert?cateID=${categoryId}&userID=${userID}&amount=${amount}`, {
-          method: 'POST'
+          method: 'POST',
+          headers:{"Authorization": `Bearer ${token}`}
         })
           .then(res => {
             if (!res.ok) throw new Error('Failed to insert prefix');

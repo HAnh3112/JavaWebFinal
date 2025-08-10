@@ -186,9 +186,9 @@
 
 <body>
   <!-- Auth check -->
-  <script src="/static/js/auth.js"></script>
+  <script src="/js/auth.js"></script>i already 
   <script>
-    checkAuth(); // Kiểm tra token trước khi hiển thị nội dung
+    requireAuth(); // Kiểm tra token trước khi hiển thị nội dung
   </script>
 
   
@@ -262,14 +262,18 @@
 
 </html>
 <script>
-  const userId = 1;
+  const token = getToken();
+  console.log(parseJwt(token));
+  const userId = getUserIdFromToken(token);
   const currentYear = new Date().getFullYear();
 
   const monthSelect = document.getElementById('monthSelect');
   const overviewText = document.querySelector('.overview-text');
 
   // Load danh sách tháng ngay khi load trang
-  fetch('/api/months')
+  fetch('/api/months',{
+      headers:{"Authorization": `Bearer ${token}`}
+  })
     .then(res => res.json())
     .then(months => {
       months.forEach(m => {
@@ -302,7 +306,9 @@
 
   // Hàm gọi API lấy giao dịch theo tháng
   function loadTransactionsByMonth(month, year) {
-    fetch(`/api/transactions/recentTransactionByMonth?userID=${userId}&month=${month}&year=${year}`)
+    fetch(`/api/transactions/recentTransactionByMonth?userID=${userId}&month=${month}&year=${year}`,{
+        headers:{"Authorization": `Bearer ${token}`}
+    })
       .then(response => {
         if (!response.ok) throw new Error("No transactions found.");
         return response.json();
@@ -342,7 +348,9 @@
   //load income and expenses
   async function loadMonthlySummary(month, year) {
     try {
-      const res = await fetch(`/api/transactions/summaryTransactionByMonth?userID=${userId}&month=${month}&year=${year}`);
+      const res = await fetch(`/api/transactions/summaryTransactionByMonth?userID=${userId}&month=${month}&year=${year}`,{
+          headers:{"Authorization": `Bearer ${token}`}
+      });
       const data = await res.json();
 
       if (data.length > 0) {
@@ -374,7 +382,9 @@
 
   async function loadSpendingCategories(month, year) {
     try {
-      const res = await fetch(`/api/categories/getSpendingCate?userID=${userId}&month=${month}&year=${year}`);
+      const res = await fetch(`/api/categories/getSpendingCate?userID=${userId}&month=${month}&year=${year}`,{
+          headers:{"Authorization": `Bearer ${token}`}
+      });
       const data = await res.json();
 
       if (!data || data.length === 0) {

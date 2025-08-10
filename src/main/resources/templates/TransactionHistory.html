@@ -278,10 +278,16 @@
   </style>
 </head>
 <body>
+      <!-- Auth check -->
+  <script src="/js/auth.js"></script>
+  <script>
+    requireAuth(); // Kiểm tra token trước khi hiển thị nội dung
+  </script>
+  
   <div class="container">
     <!-- Header -->
     <div class="header">
-      <h1>Transaction History - User 2</h1>
+      <h1 id="historyTitle"></h1>
     </div>
 
     <!-- Summary Cards -->
@@ -336,9 +342,11 @@
   </div>
 
   <script>
+    const token = getToken();
+    $("#historyTitle").text("Transaction History - " + getUsernameFromToken(token));
     // Configuration
     const API_BASE_URL = 'http://localhost:8080/api/transactions';
-    let currentUserId = 1;
+    let currentUserId = getUserIdFromToken(token);
     let allTransactions = [];
     let filteredTransactions = [];
 
@@ -387,6 +395,7 @@
       $.ajax({
         url: `${API_BASE_URL}/transactionHistory?userID=${currentUserId}`,
         method: 'GET',
+        headers:{"Authorization": `Bearer ${token}`},
         success: function(data, textStatus, xhr) {
           console.log('Transaction History API Response:', data);
           console.log('Status Code:', xhr.status);
@@ -590,6 +599,7 @@
         $.ajax({
           url: `${API_BASE_URL}/${id}`,
           method: 'DELETE',
+          headers:{"Authorization": `Bearer ${token}`},
           success: function() {
             console.log('Transaction deleted successfully');
             loadTransactions(); // Reload the transaction history

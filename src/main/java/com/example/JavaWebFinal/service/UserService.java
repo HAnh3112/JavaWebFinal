@@ -22,7 +22,10 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
     private JwtUtil jwtUtil;
+    
     public Map<String, Object> loginUserWithToken(LoginRequest request) {
     User user = userRepository.findByEmail(request.getEmail())
             .orElseThrow(() -> new RuntimeException("Email not found"));
@@ -31,7 +34,7 @@ public class UserService {
         throw new RuntimeException("Invalid password");
     }
 
-    String token = jwtUtil.generateToken(user.getEmail());
+    String token = jwtUtil.generateToken(user.getEmail(), user.getUserId(), user.getUsername());
 
     Map<String, Object> response = new HashMap<>();
     response.put("token", token);

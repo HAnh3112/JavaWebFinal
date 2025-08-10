@@ -46,29 +46,26 @@ function parseJwt(token) {
     }
 }
 
-// Hàm gọi API có sẵn token
-async function authFetch(url, options = {}) {
+function getUserIdFromToken() {
     const token = getToken();
-    if (!token) {
-        window.location.href = "/login";
-        return;
-    }
+    if (!token) return null;
 
-    options.headers = {
-        ...(options.headers || {}),
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-    };
+    const payload = parseJwt(token);
+    if (!payload) return null;
 
-    const response = await fetch(url, options);
+    // Adjust this depending on your token's claim name
+    return payload.id || null;
+}
 
-    // Nếu token hết hạn
-    if (response.status === 401) {
-        clearToken();
-        return;
-    }
+function getUsernameFromToken() {
+    const token = getToken();
+    if (!token) return null;
 
-    return response;
+    const payload = parseJwt(token);
+    if (!payload) return null;
+
+    // Adjust this depending on your token's claim name
+    return payload.username || null;
 }
 
 // Check login khi load trang

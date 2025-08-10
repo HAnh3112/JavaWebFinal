@@ -37,9 +37,9 @@
 </head>
 <body>
    <!-- Auth check -->
-  <script src="/static/js/auth.js"></script>
+  <script src="/js/auth.js"></script>
   <script>
-    checkAuth(); // Kiểm tra token trước khi hiển thị nội dung
+    requireAuth(); // Kiểm tra token trước khi hiển thị nội dung
   </script>
   <div class="page-header">
     <h2>Category Management</h2>
@@ -84,7 +84,8 @@
   </div>
 
 <script>
-const userId = 1;
+const token = getToken();
+const userId = getUserIdFromToken(token);
 const iconMap = {
   57946: "fastfood",
   57815: "directions_car",
@@ -118,7 +119,9 @@ iconGrid.addEventListener("click", e => {
 
 // Load categories
 function loadCategories(){
-  fetch(`/api/categories?userId=${userId}`)
+  fetch(`/api/categories?userId=${userId}`,{
+      headers:{"Authorization": `Bearer ${token}`}
+  })
     .then(res => res.json())
     .then(data => {
       allCategories = data;
@@ -208,7 +211,10 @@ document.getElementById("saveAddCat").addEventListener("click", () => {
   if (duplicate) { alert("Category already exists in this type"); return; }
 
   if (editMode) {
-    fetch(`/api/categories/update?id=${editId}&name=${encodeURIComponent(name)}&iconCode=${selectedIconCode}&colorCode=${encodeURIComponent(color)}&type=${encodeURIComponent(type)}`, {method:"PUT"})
+    fetch(`/api/categories/update?id=${editId}&name=${encodeURIComponent(name)}&iconCode=${selectedIconCode}&colorCode=${encodeURIComponent(color)}&type=${encodeURIComponent(type)}`, {
+        method:"PUT",
+        headers:{"Authorization": `Bearer ${token}`}
+    })
       .then(() => {
         alert("Category updated successfully");
         modal.style.display = "none";
@@ -219,7 +225,10 @@ document.getElementById("saveAddCat").addEventListener("click", () => {
         alert("Error updating category");
       });
   } else {
-    fetch(`/api/categories/insert?userID=${userId}&name=${encodeURIComponent(name)}&iconCode=${selectedIconCode}&colorCode=${encodeURIComponent(color)}&type=${encodeURIComponent(type)}`, { method: "POST" })
+    fetch(`/api/categories/insert?userID=${userId}&name=${encodeURIComponent(name)}&iconCode=${selectedIconCode}&colorCode=${encodeURIComponent(color)}&type=${encodeURIComponent(type)}`, { 
+        method: "POST",
+        headers:{"Authorization": `Bearer ${token}`}
+    })
       .then(() => {
         alert("Category added successfully");
         modal.style.display = "none";
@@ -238,7 +247,10 @@ function startEdit(id){
 }
 function deleteCategory(id) {
   if (!confirm("Delete this category?")) return;
-  fetch(`/api/categories/delete?id=${id}`, { method: "DELETE" })
+  fetch(`/api/categories/delete?id=${id}`, { 
+      method: "DELETE",
+      headers:{"Authorization": `Bearer ${token}`}
+  })
     .then(() => {
       alert("Category deleted successfully");
       loadCategories();
