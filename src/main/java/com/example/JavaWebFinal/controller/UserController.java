@@ -8,15 +8,23 @@ package com.example.JavaWebFinal.controller;
  *
  * @author ADMIN
  */
-import com.example.JavaWebFinal.service.UserService;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.example.JavaWebFinal.dto.login.LoginRequest;
 import com.example.JavaWebFinal.dto.login.RegisterRequest;
 import com.example.JavaWebFinal.dto.login.UserResponse;
-import org.springframework.http.HttpStatus;
-import java.util.Map;
+import com.example.JavaWebFinal.service.UserService;
 
 @RestController
 @RequestMapping("/api/user")
@@ -42,7 +50,7 @@ public class UserController {
 
     @PostMapping("/update")
     public String updateUser(@RequestParam int id, @RequestParam String name,
-                             @RequestParam String email, @RequestParam String password) {
+            @RequestParam String email, @RequestParam String password) {
         return userService.updateUser(id, name, email, password);
     }
 
@@ -58,10 +66,13 @@ public class UserController {
         }
     }
 
-
     @PostMapping("/login")
-    public ResponseEntity<UserResponse> loginUser(@RequestBody LoginRequest request) {
-        return ResponseEntity.ok(userService.loginUser(request));
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest request) {
+        try {
+            return ResponseEntity.ok(userService.loginUserWithToken(request));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", e.getMessage()));
+        }
     }
-}
 
+}

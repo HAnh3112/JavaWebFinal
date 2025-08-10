@@ -201,6 +201,12 @@
     </style>
 </head>
 <body>
+    <!-- Auth check -->
+    <script src="/static/js/auth.js"></script>
+    <script>
+        checkAuth(); // Kiểm tra token trước khi hiển thị nội dung
+    </script>
+
     <div class="main-container">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -279,22 +285,17 @@
 
     <script>
         function loadPage(page) {
-            // Update iframe source
             document.getElementById('contentFrame').src = page;
-            
-            // Update active navigation item
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
             event.target.classList.add('active');
         }
 
-        // Show current date in real-time
         function updateDate() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const formatted = now.toLocaleDateString('en-US', options);
-            document.getElementById("dateDisplay").textContent = formatted;
+            document.getElementById("dateDisplay").textContent = now.toLocaleDateString('en-US', options);
         }
 
         updateDate();

@@ -74,14 +74,14 @@
 <body>
 
 <div class="form-container">
-    <h2>Đăng ký</h2>
-    <input type="text" id="username" placeholder="Tên đăng nhập">
+    <h2>Sign Up</h2>
+    <input type="text" id="username" placeholder="Username">
     <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Mật khẩu">
-    <button onclick="register()">Đăng ký</button>
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="register()">Sign up</button>
     <div id="message"></div>
     <div class="switch">
-        Đã có tài khoản? <a href="login">Đăng nhập</a>
+        Already have an account? <a href="login">Log in</a>
     </div>
 </div>
 
@@ -100,18 +100,18 @@
     .then(res => {
         if (res.ok) {
             messageDiv.style.color = 'green';
-            messageDiv.textContent = "Đăng ký thành công!";
+            messageDiv.textContent = "Register successfully!";
             setTimeout(() => {
                 window.location.href = "login";
             }, 1500);
         } else {
             messageDiv.style.color = 'red';
-            messageDiv.textContent = "Đăng ký thất bại! Vui lòng thử lại.";
+            messageDiv.textContent = "Register failed! Please try again.";
         }
     })
     .catch(err => {
         messageDiv.style.color = 'red';
-        messageDiv.textContent = "Có lỗi xảy ra, xin vui lòng thử lại sau.";
+        messageDiv.textContent = "There was error during the process. Please try again later.";
     });
 }
 </script>

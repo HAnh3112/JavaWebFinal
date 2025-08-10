@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="vi">
-
 <head>
     <meta charset="UTF-8">
     <title>Đăng nhập</title>
+    <script src="/js/auth.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -21,14 +21,11 @@
             border-radius: 16px;
             box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
             width: 480px;
-            /* to hơn xíu */
             max-width: 90vw;
-            /* responsive cho màn nhỏ */
             text-align: center;
             display: flex;
             flex-direction: column;
             gap: 18px;
-            /* cách đều input + button */
         }
 
         h2 {
@@ -39,11 +36,10 @@
         input {
             width: 100%;
             padding: 14px;
-            margin: 0;
             border: 1.5px solid #ccc;
             border-radius: 12px;
-            box-sizing: border-box;
             font-size: 16px;
+            box-sizing: border-box;
             transition: border-color 0.3s ease;
         }
 
@@ -69,7 +65,6 @@
             background: #1f6391;
         }
 
-
         .switch {
             margin-top: 15px;
             font-size: 14px;
@@ -81,23 +76,23 @@
         }
     </style>
 </head>
-
 <body>
 
-<div class="form-container">
-    <h2>Đăng nhập</h2>
-    <input type="text" id="email" placeholder="Tên đăng nhập">
-    <input type="password" id="password" placeholder="Mật khẩu">
-    <button onclick="login()">Đăng nhập</button>
-    <div id="login-message" style="margin-top:10px; font-weight: bold;"></div>
-    <div class="switch">
-        Chưa có tài khoản? <a href="signin">Đăng ký</a>
+    <div class="form-container">
+        <h2>Log In</h2>
+        <input type="text" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Sign in</button>
+        <div id="login-message" style="margin-top:10px; font-weight: bold;"></div>
+        <div class="switch">
+            Don't have an account? <a href="signup.html">Sign up</a>
+        </div>
     </div>
 
     <script>
         function login() {
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
             const messageDiv = document.getElementById("login-message");
 
             fetch("/api/user/login", {
@@ -105,26 +100,26 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
             })
-                .then(res => {
-                    if (res.ok) {
-                        messageDiv.style.color = 'green';
-                        messageDiv.textContent = "Đăng nhập thành công!";
-                        setTimeout(() => {
-                            window.location.href = "/";
-                        }, 1500);
-                    } else {
-                        messageDiv.style.color = 'red';
-                        messageDiv.textContent = "Sai tài khoản hoặc mật khẩu!";
-                    }
-                })
-                .catch(() => {
+            .then(res => res.json().then(data => ({ status: res.status, body: data })))
+            .then(({ status, body }) => {
+                if (status === 200 && body.token) {
+                    saveToken(body.token); // lưu token qua auth.js
+                    messageDiv.style.color = 'green';
+                    messageDiv.textContent = "Log in successfully!";
+                    setTimeout(() => {
+                        window.location.href = "/";
+                    }, 1500);
+                } else {
                     messageDiv.style.color = 'red';
-                    messageDiv.textContent = "Có lỗi xảy ra, xin vui lòng thử lại sau.";
-                });
+                    messageDiv.textContent = body.message || "Wrong username or password!";
+                }
+            })
+            .catch(() => {
+                messageDiv.style.color = 'red';
+                messageDiv.textContent = "There was an error. Please try again later.";
+            });
         }
-
     </script>
 
 </body>
-
 </html>
