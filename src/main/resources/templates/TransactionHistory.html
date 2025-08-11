@@ -138,15 +138,6 @@
       background: #cbd5e1;
     }
 
-    .filters button.apply-btn {
-      background: #3b82f6;
-      color: white;
-    }
-
-    .filters button.apply-btn:hover {
-      background: #2563eb;
-    }
-
     .transactions-container {
       background: white;
       border-radius: 12px;
@@ -321,11 +312,11 @@
       </div>
       <div class="card income">
         <div class="card-title">Total Income</div>
-        <div class="card-value" id="totalIncome">VND0</div>
+        <div class="card-value" id="totalIncome">₫0</div>
       </div>
       <div class="card expenses">
         <div class="card-title">Total Expenses</div>
-        <div class="card-value" id="totalExpenses">VND0</div>
+        <div class="card-value" id="totalExpenses">₫0</div>
       </div>
     </div>
 
@@ -344,7 +335,6 @@
         </select>
         <input type="date" id="startDate" />
         <input type="date" id="endDate" />
-        <button id="applyFilters" class="apply-btn">Apply Filters</button>
         <button id="clearFilters">Clear Filters</button>
       </div>
     </div>
@@ -415,9 +405,9 @@
       return iconMap[iconCode] || "account_balance_wallet"; // Default icon if not found
     }
 
-    // Function to format VND currency
+    // Function to format VND currency (updated to match dashboard format)
     function formatVND(amount) {
-      return `${Math.abs(amount).toLocaleString('vi-VN')} VND`;
+      return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
     }
 
     // Initialize the application
@@ -434,9 +424,6 @@
     });
 
     function initializeEventListeners() {
-      // Apply filters button
-      $('#applyFilters').on('click', applyFilters);
-      
       // Clear filters button
       $('#clearFilters').on('click', clearFilters);
       
@@ -579,7 +566,7 @@
       }
     }
 
-    // Apply filters by making an API call
+    // Apply filters by making an API call (automatically triggered on input changes)
     function applyFilters() {
       const filters = {
         searchTerm: $('#searchInput').val(),
@@ -648,7 +635,7 @@
               </div>
             </div>
             <div class="transaction-description">${transaction.note}</div>
-            <div class="transaction-amount ${amountClass}">${amountPrefix} ${formatVND(transaction.amount)}</div>
+            <div class="transaction-amount ${amountClass}">${amountPrefix} ${formatVND(Math.abs(transaction.amount))}</div>
             <div class="transaction-actions">
               <button class="delete" onclick="deleteTransaction(${transaction.transactionID})" title="Delete">🗑️</button>
             </div>
