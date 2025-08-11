@@ -52,9 +52,9 @@ public class PageController {
         return "login";
     }
     
-    @GetMapping("/signin")
+    @GetMapping("/signup")
     public String signin(){
-        return "signin";
+        return "signup";
     }
 
 }
