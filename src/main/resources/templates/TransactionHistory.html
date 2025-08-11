@@ -394,7 +394,7 @@
       58328: "medical_services",
       58713: "school",
       58007: "flight",
-      58856: "sports_esports",
+      58856: "sports_esports"
     };
 
     // Debounce function for search input
@@ -453,7 +453,7 @@
     // Load categories for the filter dropdown
     function loadCategories() {
       $.ajax({
-        url: `/api/categories/all?userID=${currentUserId}`,
+        url: `/api/categories?userId=${currentUserId}`,
         method: 'GET',
         headers: {
           "Authorization": `Bearer ${token}`
