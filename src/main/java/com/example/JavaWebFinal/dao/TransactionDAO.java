@@ -2,6 +2,7 @@ package com.example.JavaWebFinal.dao;
 
 import com.example.JavaWebFinal.dto.budget.BudgetWithSpendingDTO;
 import com.example.JavaWebFinal.dto.transactions.MonthlySummaryDTO;
+import com.example.JavaWebFinal.dto.transactions.TotalSpentDTO;
 import com.example.JavaWebFinal.dto.transactions.TransactionDTO;
 import com.example.JavaWebFinal.dto.transactions.TransactionHistoryDTO;
 import com.example.JavaWebFinal.dto.transactions.TransactionSummaryDTO;
@@ -297,4 +298,28 @@ public class TransactionDAO{
             throw new RuntimeException("Database error in GetPaginatedTransactionHistory: " + e.getMessage(), e);
         }
     }
+
+
+
+
+    //tqa
+
+
+    private static class TotalSpentRowMapper implements RowMapper<TotalSpentDTO> {
+    @Override
+    public TotalSpentDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+        TotalSpentDTO dto = new TotalSpentDTO();
+        dto.setTotalSpent(rs.getBigDecimal("TotalBalance"));
+        return dto;
+    }
+}
+
+    public List<TotalSpentDTO> GetTotalBalance(int userId) {
+        String sql = "EXEC GetUserTotalBalance ?";
+
+        return jdbcTemplate.query(sql, new Object[]{userId}, new TotalSpentRowMapper());
+    }
+
+    
+
 }

@@ -165,4 +165,9 @@ public class TransactionService {
     public Object GetFilteredTransactionStats(int userID, String transactionType, String categoryName, String searchTerm, LocalDate startDate, LocalDate endDate) {
         return transactionDAO.GetFilteredTransactionStats(userID, transactionType, categoryName, searchTerm, startDate, endDate);
     }
+
+    //tqa
+    public Object GetTotalBalance(int userID){
+        return transactionDAO.GetTotalBalance(userID);
+    }
 }

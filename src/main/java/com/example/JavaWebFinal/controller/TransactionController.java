@@ -284,5 +284,12 @@ public class TransactionController {
                 .body("Error: " + e.getMessage());
         }
     }
+
+    //tqa
+    @GetMapping("/totalBalance")
+    public Object GetTotalBalance(@RequestParam int userID){
+        return transactionService.GetTotalBalance(userID);
+    }
+
 }
 
